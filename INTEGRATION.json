@@ -1865,7 +1865,7 @@
       "host": "hq-dev1-pve2-vm2",
       "pid": 4099516
     },
-    "phase": "checking",
+    "phase": "failed",
     "land": "main",
     "base": "0f6f369100a699b48f2245cca52a152dc10ef535",
     "cohort": [
@@ -2049,27 +2049,24 @@
         "exitCode": 1,
         "cached": false,
         "timedOut": false,
-        "cancelled": false,
+        "cancelled": true,
         "stale": false,
-        "ms": 85142,
+        "ms": 290994,
         "scope": {
           "TIER": "batch",
           "DIFF_BASE": "0f6f369100a699b48f2245cca52a152dc10ef535",
           "TASK": "",
           "TASKS": ""
         },
-        "commit": "e448a23eae08309ba69b75ea875dcd1f99937484",
-        "tree": "0752b78cfdd5f459801c00930358e102e2faf773",
-        "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-f8882c37-dd12-4218-b6d0-3f5504e0f3d8.log",
+        "commit": "5f3258031869fc2090825295212a44fa7a4b7f8a",
+        "tree": "b6709712ba38c00dcadc4d8917a88297bb5dabcd",
+        "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-a04e3e01-4336-4c24-ae93-506b87dab15d.log",
         "tail": [
-          "0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/validate_presentation.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/validate_presentation.stderr.log\",\"finished\":\"2026-11-20T06:48:50.078Z\",\"elapsedMs\":2037,\"commandExitCode\":0}",
-          "{\"event\":\"verification-stage\",\"stage\":\"validate:i18n\",\"status\":\"passed\",\"command\":\"pnpm run validate:i18n\",\"argv\":[\"pnpm\",\"run\",\"validate:i18n\"],\"pid\":4070405,\"started\":\"2026-11-20T06:48:48.046Z\",\"exitCode\":0,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/validate_i18n.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/validate_i18n.stderr.log\",\"finished\":\"2026-11-20T06:48:54.298Z\",\"elapsedMs\":6254,\"commandExitCode\":0}",
-          "{\"event\":\"verification-stage\",\"stage\":\"build\",\"status\":\"passed\",\"command\":\"pnpm run build\",\"argv\":[\"pnpm\",\"run\",\"build\"],\"pid\":4070416,\"started\":\"2026-11-20T06:48:48.049Z\",\"exitCode\":0,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/build.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/build.stderr.log\",\"finished\":\"2026-11-20T06:48:58.661Z\",\"elapsedMs\":10613,\"commandExitCode\":0}",
-          "{\"event\":\"verification-stage\",\"stage\":\"format:check\",\"status\":\"failed\",\"command\":\"pnpm run format:check\",\"argv\":[\"pnpm\",\"run\",\"format:check\"],\"pid\":4070391,\"started\":\"2026-11-20T06:48:48.037Z\",\"exitCode\":1,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/format_check.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/format_check.stderr.log\",\"finished\":\"2026-11-20T06:49:08.537Z\",\"elapsedMs\":20503,\"commandExitCode\":1}",
-          "{\"event\":\"verification-stage\",\"stage\":\"lint\",\"status\":\"passed\",\"command\":\"pnpm run lint\",\"argv\":[\"pnpm\",\"run\",\"lint\"],\"pid\":4070385,\"started\":\"2026-11-20T06:48:48.033Z\",\"exitCode\":0,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/lint.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/lint.stderr.log\",\"finished\":\"2026-11-20T06:49:19.426Z\",\"elapsedMs\":31395,\"commandExitCode\":0}",
-          "{\"event\":\"verification-stage\",\"stage\":\"typecheck\",\"status\":\"passed\",\"command\":\"pnpm run typecheck\",\"argv\":[\"pnpm\",\"run\",\"typecheck\"],\"pid\":4070384,\"started\":\"2026-11-20T06:48:48.028Z\",\"exitCode\":0,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/typecheck.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/typecheck.stderr.log\",\"finished\":\"2026-11-20T06:50:11.422Z\",\"elapsedMs\":83399,\"commandExitCode\":0}",
-          "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/report.json\"}",
-          " ELIFECYCLE  Command failed with exit code 1."
+          "102153,\"started\":\"2026-11-20T06:51:36.711Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.621Z\",\"signal\":\"SIGTERM\"},\"failure\":{\"kind\":\"cancel\",\"name\":\"Error\",\"message\":\"Error: Command failed: ps -eo pid=,ppid=,stat=,lstart=\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]}}",
+          "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"cancelled\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":4102153,\"started\":\"2026-11-20T06:51:36.711Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.621Z\",\"signal\":\"SIGTERM\"},\"failure\":{\"kind\":\"cancel\",\"name\":\"Error\",\"message\":\"Error: Command failed: ps -eo pid=,ppid=,stat=,lstart=\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]},\"finished\":\"2026-11-20T06:55:58.154Z\",\"elapsedMs\":261446,\"commandExitCode\":null,\"signal\":\"SIGTERM\",\"emptyTiers\":[\"unit\",\"integration\",\"contract\"],\"afterExitCode\":1}",
+          "{\"event\":\"verification-stage\",\"stage\":\"warm-worlds\",\"status\":\"cancelling\",\"command\":\"node --import tsx scripts/warm-worlds.ts\",\"argv\":[\"node\",\"--import\",\"tsx\",\"scripts/warm-worlds.ts\"],\"pid\":4102154,\"started\":\"2026-11-20T06:51:36.714Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.629Z\",\"signal\":\"SIGTERM\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]}}",
+          "{\"event\":\"verification-stage\",\"stage\":\"warm-worlds\",\"status\":\"cancelled\",\"command\":\"node --import tsx scripts/warm-worlds.ts\",\"argv\":[\"node\",\"--import\",\"tsx\",\"scripts/warm-worlds.ts\"],\"pid\":4102154,\"started\":\"2026-11-20T06:51:36.714Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.629Z\",\"signal\":\"SIGTERM\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]},\"finished\":\"2026-11-20T06:55:58.186Z\",\"elapsedMs\":261475,\"commandExitCode\":null,\"signal\":\"SIGTERM\"}",
+          "{\"event\":\"verification-finished\",\"status\":\"cancelled\",\"passed\":false,\"exitCode\":143,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/report.json\"}"
         ],
         "failedTests": [],
         "plan": {
@@ -2099,31 +2096,28 @@
               "scripts",
               "tests"
             ],
-            "inputFingerprint": "930377d7ca77cb5dbe6c570adb7e9e1d0b48e2254cb29d375e02135fccef55fa",
-            "executionFingerprint": "c6a0ab4f466615f4c38e024553575239442a12fa469d3a7f0fdf90ad5496bacb",
+            "inputFingerprint": "b77faa5b2c44f7a04a71c0aee54e03b630812f9251addcbc767bc91cb8a83d59",
+            "executionFingerprint": "f8be86d0d3e40a6d1744ee253e3c8878dac0709d1feb031988466a32ae918494",
             "ok": false,
             "status": "failed",
             "exitCode": 1,
             "cached": false,
             "timedOut": false,
-            "cancelled": false,
+            "cancelled": true,
             "stale": false,
-            "ms": 84773,
-            "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-f8882c37-dd12-4218-b6d0-3f5504e0f3d8.log",
+            "ms": 290886,
+            "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-a04e3e01-4336-4c24-ae93-506b87dab15d.log",
             "failedTests": [],
             "tail": [
-              "0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/validate_presentation.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/validate_presentation.stderr.log\",\"finished\":\"2026-11-20T06:48:50.078Z\",\"elapsedMs\":2037,\"commandExitCode\":0}",
-              "{\"event\":\"verification-stage\",\"stage\":\"validate:i18n\",\"status\":\"passed\",\"command\":\"pnpm run validate:i18n\",\"argv\":[\"pnpm\",\"run\",\"validate:i18n\"],\"pid\":4070405,\"started\":\"2026-11-20T06:48:48.046Z\",\"exitCode\":0,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/validate_i18n.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/validate_i18n.stderr.log\",\"finished\":\"2026-11-20T06:48:54.298Z\",\"elapsedMs\":6254,\"commandExitCode\":0}",
-              "{\"event\":\"verification-stage\",\"stage\":\"build\",\"status\":\"passed\",\"command\":\"pnpm run build\",\"argv\":[\"pnpm\",\"run\",\"build\"],\"pid\":4070416,\"started\":\"2026-11-20T06:48:48.049Z\",\"exitCode\":0,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/build.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/build.stderr.log\",\"finished\":\"2026-11-20T06:48:58.661Z\",\"elapsedMs\":10613,\"commandExitCode\":0}",
-              "{\"event\":\"verification-stage\",\"stage\":\"format:check\",\"status\":\"failed\",\"command\":\"pnpm run format:check\",\"argv\":[\"pnpm\",\"run\",\"format:check\"],\"pid\":4070391,\"started\":\"2026-11-20T06:48:48.037Z\",\"exitCode\":1,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/format_check.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/format_check.stderr.log\",\"finished\":\"2026-11-20T06:49:08.537Z\",\"elapsedMs\":20503,\"commandExitCode\":1}",
-              "{\"event\":\"verification-stage\",\"stage\":\"lint\",\"status\":\"passed\",\"command\":\"pnpm run lint\",\"argv\":[\"pnpm\",\"run\",\"lint\"],\"pid\":4070385,\"started\":\"2026-11-20T06:48:48.033Z\",\"exitCode\":0,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/lint.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/lint.stderr.log\",\"finished\":\"2026-11-20T06:49:19.426Z\",\"elapsedMs\":31395,\"commandExitCode\":0}",
-              "{\"event\":\"verification-stage\",\"stage\":\"typecheck\",\"status\":\"passed\",\"command\":\"pnpm run typecheck\",\"argv\":[\"pnpm\",\"run\",\"typecheck\"],\"pid\":4070384,\"started\":\"2026-11-20T06:48:48.028Z\",\"exitCode\":0,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/typecheck.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/typecheck.stderr.log\",\"finished\":\"2026-11-20T06:50:11.422Z\",\"elapsedMs\":83399,\"commandExitCode\":0}",
-              "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-48-47-955Z-4070341/report.json\"}",
-              " ELIFECYCLE  Command failed with exit code 1."
+              "102153,\"started\":\"2026-11-20T06:51:36.711Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.621Z\",\"signal\":\"SIGTERM\"},\"failure\":{\"kind\":\"cancel\",\"name\":\"Error\",\"message\":\"Error: Command failed: ps -eo pid=,ppid=,stat=,lstart=\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]}}",
+              "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"cancelled\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":4102153,\"started\":\"2026-11-20T06:51:36.711Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.621Z\",\"signal\":\"SIGTERM\"},\"failure\":{\"kind\":\"cancel\",\"name\":\"Error\",\"message\":\"Error: Command failed: ps -eo pid=,ppid=,stat=,lstart=\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]},\"finished\":\"2026-11-20T06:55:58.154Z\",\"elapsedMs\":261446,\"commandExitCode\":null,\"signal\":\"SIGTERM\",\"emptyTiers\":[\"unit\",\"integration\",\"contract\"],\"afterExitCode\":1}",
+              "{\"event\":\"verification-stage\",\"stage\":\"warm-worlds\",\"status\":\"cancelling\",\"command\":\"node --import tsx scripts/warm-worlds.ts\",\"argv\":[\"node\",\"--import\",\"tsx\",\"scripts/warm-worlds.ts\"],\"pid\":4102154,\"started\":\"2026-11-20T06:51:36.714Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.629Z\",\"signal\":\"SIGTERM\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]}}",
+              "{\"event\":\"verification-stage\",\"stage\":\"warm-worlds\",\"status\":\"cancelled\",\"command\":\"node --import tsx scripts/warm-worlds.ts\",\"argv\":[\"node\",\"--import\",\"tsx\",\"scripts/warm-worlds.ts\"],\"pid\":4102154,\"started\":\"2026-11-20T06:51:36.714Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.629Z\",\"signal\":\"SIGTERM\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]},\"finished\":\"2026-11-20T06:55:58.186Z\",\"elapsedMs\":261475,\"commandExitCode\":null,\"signal\":\"SIGTERM\"}",
+              "{\"event\":\"verification-finished\",\"status\":\"cancelled\",\"passed\":false,\"exitCode\":143,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/report.json\"}"
             ],
             "cleanup": {
               "scope": "process-group",
-              "signalled": false,
+              "signalled": true,
               "escalated": false
             }
           }
@@ -2133,7 +2127,7 @@
         ],
         "cleanup": {
           "scope": "process-group",
-          "signalled": false,
+          "signalled": true,
           "escalated": false
         }
       }
@@ -2468,6 +2462,101 @@
           }
         ],
         "at": "2026-11-20T06:50:12.859Z"
+      },
+      {
+        "candidate": "5f3258031869fc2090825295212a44fa7a4b7f8a",
+        "checks": [
+          {
+            "command": "verification-plan:scripts/verification-plan.json",
+            "schemaVersion": 1,
+            "ok": false,
+            "exitCode": 1,
+            "cached": false,
+            "timedOut": false,
+            "cancelled": true,
+            "stale": false,
+            "ms": 290994,
+            "scope": {
+              "TIER": "batch",
+              "DIFF_BASE": "0f6f369100a699b48f2245cca52a152dc10ef535",
+              "TASK": "",
+              "TASKS": ""
+            },
+            "commit": "5f3258031869fc2090825295212a44fa7a4b7f8a",
+            "tree": "b6709712ba38c00dcadc4d8917a88297bb5dabcd",
+            "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-a04e3e01-4336-4c24-ae93-506b87dab15d.log",
+            "tail": [
+              "102153,\"started\":\"2026-11-20T06:51:36.711Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.621Z\",\"signal\":\"SIGTERM\"},\"failure\":{\"kind\":\"cancel\",\"name\":\"Error\",\"message\":\"Error: Command failed: ps -eo pid=,ppid=,stat=,lstart=\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]}}",
+              "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"cancelled\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":4102153,\"started\":\"2026-11-20T06:51:36.711Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.621Z\",\"signal\":\"SIGTERM\"},\"failure\":{\"kind\":\"cancel\",\"name\":\"Error\",\"message\":\"Error: Command failed: ps -eo pid=,ppid=,stat=,lstart=\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]},\"finished\":\"2026-11-20T06:55:58.154Z\",\"elapsedMs\":261446,\"commandExitCode\":null,\"signal\":\"SIGTERM\",\"emptyTiers\":[\"unit\",\"integration\",\"contract\"],\"afterExitCode\":1}",
+              "{\"event\":\"verification-stage\",\"stage\":\"warm-worlds\",\"status\":\"cancelling\",\"command\":\"node --import tsx scripts/warm-worlds.ts\",\"argv\":[\"node\",\"--import\",\"tsx\",\"scripts/warm-worlds.ts\"],\"pid\":4102154,\"started\":\"2026-11-20T06:51:36.714Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.629Z\",\"signal\":\"SIGTERM\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]}}",
+              "{\"event\":\"verification-stage\",\"stage\":\"warm-worlds\",\"status\":\"cancelled\",\"command\":\"node --import tsx scripts/warm-worlds.ts\",\"argv\":[\"node\",\"--import\",\"tsx\",\"scripts/warm-worlds.ts\"],\"pid\":4102154,\"started\":\"2026-11-20T06:51:36.714Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.629Z\",\"signal\":\"SIGTERM\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]},\"finished\":\"2026-11-20T06:55:58.186Z\",\"elapsedMs\":261475,\"commandExitCode\":null,\"signal\":\"SIGTERM\"}",
+              "{\"event\":\"verification-finished\",\"status\":\"cancelled\",\"passed\":false,\"exitCode\":143,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/report.json\"}"
+            ],
+            "failedTests": [],
+            "plan": {
+              "source": "scripts/verification-plan.json",
+              "checks": [
+                "verify-batch"
+              ]
+            },
+            "checks": [
+              {
+                "id": "verify-batch",
+                "command": "pnpm run verify:batch",
+                "inputs": [
+                  "*.json",
+                  "*.mjs",
+                  "*.toml",
+                  "*.ts",
+                  "*.yaml",
+                  ".github",
+                  ".gitignore",
+                  ".node-version",
+                  ".prettierignore",
+                  "apps",
+                  "artifacts",
+                  "packages",
+                  "patches",
+                  "scripts",
+                  "tests"
+                ],
+                "inputFingerprint": "b77faa5b2c44f7a04a71c0aee54e03b630812f9251addcbc767bc91cb8a83d59",
+                "executionFingerprint": "f8be86d0d3e40a6d1744ee253e3c8878dac0709d1feb031988466a32ae918494",
+                "ok": false,
+                "status": "failed",
+                "exitCode": 1,
+                "cached": false,
+                "timedOut": false,
+                "cancelled": true,
+                "stale": false,
+                "ms": 290886,
+                "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-a04e3e01-4336-4c24-ae93-506b87dab15d.log",
+                "failedTests": [],
+                "tail": [
+                  "102153,\"started\":\"2026-11-20T06:51:36.711Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.621Z\",\"signal\":\"SIGTERM\"},\"failure\":{\"kind\":\"cancel\",\"name\":\"Error\",\"message\":\"Error: Command failed: ps -eo pid=,ppid=,stat=,lstart=\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]}}",
+                  "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"cancelled\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":4102153,\"started\":\"2026-11-20T06:51:36.711Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/test_unit_integration_contract.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.621Z\",\"signal\":\"SIGTERM\"},\"failure\":{\"kind\":\"cancel\",\"name\":\"Error\",\"message\":\"Error: Command failed: ps -eo pid=,ppid=,stat=,lstart=\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]},\"finished\":\"2026-11-20T06:55:58.154Z\",\"elapsedMs\":261446,\"commandExitCode\":null,\"signal\":\"SIGTERM\",\"emptyTiers\":[\"unit\",\"integration\",\"contract\"],\"afterExitCode\":1}",
+                  "{\"event\":\"verification-stage\",\"stage\":\"warm-worlds\",\"status\":\"cancelling\",\"command\":\"node --import tsx scripts/warm-worlds.ts\",\"argv\":[\"node\",\"--import\",\"tsx\",\"scripts/warm-worlds.ts\"],\"pid\":4102154,\"started\":\"2026-11-20T06:51:36.714Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.629Z\",\"signal\":\"SIGTERM\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]}}",
+                  "{\"event\":\"verification-stage\",\"stage\":\"warm-worlds\",\"status\":\"cancelled\",\"command\":\"node --import tsx scripts/warm-worlds.ts\",\"argv\":[\"node\",\"--import\",\"tsx\",\"scripts/warm-worlds.ts\"],\"pid\":4102154,\"started\":\"2026-11-20T06:51:36.714Z\",\"exitCode\":null,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/warm-worlds.stderr.log\",\"cancelRequested\":{\"at\":\"2026-11-20T06:55:57.629Z\",\"signal\":\"SIGTERM\"},\"cancellationCleanup\":{\"descendants\":[],\"escalated\":[]},\"finished\":\"2026-11-20T06:55:58.186Z\",\"elapsedMs\":261475,\"commandExitCode\":null,\"signal\":\"SIGTERM\"}",
+                  "{\"event\":\"verification-finished\",\"status\":\"cancelled\",\"passed\":false,\"exitCode\":143,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36/.tmp/verification/2026-11-20T06-51-08-244Z-4100264/report.json\"}"
+                ],
+                "cleanup": {
+                  "scope": "process-group",
+                  "signalled": true,
+                  "escalated": false
+                }
+              }
+            ],
+            "failedCheckIds": [
+              "verify-batch"
+            ],
+            "cleanup": {
+              "scope": "process-group",
+              "signalled": true,
+              "escalated": false
+            }
+          }
+        ],
+        "at": "2026-11-20T06:55:59.284Z"
       }
     ],
     "path": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-4e0a9875-d0ce-46bc-9669-41267bc42a36",
