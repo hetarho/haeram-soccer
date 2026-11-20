@@ -200,6 +200,7 @@
 - 261119 parked T1039: Shared gate f96fd6c3 (candidate e16be77cf, landed on main as a fast-forward) holds four required checks recorded fail from CI 44574533210 and one optional check not-run, yet stays waiting-agent: integration finish answers waiting-agent and abandon answers integration-not-releasable, so plan-push answers integration-frozen. T1039 was put on main by a spec-only fast-forward instead. Settle the gate before the next plan-push.
 - 261120 decided HIST-12: 우승 당시의 기준 시점 → 리그 최종 순위가 확정되어 시즌 아카이브에 쓰는 순간 (alt: 우승 확정 라운드 | 시즌 평균). 모든 진행 방식에서 같은 시점을 한 번 기록하고 다음 시즌의 선수단 변경과 구분할 수 있습니다.
 - 261120 decided HIST-13: 어느 리그 우승팀을 기록할지 → 이미 아카이브에 남기는 모든 구현 국가의 디비전·지역 그룹 정규 리그 우승팀 (alt: 우리 리그만 | 각국 1부만). 과거 순위표가 탐색하는 범위와 일치하며 컵·유럽 대회는 이 선택의 범위 밖입니다.
+- 261120 decided WEB-54: 구단 성장의 OVR 시리즈 → Elo·가치와 같은 시즌 단위 차트와 선택 말풍선을 쓰고 종료 시즌만 표시 (alt: 진행 중 OVR을 마지막 점으로 추가 | 별도 연도별 표). 기존 Elo·가치 차트의 데이터는 종료된 시즌에서 오며 현재 Elo는 별도 패널입니다.
 
 ## unlanded
 | id | tag | branch | commit | at |
