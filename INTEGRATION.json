@@ -1691,11 +1691,34 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-ovr20b-916c8e5f",
-      "head": "66a3fe86ce91a3adb6f5f8928e9197ac2961f12b",
+      "head": "73532b185ba244e542bd3113b0db61cda4c30e81",
       "land": "main",
       "status": "working",
-      "at": "2026-11-20T03:34:32.113Z",
-      "agentChecks": [],
+      "at": "2026-11-20T03:45:21.702Z",
+      "agentChecks": [
+        {
+          "id": "closed-league-table-ovr",
+          "scenario": "지난 시즌 최종 순위표의 모바일 OVR 열과 우승 행 표시",
+          "steps": [
+            "고정 후보를 390×844에서 열고 우리 리그와 다른 지역 조의 새로 닫힌 시즌 순위표를 확인합니다.",
+            "밝은 테마와 어두운 테마에서 OVR 열, 등급 칩, 우승 행 테두리와 접근성 이름을 확인합니다.",
+            "전체 OVR 스냅샷이 없는 이전 시즌의 순위표를 엽니다."
+          ],
+          "expected": "구단 바로 다음 OVR 열이 가로 스크롤 없이 보이고 저장된 값은 라이브 표와 같은 등급 칩으로 표시됩니다. 각 표의 우승 행에는 두 테마에서 보이는 테두리와 접근성 이름이 있습니다. 우승 배지는 사라지고 이전 시즌은 모든 OVR 셀에 —를 표시합니다.",
+          "observed": "미실행",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "기획 단위에서 검증할 구현 후보가 아직 없습니다. 호스트가 두 태스크를 반영한 고정 후보에서 확인합니다.",
+          "replaces": [
+            "e2e:league-history:champion-ovr"
+          ],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        }
+      ],
       "verificationCommands": []
     }
   },
