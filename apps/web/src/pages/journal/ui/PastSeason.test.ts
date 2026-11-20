@@ -69,7 +69,11 @@ it('shows full closing ratings and keeps the official champion marked when sorte
   } as SeasonArchive;
   await render(earlier);
   // A champions-only snapshot still shows what it recorded: our rating and the champion's.
-  expect(bodyRows().map((row) => row.cells[2]?.textContent).sort()).toEqual(['65', '75', '—']);
+  expect(
+    bodyRows()
+      .map((row) => row.cells[2]?.textContent)
+      .sort(),
+  ).toEqual(['65', '75', '—']);
   await render({ ...season, closingClubOvr: undefined });
   expect(container.querySelector('thead')?.textContent).not.toContain(
     displayMessage('team.column.ovr'),
