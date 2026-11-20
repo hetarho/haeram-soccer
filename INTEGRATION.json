@@ -1584,6 +1584,22 @@
       "agentChecks": [],
       "verificationCommands": [],
       "reason": "session-ended"
+    },
+    "59bbbe573858883ac186b857": {
+      "id": "59bbbe573858883ac186b857",
+      "owner": "f6b8b523-2bfb-456e-8327-c100ccba8731",
+      "tag": "stad20",
+      "kind": "start",
+      "publication": "merge",
+      "host": "hq-dev1-pve2-vm2",
+      "device": "hq-dev1-pve2-vm2",
+      "branch": "gusta-session-start-stad20-a4e0e490",
+      "head": "34ef94a19b999dcbefe28b12026bbe2469c2d383",
+      "land": "main",
+      "status": "working",
+      "at": "2026-11-20T03:31:14.959Z",
+      "agentChecks": [],
+      "verificationCommands": []
     }
   },
   "gate": {
