@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r29 | Define the browser-demo rules for durable metrics and history.
+> r30 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -37,7 +37,8 @@
   - our country's cup and every continental competition except the Super Cup as a bracket from the first round of 32 or fewer clubs (qualifiers skipped) to the final: each tie its two clubs, both legs and how it was decided (penalties, away goals).
   - the Ballon d'Or podium (→PLAYER-27): for each of the three places the player's stable identity, name, club, position, goals, assists, appearances and points, kept in the season itself so every view reads it without the archive request.
   - season-long detail is written only when the season was tracked whole; seasons closed before rules 1.12.0 keep finals only. Scorers and brackets reach the screen through the season archive request, not every update.
-  - every archived domestic league division and regional group in each implemented country (→!HIST-2) keeps its league champion's Club OVR (→=HIST-12), in seasons before and after the takeover. Capture it for the champion of the settled league table, including deductions.
+  - before and after the takeover, keep the closing Club OVR (→=HIST-12) of every club in the archived domestic league standings, across every division and regional group in each implemented country (→!HIST-2). Capture it once per club at the archive write. Keep generation and season-close times within measurement noise of the baseline (→~ARCH-28).
+  - serve the full table's ratings through the season archive request. Keep the own-club growth and generation champions reads supplied with their recorded values.
   - derived on read, never stored: a cup run's stages from match ids and calendar slots, titles by club and nation, doubles, trebles and runs of titles from the archived champions and finals, the head-to-head with any club from every own match, and a player's Ballon d'Or wins and podium places from the archived podiums by his stable identity.
   - an appearance counts one recorded match with minutes played > 0, whether starting or coming on as a substitute (→MATCH-20). Minutes / 90 is a denominator for per-90 rates, never the appearance count; a substitute who does not play gains no appearance.
 
@@ -103,6 +104,7 @@
 
 
 ## chg
+- r30 261120 HIST-13✎ closing Club OVR for each domestic division or group champion→closing Club OVR for every archived domestic league club, with full ratings read on demand
 - r29 261120 HIST-12✎ own-club Elo and value archive→also own-club actual XI OVR at the archive write · HIST-13✎ closed league standings and champions→also the closing OVR of every archived domestic division or group champion
 - r28 261119 HIST-16✎ per-match material with heat maps, reduced at the close to one season heat map per own player→watched matches' shot maps, pass networks and tactical reports, deleted at the close with no season map
 - r27 261113 HIST-23✎ season lines from the season's settled aggregates, scope and start unstated→all competitions together, aggregates kept from the world's first season with or without an owner (before: none in a world nobody owns until 1955/56), no line for a season with no tracked aggregates

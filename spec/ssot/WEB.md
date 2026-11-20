@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r228 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r229 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -248,7 +248,9 @@
 
 - WEB-47 [o] League uses visible competition selection and starts on standings: the current season first, every closed one by the header's season stepper (→WEB-40). The stable lenses of →WEB-40 keep their purpose across periods; a closed season never forces a club-review tab.
   - Final tables retain their historical division zones. Our league's closed table shows played, won, drawn and lost for every club, as derived from its retained round snapshots (→=HIST-13), and leaves those columns out whenever the snapshots disagree with our archived record. Another league's closed table offers points and goals statistics and identifies that coverage. Other competition details follow retained scope (→!WEB-65). A season close opens no screen automatically.
-  - A closed table shows a sortable Club OVR column when any of its clubs has an archived closing rating. Eligible values are the recorded own-club OVR and recorded champions' OVR (→=HIST-12/13). Use the unavailable marker (—) for missing ratings. The champion stays marked in the final table, with its archived OVR or the unavailable marker, and every champions list still shows that value next to the club.
+  - A closed domestic division or group table shows a sortable Club OVR column immediately after the club when any of its clubs has an archived closing rating. Values come from the season's full club snapshot (→=HIST-13), so every recorded club has one; earlier archives keep only the own-club and champions' values. Use the live league table's tier chip (→~WEB-58), keep the column visible at 390 px and use the unavailable marker (—) for a missing rating.
+  - The champion row (official first place of each closed division or group) carries a border or outline visible on phones in both light and dark themes, and keeps it wherever sorting moves the row. The row treatment replaces the champion badge. Convey the champion status in accessible table semantics using the existing champion message (→!ARCH-32).
+  - Champions lists show the archived Club OVR beside each closed league season's champion, with — when it is absent (→=HIST-13).
   - Our archived club-season analytical review is reached through records, alongside our matches and decisions (→WEB-54); an explicitly named link opens that season's league table and preserves the way back.
   - The review preserves these analytical facts without collecting new history:
   - hero band: crest, club, division move, final rank of the division size and last season's rank.
@@ -632,6 +634,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r229 261120 WEB-47✎ champion badge and own/champion-only OVR in closed tables→every recorded club's OVR in the sortable column and a border or outline on the champion row
 - r228 261120 WEB-30✎ preview→all clubs · WEB-40✎ team records→rank trend with team stats · WEB-41✎ fixed order→numeric sorting · WEB-47/58✎ champion OVR in final tables→sortable recorded OVR · WEB-65✎ round dropdown, fixture cards, nearby comparison→round stepper, chronological rows, club toggles
 - r227 261120 WEB-47✎ closed champions identified in final tables and lists→also show their recorded OVR or absence · WEB-54✎ existing growth metrics→also archived own-club OVR on the same season chart · WEB-115✎ generation's league champions list→also each champion's archived OVR
 - r226 261119 WEB-14✎ first-team training and academy work links→existing facility entries, including the academy detour
