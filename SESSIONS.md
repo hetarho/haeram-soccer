@@ -219,29 +219,6 @@
 - 261120 decided T1047 T1049 T1050 T1051 T1052: 실행 도구 배정(오케스트레이터) → 그림 태스크 T1047·T1049·T1050은 Codex(내장 이미지 생성 도구가 필요한 손그림풍 팩)로, T1051·T1052는 AGENTS.md 기본대로 claude/opus@high로 돌립니다 (alt: 전부 --provider claude 고정 — T1049가 이미지 도구 부재로 blocked). Claude 단위는 standard·matchday-print·sticker-club의 페인팅 원본을 만들 수 없습니다.
 - 261120 suggest ECON-29 ECON-28 ECON-9: T1052 finding: a reputation-90 ENG top-flight club sold out at 0.12 has matchday 69.7-75.4% of league-season turnover in 2000 (band 15-25%), distribution 10.3-12.7% (band 40-55%); still 51.8-58.9% matchday at the default 0.05 preset. Turnover totals (2000 GBP106-131m, 2020 GBP527-620m) are plausible, so not game-breaking; review the giant gate per spectator against the 2000s distribution and commercial curves on lived careers (artifacts/benchmarks/T1052).
 
-## unlanded
-| id | tag | branch | commit | at |
-|---|---|---|---|---|
-| T1033 | facauto | gusta-session-start-facauto-7fb6ee3c | df1d3ebecf8f | 2026-11-19T16:30Z |
-| T1034 | facauto | gusta-session-start-facauto-7fb6ee3c | 8f5410d55959 | 2026-11-19T16:35Z |
-| T1035 | facauto | gusta-session-start-facauto-7fb6ee3c | f36f55b25376 | 2026-11-19T16:39Z |
-| T1036 | facauto | gusta-session-start-facauto-7fb6ee3c | 64d9ebec58ae | 2026-11-19T16:43Z |
-| T1037 | facauto | gusta-session-start-facauto-7fb6ee3c | 9ee690a297ba | 2026-11-19T16:44Z |
-| T1038 | tk19 | gusta-session-start-tk19-9706a3bf | 9dc24fbd7064 | 2026-11-19T16:57Z |
-| T1040 | ovr20 | gusta-session-start-ovr20-f773a1bb | 0829da3e8a15 | 2026-11-20T01:32Z |
-| T1041 | ovr20 | gusta-session-start-ovr20-f773a1bb | 60b2a0a59223 | 2026-11-20T01:34Z |
-| T1042 | lgux20 | gusta-session-start-lgux20-8a35ba80 | b113a0b8409d | 2026-11-20T03:42Z |
-| T1045 | stad20 | gusta-session-start-stad20-a4e0e490 | 11a71bcbb35c | 2026-11-20T04:04Z |
-| T1043 | ovr20b | gusta-session-start-ovr20b-916c8e5f | ead29c5864ae | 2026-11-20T04:09Z |
-| T1044 | ovr20b | gusta-session-start-ovr20b-916c8e5f | 8e3908017e30 | 2026-11-20T04:17Z |
-| T1046 | stad20 | gusta-session-start-stad20-a4e0e490 | 973231ed6e30 | 2026-11-20T04:22Z |
-| T1048 | stad20 | gusta-session-start-stad20-a4e0e490 | d4916c21445a | 2026-11-20T04:41Z |
-| T1049 | stad20 | gusta-session-start-stad20-a4e0e490 | 14170b928 | 2026-11-20T05:07Z |
-| T1050 | stad20 | gusta-session-start-stad20-a4e0e490 | 857e71e9f8a0 | 2026-11-20T05:15Z |
-| T1047 | stad20 | gusta-session-start-stad20-a4e0e490 | ae66c7743f43 | 2026-11-20T05:23Z |
-| T1051 | stad20 | gusta-session-start-stad20-a4e0e490 | 5c6899c6668b | 2026-11-20T05:56Z |
-| T1052 | stad20 | gusta-session-start-stad20-a4e0e490 | 8d940fc57c4e | 2026-11-20T06:03Z |
-
 ## log
 - 261120 T1052 done
 - 261120 T1051 done
