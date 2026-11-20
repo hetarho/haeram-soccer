@@ -223,6 +223,7 @@
 | T1041 | ovr20 | gusta-session-start-ovr20-f773a1bb | 60b2a0a59223 | 2026-11-20T01:34Z |
 
 ## log
+- 261120 gusta-update-ssot HIST@30 SAVE@75 WEB@228: closing OVR coverage and final table presentation; pending task decomposition
 - 261120 gusta-update-ssot HIST SAVE WEB start
 - 261120 gusta-create-task WEB r228: T1042 plans standings, round and own fixtures, rank trend, and compatible patch preparation
 - 261120 gusta-create-task WEB start
@@ -242,4 +243,3 @@
 - 261119 T1038 done
 - 261119 T1037 done
 - 261119 T1036 done
-- 261119 T1035 done
