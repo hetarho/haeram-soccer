@@ -69,7 +69,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1039 | Fix CI failure | ARCH SAVE | - | todo |
-| T1047 | Prepare matchday-print art for the two stadium steps | ECON WEB ARCH | - | todo |
 | T1051 | Enable the 105,000 and 120,000 stadium steps | ECON SAVE WEB ARCH | T1045 T1047 T1048 T1049 T1050 | todo |
 | T1052 | Measure top-flight sellout receipts and income mix | ECON ARCH | T1051 | todo |
 
@@ -85,7 +84,8 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
-- gusta-implement-task T1043 T1047
+- gusta-implement-task T1051
+- gusta-implement-task T1043
 - gusta-implement-task T1045 — stad20 (261120): popular clubs sell out at any preset (ECON-9 r66), stadium steps to 105,000 and 120,000 (ECON-32, WEB-72 r230); T1045–T1052.
 - ovr20 (261120): season-close Club OVR landed as 0.8.20 (T1040 archive, T1041 past tables, 구단 성장 and generation champions); reports/261120-ovr20.
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
@@ -98,5 +98,5 @@
 - gusta-implement-task T1003 T989 T991
 - gusta-implement-task T953 T954
 - T1039 Chromium follow-up: the 0.8.21 candidate includes fixes for the observed worker and fixture boundary failures. Check the post-push CI against this code. See reports/261120-lgux20.
-- gusta-implement-task T1045 T1047
+- gusta-implement-task T1045
 - ovr20b (261120): every archived domestic club's closing OVR (T1043) and the closed-table OVR column with a champion-row border instead of the badge (T1044) landed as 0.8.22 on unit checks only (owner); reports/261120-ovr20b.

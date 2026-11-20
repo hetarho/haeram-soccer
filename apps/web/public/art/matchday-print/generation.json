@@ -2399,6 +2399,258 @@
         "bytes": 28210,
         "sha256": "149ac3b5dbef3ea7d5b4dcdc5e0238f31683ef367d599c4b0b97e199c2e53679"
       }
+    },
+    {
+      "id": "heritage-stadium-9",
+      "asset": "heritage/stadium-9",
+      "kind": "stadium",
+      "era": "heritage",
+      "stage": 9,
+      "prompt": "Original matchday-print woodcut panorama: stadium, heritage, completed stadium stage 9; stage 10 adds an upper tier. No text or branding.",
+      "source": "apps/web/design/matchday-print/facilities-large/sources/heritage/stadium-9.png",
+      "sourceSha256": "3b62ec5997764a590b37703a46778e6dbf83546622faf1c9805f8d9fcede53d7",
+      "width": 960,
+      "height": 320,
+      "bytes": 114722,
+      "sha256": "d426ceb12054b135102106dae42e801fffb915087747b0e04fdb9359eec5c236",
+      "small": {
+        "file": "heritage/stadium-9.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 25028,
+        "sha256": "978c70aa9ab2020c09fc15a0149aa776e46d6818d2f53defd31ebcafe1fb5d06"
+      }
+    },
+    {
+      "id": "heritage-stadium-10",
+      "asset": "heritage/stadium-10",
+      "kind": "stadium",
+      "era": "heritage",
+      "stage": 10,
+      "prompt": "Original matchday-print woodcut panorama: stadium, heritage, completed stadium stage 10; stage 10 adds an upper tier. No text or branding.",
+      "source": "apps/web/design/matchday-print/facilities-large/sources/heritage/stadium-10.png",
+      "sourceSha256": "c95a7844d73d15c474bce524a9d06651bc2ff0b9104e0358142057fad260e960",
+      "width": 960,
+      "height": 320,
+      "bytes": 110588,
+      "sha256": "92e6076a2628357c637556a128d3719e8284c0f58c9b2f4b0eb96ab87ba2fa02",
+      "small": {
+        "file": "heritage/stadium-10.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 25160,
+        "sha256": "eb5227ad88ba5ad41a44f679febdfa9fa5e81c1e4713ea159987969d4a847337"
+      }
+    },
+    {
+      "id": "heritage-locker-9",
+      "asset": "heritage/locker-9",
+      "kind": "locker",
+      "era": "heritage",
+      "stage": 9,
+      "prompt": "Original matchday-print woodcut panorama: locker, heritage, completed stadium stage 9; stage 10 adds an upper tier. No text or branding.",
+      "source": "apps/web/design/matchday-print/facilities-large/sources/heritage/locker-9.png",
+      "sourceSha256": "46b8bf6a21cdec472e17d7309880f7321613c435f04fdec1a7279d65605e9caf",
+      "width": 960,
+      "height": 320,
+      "bytes": 128582,
+      "sha256": "ffbc68e4ac8e4c5cd6d84e9289901c72586a0426325ccf09d5c02e8315516352",
+      "small": {
+        "file": "heritage/locker-9.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 28408,
+        "sha256": "882a837d1fa4f8004a92a059b0fa77f4b3b62ccedefd52e90d2a1a024c03e338"
+      }
+    },
+    {
+      "id": "heritage-locker-10",
+      "asset": "heritage/locker-10",
+      "kind": "locker",
+      "era": "heritage",
+      "stage": 10,
+      "prompt": "Original matchday-print woodcut panorama: locker, heritage, completed stadium stage 10; stage 10 adds an upper tier. No text or branding.",
+      "source": "apps/web/design/matchday-print/facilities-large/sources/heritage/locker-10.png",
+      "sourceSha256": "80404ec99b7d22f12edbff477b2080937b95295344f6ed05d94586b4f5e86493",
+      "width": 960,
+      "height": 320,
+      "bytes": 123962,
+      "sha256": "dc5bd4b28083b41f1ad69d79cfc3edb44edf5f38baaf8dca03fbc0cc2fe7f1e9",
+      "small": {
+        "file": "heritage/locker-10.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 28784,
+        "sha256": "f5dd2adb4926581da751e300c4876a44f006e0407c8395db495a1c52510e8b64"
+      }
+    },
+    {
+      "id": "terraces-stadium-9",
+      "asset": "terraces/stadium-9",
+      "kind": "stadium",
+      "era": "terraces",
+      "stage": 9,
+      "prompt": "Original matchday-print woodcut panorama: stadium, terraces, completed stadium stage 9; stage 10 adds an upper tier. No text or branding.",
+      "source": "apps/web/design/matchday-print/facilities-large/sources/terraces/stadium-9.png",
+      "sourceSha256": "fb75e67f816fd6155ae30be6fe3cf0e5cb94d2dfe08976b45c4522a5ab1c15c4",
+      "width": 960,
+      "height": 320,
+      "bytes": 113686,
+      "sha256": "b287414a6ded9bd7c4ecca8995f7dd7cb3c6cae9f50bb3ee89e13766cce61f51",
+      "small": {
+        "file": "terraces/stadium-9.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 24526,
+        "sha256": "c6407bad64b158d60eb4f1ea9d3b07b3e320d3538d9de52facdab0e0709c76ce"
+      }
+    },
+    {
+      "id": "terraces-stadium-10",
+      "asset": "terraces/stadium-10",
+      "kind": "stadium",
+      "era": "terraces",
+      "stage": 10,
+      "prompt": "Original matchday-print woodcut panorama: stadium, terraces, completed stadium stage 10; stage 10 adds an upper tier. No text or branding.",
+      "source": "apps/web/design/matchday-print/facilities-large/sources/terraces/stadium-10.png",
+      "sourceSha256": "16059555c956833916b743c9f626585ae67c9c084412d937f842e1d93fc5fc54",
+      "width": 960,
+      "height": 320,
+      "bytes": 112788,
+      "sha256": "784d7d364b9867130cab83b59f37aa639b759f603d9605e657500791ef1e40b7",
+      "small": {
+        "file": "terraces/stadium-10.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 24508,
+        "sha256": "1e7ff09eacc1aec62a806a85855a499bb775ca8c20f8074c21b7e9d1acd3d072"
+      }
+    },
+    {
+      "id": "terraces-locker-9",
+      "asset": "terraces/locker-9",
+      "kind": "locker",
+      "era": "terraces",
+      "stage": 9,
+      "prompt": "Original matchday-print woodcut panorama: locker, terraces, completed stadium stage 9; stage 10 adds an upper tier. No text or branding.",
+      "source": "apps/web/design/matchday-print/facilities-large/sources/terraces/locker-9.png",
+      "sourceSha256": "dc84500261f0fb092a1a0aaeb631b7cf0f714bcbfc40f099791324454684dd56",
+      "width": 960,
+      "height": 320,
+      "bytes": 124840,
+      "sha256": "d7b7df7d0d142bac1f06f572ab0ec61f6b4de233c6d2b0f8c98362b574a96f38",
+      "small": {
+        "file": "terraces/locker-9.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 27476,
+        "sha256": "968b9945d0128681e553390819ba85a15c88043cb63d6355c13e138645c06b3f"
+      }
+    },
+    {
+      "id": "terraces-locker-10",
+      "asset": "terraces/locker-10",
+      "kind": "locker",
+      "era": "terraces",
+      "stage": 10,
+      "prompt": "Original matchday-print woodcut panorama: locker, terraces, completed stadium stage 10; stage 10 adds an upper tier. No text or branding.",
+      "source": "apps/web/design/matchday-print/facilities-large/sources/terraces/locker-10.png",
+      "sourceSha256": "d4e36f7dad32a53e1b59166232e2d1f18fcdbdbfcb0a172c14ce1b8aea460b62",
+      "width": 960,
+      "height": 320,
+      "bytes": 104048,
+      "sha256": "0acd6d957cc293dfe5f31b25cd07fdf63c206b097a0358cabef73ba26870c7dc",
+      "small": {
+        "file": "terraces/locker-10.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 24894,
+        "sha256": "0c3c6b2555710b65c8cc40cd63d8e60c6ea092f493802eb94c163e1094a1489b"
+      }
+    },
+    {
+      "id": "contemporary-stadium-9",
+      "asset": "contemporary/stadium-9",
+      "kind": "stadium",
+      "era": "contemporary",
+      "stage": 9,
+      "prompt": "Original matchday-print woodcut panorama: stadium, contemporary, completed stadium stage 9; stage 10 adds an upper tier. No text or branding.",
+      "source": "apps/web/design/matchday-print/facilities-large/sources/contemporary/stadium-9.png",
+      "sourceSha256": "778a9e5d366f94ee3894a50e0b854d368ddedf3995d792aefacfdf2b82cec14a",
+      "width": 960,
+      "height": 320,
+      "bytes": 111014,
+      "sha256": "4669cd4346d627a0583d08e15e780427bd995ea5f3d940e8ea40a02fcad289fb",
+      "small": {
+        "file": "contemporary/stadium-9.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 25528,
+        "sha256": "57d47ad451c289311282e1febe4e650dfdd1dc73e440c435557013aa00bdc31d"
+      }
+    },
+    {
+      "id": "contemporary-stadium-10",
+      "asset": "contemporary/stadium-10",
+      "kind": "stadium",
+      "era": "contemporary",
+      "stage": 10,
+      "prompt": "Original matchday-print woodcut panorama: stadium, contemporary, completed stadium stage 10; stage 10 adds an upper tier. No text or branding.",
+      "source": "apps/web/design/matchday-print/facilities-large/sources/contemporary/stadium-10.png",
+      "sourceSha256": "4433492350d6c2005a63ac92625ec7dcece4755d09c2417db58dd4d16e6f7f71",
+      "width": 960,
+      "height": 320,
+      "bytes": 127250,
+      "sha256": "315a542aba59ed2e1362dfa4dacb1cbdec01a2bdd0e3bedbd306258751601bed",
+      "small": {
+        "file": "contemporary/stadium-10.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 27426,
+        "sha256": "71786e17d492d3776f35bcdfab047da8b857865268a259273b16779405a585c6"
+      }
+    },
+    {
+      "id": "contemporary-locker-9",
+      "asset": "contemporary/locker-9",
+      "kind": "locker",
+      "era": "contemporary",
+      "stage": 9,
+      "prompt": "Original matchday-print woodcut panorama: locker, contemporary, completed stadium stage 9; stage 10 adds an upper tier. No text or branding.",
+      "source": "apps/web/design/matchday-print/facilities-large/sources/contemporary/locker-9.png",
+      "sourceSha256": "088cc99cbcf42aefadcd5bdbcf982658ba929127ca8334ee7573362b10b9c8ca",
+      "width": 960,
+      "height": 320,
+      "bytes": 119818,
+      "sha256": "ee1803b60dc3c7b54450bea23e114a40b7624f373e0113cec41976291bc3f25c",
+      "small": {
+        "file": "contemporary/locker-9.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 26642,
+        "sha256": "7f80d6eeefb8a576cf785eb8932c144e9b542c31b8ee88e8b092b9120938cff6"
+      }
+    },
+    {
+      "id": "contemporary-locker-10",
+      "asset": "contemporary/locker-10",
+      "kind": "locker",
+      "era": "contemporary",
+      "stage": 10,
+      "prompt": "Original matchday-print woodcut panorama: locker, contemporary, completed stadium stage 10; stage 10 adds an upper tier. No text or branding.",
+      "source": "apps/web/design/matchday-print/facilities-large/sources/contemporary/locker-10.png",
+      "sourceSha256": "d2f93d6b9ec2efe637129fd614ae8b43bfc5fda99064ad3993dde018035ed790",
+      "width": 960,
+      "height": 320,
+      "bytes": 113886,
+      "sha256": "788931e96687559d73b7175d7fd69caa41142bfbcff21a5cf01f9600502ca2ff",
+      "small": {
+        "file": "contemporary/locker-10.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 24400,
+        "sha256": "5dcc2b895d8f4527a451f5ad09f8b2e314f96324e137733e191303f859ce4414"
+      }
     }
   ]
 }
