@@ -1701,8 +1701,8 @@
       "branch": "gusta-session-start-ovr20b-916c8e5f",
       "head": "a71ff85112ca9789303accd584d238c6066ceb22",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-20T04:17:45.710Z",
+      "status": "paused",
+      "at": "2026-11-20T04:17:48.555Z",
       "agentChecks": [
         {
           "id": "closed-league-table-ovr",
