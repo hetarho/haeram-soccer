@@ -25,7 +25,10 @@ export const setups = {
     // The owner keeps 유소년 운영 so the academy level stays fixed: a delegate re-plans it when the
     // forecast income moves (→ECON-33/40), and the bill comparison needs one level all season.
     const settings = settingsOf(w);
-    w.settings = { ...settings, responsibilities: { ...settings.responsibilities, academy: 'direct' } };
+    w.settings = {
+      ...settings,
+      responsibilities: { ...settings.responsibilities, academy: 'direct' },
+    };
     return w;
   },
   recorded: () => {
