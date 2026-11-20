@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| ovr20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T01:26Z | 2026-11-20T01:27Z | T1040 | gusta-session-start-ovr20-f773a1bb | 0829da3e8a15 | fb13eadd7bf9b51d38f9f565 |
+| ovr20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T01:26Z | 2026-11-20T01:32Z | - | gusta-session-start-ovr20-f773a1bb | 0829da3e8a15 | fb13eadd7bf9b51d38f9f565 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -213,8 +213,10 @@
 | T1036 | facauto | gusta-session-start-facauto-7fb6ee3c | 64d9ebec58ae | 2026-11-19T16:43Z |
 | T1037 | facauto | gusta-session-start-facauto-7fb6ee3c | 9ee690a297ba | 2026-11-19T16:44Z |
 | T1038 | tk19 | gusta-session-start-tk19-9706a3bf | 9dc24fbd7064 | 2026-11-19T16:57Z |
+| T1040 | ovr20 | gusta-session-start-ovr20-f773a1bb | 0829da3e8a15 | 2026-11-20T01:32Z |
 
 ## log
+- 261120 T1040 done
 - 261120 ovr20 planning 33cba0145 put on main by a spec-only fast-forward (gate f96fd6c3 still frozen, same as T1039)
 - 261120 T1040 T1041 planning verification: spec lint and task tier completed in 172s with no affected unit files. Inherited brief alone counts 197498 chars against 40000. Use whole-block pagination.
 - 261120 gusta-create-task HIST WEB SAVE → T1040 T1041; five inbox decisions; engine archive before web; brief overage also present in baseline
@@ -234,4 +236,3 @@
 - 261119 gusta-create-task T1033 T1034 T1035 T1036 T1037: saved state, copy, command, settlement and UI
 - 261119 gusta-create-task ECON CLUB WEB SAVE start
 - 261119 gusta-update-ssot ECON@65 CLUB@84 WEB@225 SAVE@73: facility continuation, paid starts and save states
-- 261119 gusta-update-ssot ECON CLUB WEB SAVE start
