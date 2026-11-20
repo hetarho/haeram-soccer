@@ -20,7 +20,7 @@ import { OWNER_TIERS, OWNER_TRAITS } from '../../../../../../packages/engine/src
 import { useLocale } from '../../../presentation/react';
 import { ClubListing } from './ClubListing';
 import { atDeadline } from '../lib/deadline';
-import { seasonName } from '../../../presentation/format';
+import { number, seasonName } from '../../../presentation/format';
 import {
   cardCloses,
   closeDue,
@@ -621,6 +621,9 @@ function GenerationHistory({ digest }: { digest?: GenerationDigest }) {
                 <li key={row.country}>
                   <small>{localizeValue(country(row.country).name)}</small>
                   <span className={s.name}>{row.club.name}</span>
+                  <b>
+                    {richMessage('team.column.ovr')} {row.ovr === undefined ? '—' : number(row.ovr)}
+                  </b>
                 </li>
               )),
             )}

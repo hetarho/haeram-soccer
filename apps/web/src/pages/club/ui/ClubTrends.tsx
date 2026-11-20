@@ -11,6 +11,7 @@ import type {
 import { honoursBeforeOwner } from '../../../../../../packages/engine/src/club-past';
 import { country, currency } from '../../../../../../packages/catalogs/src/index';
 import { clubOf, ownSeasons } from '../../../../../../packages/engine/src/player-state';
+import { archivedClubOvr } from '../../../../../../packages/engine/src/archives';
 import { inTodayMoney } from '../../../../../../packages/engine/src/transfer-records';
 import { Panel } from '../../../shared/ui/Panel';
 import { Chart, type ChartBand } from './Chart';
@@ -63,6 +64,8 @@ function trendSeries(w: World) {
     code = club.country,
     amount = (value: string) => compactMoney(value, code, w.year),
     seasons = ownSeasons(w),
+    ovrSeasons = seasons.filter((h) => archivedClubOvr(h, w.playerClub) !== undefined),
+    missingOvr = seasons.filter((h) => archivedClubOvr(h, w.playerClub) === undefined),
     rated = seasons.filter((h) => h.elo !== undefined),
     valued = seasons.filter((h) => h.squadValue && h.clubValue);
   const series = (list: typeof seasons, values: number[], detail: (index: number) => string) => ({
@@ -89,6 +92,13 @@ function trendSeries(w: World) {
   ];
   return {
     axis: (value: number) => axisMoney(w, value),
+    ovr: series(
+      ovrSeasons,
+      ovrSeasons.map((h) => archivedClubOvr(h, w.playerClub)!),
+      (i) =>
+        `${seasonName(ovrSeasons[i].year)} · ${number(archivedClubOvr(ovrSeasons[i], w.playerClub)!)}`,
+    ),
+    missingOvr,
     league: series(
       seasons,
       seasons.map((h) => pyramidPosition(code, h)),
@@ -222,6 +232,7 @@ export function EloStanding({
 const TREND_METRICS = [
   ['league', sourceMessage('copy.ClubTrends.8d547a12d3')],
   ['elo', 'Elo'],
+  ['ovr', sourceMessage('team.column.ovr')],
   ['squad', sourceMessage('copy.ClubTrends.837d4e5ad5')],
   ['club', sourceMessage('copy.ClubTrends.9aea64c2b7')],
   ['fans', sourceMessage('copy.ClubTrends.2070613ba9')],
@@ -314,6 +325,25 @@ export function ClubTrends({ w }: { w: World }) {
               )}
               <EloStanding w={w} standing={standing} />
               <p className={s.muted}>{richMessage('copy.ClubTrends.472acb8bec')}</p>
+            </div>
+          </Panel>
+        ),
+      )}
+      {localizeValue(
+        metric === 'ovr' && (
+          <Panel title={displayMessage('team.column.ovr')}>
+            <div className={s.panelBody}>
+              <Chart
+                label={displayMessage('team.column.ovr')}
+                values={series.ovr.values}
+                labels={series.ovr.labels}
+                detail={(i) => series.ovr.details[i]}
+              />
+              {series.missingOvr.map((h) => (
+                <p className={s.muted} key={h.year}>
+                  {seasonName(h.year)} · —
+                </p>
+              ))}
             </div>
           </Panel>
         ),

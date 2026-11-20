@@ -10,6 +10,7 @@ import type {
   World,
 } from '../../../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../../../packages/engine/src/player-state';
+import { archivedClubOvr } from '../../../../../../packages/engine/src/archives';
 import { country } from '../../../../../../packages/catalogs/src/index';
 import type { GameClient } from '../../../runtime/client';
 import { useGameState } from '../../../runtime/store';
@@ -158,6 +159,11 @@ function FinalTable({
                         i === 0 && (
                           <span className={r.champion}>
                             {richMessage('copy.CupHistory.31e52393f3')}
+                            {' · '}
+                            {richMessage('team.column.ovr')}{' '}
+                            {id && archivedClubOvr(read?.files?.season ?? season, id) !== undefined
+                              ? number(archivedClubOvr(read?.files?.season ?? season, id)!)
+                              : '—'}
                           </span>
                         ),
                       )}
