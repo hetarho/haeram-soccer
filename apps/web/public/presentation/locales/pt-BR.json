@@ -3055,6 +3055,8 @@
     "copy.LeagueInsights.222a9e05c1": "Piso {p0} {p1}",
     "copy.LeagueInsights.a695bf2eb0": "As classificações variam dependendo dos resultados de outras equipes na mesma rodada.",
     "copy.LeagueInsights.29c853849e": "O calendário da liga desta temporada acabou. Quando a temporada terminar, você poderá ver os resultados do acordo e da promoção na lista de temporadas da liga.",
+    "league.rank.clubSelection": "Clubes no gráfico de classificação",
+    "league.rank.emptySelection": "Selecione um clube para ver sua evolução na classificação.",
     "copy.LeagueInsights.9cfb907bbd": "Tendência de classificação da temporada",
     "copy.LeagueInsights.5ef6d66a2a": " · {p0} na época",
     "copy.LeagueInsights.205acf650d": "{p0}{p1}{p2} · Quanto mais alto você for, maior será a classificação.",

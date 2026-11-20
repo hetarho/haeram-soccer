@@ -173,6 +173,10 @@ export function worldMarketOffer(
   return player && clubOffer(w, club, player, recommended);
 }
 
+type MarketRow = ({ club: Club; player: Player } | { player: FreeAgent }) & {
+  offer?: WorldMarketOffer;
+};
+
 /** Pure bounded query. Only rows on this page leave the worker; no previews are built here. */
 export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketPage {
   const q = worldMarketQuerySchema.parse(input);
@@ -181,27 +185,31 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
   const feeMultiplier = askingMultiplier(w);
   const owned = new Set(activePlayers(w).map((p) => p.id));
   const graduates = graduateIds(w);
-  const rows: WorldMarketOffer[] = [];
+  const rows: MarketRow[] = [];
   const seen = new Set<string>();
   const name = q.name?.trim().toLowerCase();
-  // Reuse the exact existing fit filter with one shared XI; full previews stay detail-only.
   const fitContext = q.fit === 'improves' ? recruitmentContext(w) : undefined;
-  const include = (offer: WorldMarketOffer) => {
-    const p = offer.player;
+  // Most filters and sorts need only the player. Calculate offer terms for fit, money order or
+  // rows that will actually be returned, keeping their exact quotation in the market path.
+  const priced = (row: MarketRow) =>
+    (row.offer ??=
+      'club' in row
+        ? clubOffer(w, row.club, row.player, recommended, feeMultiplier, owned, graduates)
+        : freeAgentOffer(w, row.player, recommended, owned, graduates));
+  const include = (row: MarketRow) => {
+    const p = row.player;
     if (p.status !== 'active' || seen.has(p.id)) return;
     if (name && !p.name.toLowerCase().includes(name)) return;
-    if (q.recommendedOnly && !offer.recommended) return;
-    if (q.team && offer.source?.club !== q.team) return;
     if (
-      q.league &&
-      (!offer.source ||
-        offer.source.country !== q.league.country ||
-        offer.source.tier !== q.league.tier ||
-        offer.source.group !== q.league.group)
+      q.recommendedOnly &&
+      (!recommended.has(p.id) || ('club' in row && row.club.id === w.playerClub))
     )
       return;
-    if (q.ovrMin !== undefined && overall(p) < q.ovrMin) return;
-    if (q.ovrMax !== undefined && overall(p) > q.ovrMax) return;
+    if (q.ovrMin !== undefined || q.ovrMax !== undefined) {
+      const rating = overall(p);
+      if (q.ovrMin !== undefined && rating < q.ovrMin) return;
+      if (q.ovrMax !== undefined && rating > q.ovrMax) return;
+    }
     if (q.ageMax !== undefined && w.year - p.born > q.ageMax) return;
     if (q.position && (p.positions[q.position] ?? 0) < 2) return;
     if (
@@ -212,11 +220,11 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
     )
       return;
     if (fitContext) {
-      const fit = recruitmentFit(w, offer, fitContext);
+      const fit = recruitmentFit(w, priced(row), fitContext);
       if (fit.strengthDelta <= 0 && fit.fitDelta <= 0) return;
     }
     seen.add(p.id);
-    rows.push(offer);
+    rows.push(row);
   };
   for (const club of w.clubs) {
     if (q.team && q.team !== club.id) continue;
@@ -227,14 +235,12 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
         q.league.group !== club.group)
     )
       continue;
-    for (const player of clubPlayers(w, club))
-      include(clubOffer(w, club, player, recommended, feeMultiplier, owned, graduates));
+    for (const player of clubPlayers(w, club)) include({ club, player });
   }
   // The whole pool, whatever the chief scout's reach (→CLUB-51): the owner's search is not his.
   if (!q.team && !q.league)
     for (const agent of freeAgentsOf(w)) {
-      const offer = freeAgentOffer(w, agent, recommended, owned, graduates);
-      if (offer.available) include(offer);
+      if (!owned.has(agent.id)) include({ player: agent });
     }
   const sort = q.sort ?? 'ovr',
     direction = q.direction === 'asc' ? 1 : -1;
@@ -251,8 +257,8 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
             : sort === 'potential'
               ? a.player.potential - b.player.potential
               : sort === 'fee'
-                ? moneyCompare(a.fee, b.fee)
-                : moneyCompare(a.player.wage, b.player.wage);
+                ? moneyCompare(priced(a).fee, priced(b).fee)
+                : moneyCompare(priced(a).player.wage, priced(b).player.wage);
     return direction * delta || compareIds(a.player.id, b.player.id);
   });
   const pageSize = q.pageSize ?? WORLD_MARKET_PAGE_SIZE;
@@ -263,7 +269,7 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
     total: rows.length,
     page,
     pageSize,
-    items: structuredClone(rows.slice(page * pageSize, (page + 1) * pageSize)),
+    items: structuredClone(rows.slice(page * pageSize, (page + 1) * pageSize).map(priced)),
   };
 }
 

@@ -22,6 +22,7 @@ export const selectLeagueWorld = worldSelector([
   'round',
   'playerClub',
   'europe',
+  'cups',
   'ownMatches',
   'players',
 ]);

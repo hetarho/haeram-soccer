@@ -1362,8 +1362,11 @@ export class Host {
             let days = 0;
             for (const day of nextEventDays(w)) {
               void day;
-              // No intermediate view/progress publication or public cancel journey.
-              if (++days % 14 === 0) await new Promise((resolve) => setTimeout(resolve, 0));
+              if (++days % 14 === 0) {
+                // Keep the request alive across long jumps without publishing intermediate views.
+                this.progress({ requestId: r.requestId, ok: true, progress: 0 });
+                await new Promise((resolve) => setTimeout(resolve, 0));
+              }
             }
           } else if (cmd.type === 'advance-days' || cmd.type === 'next-match') {
             if (w.critical) throw new Error(sourceMessage('copy.host.0224ffabb2'));

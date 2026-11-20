@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { message as sourceMessage } from '../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../presentation/text';
 import { richMessage } from '../../presentation/LocalizedMessage';
@@ -13,11 +14,66 @@ export function neighbourSeason(years: readonly number[], value: number, step: -
   return at < 0 ? undefined : years[at + step];
 }
 
-/**
- * ‹ season › (→WEB-40): the arrows step to the next older or newer kept season and the select in
- * the middle jumps to any of them, newest first. `years` run oldest first; `current` is the season
- * in progress, marked so for assistive technology without widening the row.
- */
+/** Adjacent numeric choices share the same controls wherever the selected value is browsed. */
+export function NumberStepper({
+  values,
+  value,
+  label,
+  selectLabel = label,
+  current,
+  onChange,
+  children,
+}: {
+  values: readonly number[];
+  value: number;
+  label: string;
+  selectLabel?: string;
+  current?: number;
+  onChange: (value: number) => void;
+  children: ReactNode;
+}) {
+  useTextLocale();
+  const previous = neighbourSeason(values, value, -1),
+    next = neighbourSeason(values, value, 1);
+  return (
+    <div
+      className={st.stepper}
+      role="group"
+      aria-label={displayMessage('copy.SeasonStepper.e4be6a3641', { p0: label })}
+    >
+      <button
+        data-ui="icon"
+        type="button"
+        className={st.step}
+        aria-label={displayMessage('copy.SeasonStepper.0caa3d74a6', { p0: label })}
+        disabled={previous === undefined}
+        onClick={() => previous !== undefined && onChange(previous)}
+      >
+        <PixelIcon name="chevronLeft" size={20} />
+      </button>
+      <Select
+        aria-label={localizeValue(selectLabel)}
+        className={`${st.select} ${value === current ? st.live : ''}`}
+        value={value}
+        onValueChange={(next) => onChange(Number(next))}
+      >
+        {children}
+      </Select>
+      <button
+        data-ui="icon"
+        type="button"
+        className={st.step}
+        aria-label={displayMessage('copy.SeasonStepper.af5ed0b7a4', { p0: label })}
+        disabled={next === undefined}
+        onClick={() => next !== undefined && onChange(next)}
+      >
+        <PixelIcon name="chevronRight" size={20} />
+      </button>
+    </div>
+  );
+}
+
+/** The season select jumps directly to any retained year, newest first (→WEB-40). */
 export function SeasonStepper({
   years,
   value,
@@ -32,53 +88,20 @@ export function SeasonStepper({
   label?: string;
 }) {
   useTextLocale();
-  const older = neighbourSeason(years, value, -1),
-    newer = neighbourSeason(years, value, 1);
   return (
-    <div
-      className={st.stepper}
-      role="group"
-      aria-label={displayMessage('copy.SeasonStepper.e4be6a3641', { p0: label })}
-    >
-      <button
-        data-ui="icon"
-        type="button"
-        className={st.step}
-        aria-label={displayMessage('copy.SeasonStepper.0caa3d74a6', { p0: label })}
-        disabled={older === undefined}
-        onClick={() => older !== undefined && onChange(older)}
-      >
-        <PixelIcon name="chevronLeft" size={20} />
-      </button>
-      <Select
-        aria-label={localizeValue(label)}
-        className={`${st.select} ${value === current ? st.live : ''}`}
-        value={value}
-        onValueChange={(next) => onChange(Number(next))}
-      >
-        {localizeValue(
-          [...years].reverse().map((year) => (
-            <option key={year} value={year}>
-              {localizeValue(seasonName(year))}
-              {localizeValue(
-                year === current && (
-                  <span className={s.srOnly}>{richMessage('copy.LeagueInsights.b2801e8117')}</span>
-                ),
-              )}
-            </option>
-          )),
-        )}
-      </Select>
-      <button
-        data-ui="icon"
-        type="button"
-        className={st.step}
-        aria-label={displayMessage('copy.SeasonStepper.af5ed0b7a4', { p0: label })}
-        disabled={newer === undefined}
-        onClick={() => newer !== undefined && onChange(newer)}
-      >
-        <PixelIcon name="chevronRight" size={20} />
-      </button>
-    </div>
+    <NumberStepper values={years} value={value} label={label} current={current} onChange={onChange}>
+      {localizeValue(
+        [...years].reverse().map((year) => (
+          <option key={year} value={year}>
+            {localizeValue(seasonName(year))}
+            {localizeValue(
+              year === current && (
+                <span className={s.srOnly}>{richMessage('copy.LeagueInsights.b2801e8117')}</span>
+              ),
+            )}
+          </option>
+        )),
+      )}
+    </NumberStepper>
   );
 }

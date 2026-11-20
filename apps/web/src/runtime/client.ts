@@ -40,6 +40,8 @@ const STORAGE_TIMEOUT_MS = 600000;
  * each season it reaches is a progress message that restarts the watchdog.
  */
 const GENERATION_STEP_MS = 600000;
+/** A manual event can settle several days before its next worker heartbeat. */
+const NEXT_EVENT_TIMEOUT_MS = 30_000;
 /** Automatic progress waits at most this long for its background save (→SAVE-8). */
 export const AUTOSAVE_MS = 30000;
 /** The writer's notice once an activated career's updated save data is committed (→WEB-66). */
@@ -634,7 +636,11 @@ export class GameClient {
       this.state.savedRevision = -1;
       this.staging.replace();
     }
-    const reply = await this.rpc(body, undefined, undefined, automatic);
+    const timeout =
+      body.type === 'command' && body.command.type === 'next-event'
+        ? NEXT_EVENT_TIMEOUT_MS
+        : undefined;
+    const reply = await this.rpc(body, undefined, timeout, automatic);
     if (reply.playback) this.staging.replace(reply.playback);
     this.emit();
     // The engine answered without encoding; the caller asks for the background save.

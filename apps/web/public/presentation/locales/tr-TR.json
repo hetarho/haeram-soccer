@@ -3219,6 +3219,8 @@
     "copy.LeagueInsights.222a9e05c1": "Zemin {p0} {p1}",
     "copy.LeagueInsights.a695bf2eb0": "Sıralamalar aynı turdaki diğer takımların sonuçlarına göre değişir.",
     "copy.LeagueInsights.29c853849e": "Bu sezonun lig programı sona erdi.Sezon sona erdiğinde ligin sezon listesinde uzlaşma ve yükselme sonuçlarını görebilirsiniz.",
+    "league.rank.clubSelection": "Sıralama grafiğindeki kulüpler",
+    "league.rank.emptySelection": "Sıralama değişimini görmek için bir kulüp seçin.",
     "copy.LeagueInsights.9cfb907bbd": "Sezon sıralaması trendi",
     "copy.LeagueInsights.5ef6d66a2a": " · {p0} o sırada",
     "copy.LeagueInsights.205acf650d": "{p0}{p1}{p2} · Ne kadar yükseğe çıkarsanız rütbeniz de o kadar yüksek olur.",

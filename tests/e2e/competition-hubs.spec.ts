@@ -75,7 +75,7 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   // A legacy explicit current year belongs to Season and keeps its competition and lens.
   await page.goto('/leagues?season=1930&league=GER.0.0&view=teams');
   await expect(page).toHaveURL(/season\?competition=league.*league=GER\.0\.0.*view=teams/);
-  await expect(page.getByRole('tab', { name: '팀 기록', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('tab', { name: '순위 추이', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );

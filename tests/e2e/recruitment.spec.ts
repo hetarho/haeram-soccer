@@ -1,3 +1,4 @@
+import { exportWorld } from './club-identity-helpers';
 import { registrationRoom } from '../../packages/engine/src/registration';
 import { releasedMarketPlayer, importPreparedCareer } from '../fixtures/browser-career';
 import { message } from '../../packages/contracts/src/messages';
@@ -14,11 +15,9 @@ import {
 } from '../../apps/web/src/pages/club/lib/worldMarket';
 import { configureResponsibilities, acknowledgeEvents } from './events';
 import { pendingDecisions } from '../../packages/engine/src/stopping';
-import { finishSeason } from './season-progression';
+import { advanceManualEvent, finishSeason } from './season-progression';
 import { chooseOption } from './select';
 import { expect, test, type Page, type Locator } from '@playwright/test';
-import { readFile } from 'node:fs/promises';
-import { worldOfSaveFile } from '../fixtures/save-file';
 import { recruitmentPreview } from '../../packages/engine/src/recruitment';
 import { transferOffers, operatingCost } from '../../packages/engine/src/operations';
 import { operatingCosts } from '../../packages/engine/src/finance';
@@ -31,17 +30,6 @@ import { horizontalOverflow } from './layout';
 import { chooseLevel, closeOutcome, setResponsibility } from './events';
 import { clubhouseTab, primaryEntry } from './competition-navigation';
 import { fundClub, startCareer, type CareerStart } from './start';
-
-async function exportWorld(page: Page): Promise<World> {
-  await page.getByRole('button', { name: '설정', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '설정' });
-  const downloading = page.waitForEvent('download');
-  await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
-  const download = await downloading;
-  const raw = await readFile((await download.path())!);
-  await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
-  return worldOfSaveFile(raw);
-}
 
 /**
  * Takes a club over on `seed` and opens the market. A journey that pays a fee supplements the
@@ -155,7 +143,7 @@ async function settlePaidLoans(page: Page, players: string[]) {
     expect(bids.every((bid) => bid.status === 'completed' || bid.status === 'pending')).toBe(true);
     await clubhouseTab(page).click();
     if (pendingDecisions(current).length) await acknowledgeEvents(page);
-    else await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
+    else await advanceManualEvent(page);
   }
   throw new Error('Paid loans did not settle within ten actual stopping events');
 }

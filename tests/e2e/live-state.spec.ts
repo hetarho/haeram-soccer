@@ -29,12 +29,8 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
   });
   const date = page.getByTestId('game-date');
   await openLeague(page);
-  const rankTab = page.getByRole('tab', { name: '팀 기록', exact: true });
+  const rankTab = page.getByRole('tab', { name: '순위 추이', exact: true });
   await rankTab.click();
-  await page
-    .getByRole('group', { name: '팀 기록 보기' })
-    .getByRole('button', { name: '순위 추이', exact: true })
-    .click();
   await page.evaluate(() => {
     const state = window as typeof window & {
       liveProbe?: { panel: Element | null; canvas: Element | null; flashes: number };

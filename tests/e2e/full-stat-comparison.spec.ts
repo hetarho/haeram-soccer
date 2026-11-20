@@ -30,7 +30,7 @@ const nav = (page: Page) =>
     name: page.viewportSize()!.width < 760 ? '모바일 게임 메뉴' : '게임 메뉴',
     exact: true,
   });
-async function openLeagueTab(page: Page, tab: '팀 기록' | '선수 기록') {
+async function openLeagueTab(page: Page, tab: '순위 추이' | '선수 기록') {
   await openLeague(page);
   await page.getByRole('tab', { name: tab, exact: true }).click();
 }
@@ -44,7 +44,11 @@ for (const viewport of VIEWPORTS)
     await importResponsibilityCareer(page, career('full-stat-comparison', 0, 2));
 
     // Every club's totals, ours highlighted, tracked from the season's first day.
-    await openLeagueTab(page, '팀 기록');
+    await openLeagueTab(page, '순위 추이');
+    await page
+      .getByRole('group', { name: '팀 기록 보기' })
+      .getByRole('button', { name: '팀 성적', exact: true })
+      .click();
     const teams = page.getByRole('region', { name: '팀 세부 기록', exact: true });
     await expect(teams.getByTestId('full-stats-coverage')).toContainText('시즌 전체 기록');
     const table = teams.getByRole('table', { name: '팀 세부 기록표' });

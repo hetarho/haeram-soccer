@@ -63,13 +63,9 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   await page.getByRole('tab', { name: '순위표', exact: true }).click();
   await expect(page.getByRole('table', { name: '리그 순위표' })).toBeVisible();
   await expect(page.getByRole('table', { name: '리그 순위표' })).toContainText('우리 팀');
-  await page.getByRole('tab', { name: '팀 기록', exact: true }).click();
-  await page
-    .getByRole('group', { name: '팀 기록 보기' })
-    .getByRole('button', { name: '순위 추이', exact: true })
-    .click();
+  await page.getByRole('tab', { name: '순위 추이', exact: true }).click();
   await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
-  await expect(page.getByRole('tabpanel', { name: '팀 기록', exact: true })).toContainText(club);
+  await expect(page.getByRole('tabpanel', { name: '순위 추이', exact: true })).toContainText(club);
   await page.getByRole('tab', { name: '일정·결과', exact: true }).click();
   await expect(page.getByRole('heading', { name: '같은 라운드, 다른 경기' })).toBeVisible();
   await chooseOption(page.getByRole('combobox', { name: '리그 라운드 선택', exact: true }), {

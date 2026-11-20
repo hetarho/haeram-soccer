@@ -3,7 +3,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import type { World } from '../../../../../../packages/contracts/src/types';
-import { neighbourSeason, SeasonStepper } from '../../../shared/ui/SeasonStepper';
+import { neighbourSeason, NumberStepper, SeasonStepper } from '../../../shared/ui/SeasonStepper';
 import { divisionValue, LeaguePicker, parseDivision } from './LeaguePicker';
 
 /** Our club in England's fourth tier, in the 1952/53 season after two closed ones. */
@@ -22,9 +22,14 @@ vi.mock('../../../shared/lib/liveState', () => ({ selectLeagueWorld: () => world
 const YEARS = [1950, 1951, 1952];
 type Arrow = { props: { 'aria-label': string; disabled: boolean; onClick: () => void } };
 const arrows = (value: number, onChange = vi.fn()) => {
-  const [older, , newer] = captureRender(() =>
+  const stepper = captureRender(() =>
     SeasonStepper({ years: YEARS, value, current: 1952, onChange }),
-  ).props.children as [Arrow, unknown, Arrow];
+  );
+  const [older, , newer] = captureRender(() => NumberStepper(stepper.props)).props.children as [
+    Arrow,
+    unknown,
+    Arrow,
+  ];
   return { older, newer, onChange };
 };
 

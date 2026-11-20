@@ -62,7 +62,7 @@ import { worldSelector } from '../../shared/lib/liveState';
 import { Standings } from '../../widgets/league-insights';
 import { todayStamp } from '../../../../../packages/engine/src/calendar';
 import s from '../../shared/ui/styles/App.module.css';
-import { Dialog } from '../../shared/ui/Dialog';
+import { SaveImportConfirmation } from './SaveImportConfirmation';
 import { ActionOutcome } from './ActionOutcome';
 import { play } from '../../shared/ui/motion';
 import {
@@ -1250,36 +1250,18 @@ export function App() {
       {localizeValue(playing && controller && <CrisisAlert controller={controller} />)}
       {localizeValue(
         pendingImport && (
-          <Dialog
-            label={localizeValue(t('save.confirmImport'))}
+          <SaveImportConfirmation
+            blocked={importBlocked}
             onClose={() => setPendingImport(undefined)}
-          >
-            <h2>{localizeValue(t('save.importQuestion'))}</h2>
-            <p>{localizeValue(t('save.importNotice'))}</p>
-            <div className={s.actions}>
-              <button onClick={() => void download()}>
-                {localizeValue(t('save.exportCurrent'))}
-              </button>
-              <button onClick={() => setPendingImport(undefined)}>
-                {localizeValue(t('common.cancel'))}
-              </button>
-              <button
-                data-ui="primary"
-                className={s.primary}
-                disabled={importBlocked}
-                onClick={() => {
-                  if (gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
-                  const file = pendingImport;
-                  setPendingImport(undefined);
-                  // The game in play is the one the import replaces (→WEB-62).
-                  client?.replaceOnCreate(client.gameId);
-                  void client?.importFile(file);
-                }}
-              >
-                {localizeValue(t('save.replaceAndImport'))}
-              </button>
-            </div>
-          </Dialog>
+            onExport={download}
+            onImport={() => {
+              if (!client || gameActionsBlocked(gameStore.getSnapshot(), { recovery: true }))
+                return undefined;
+              // The game in play is the one the import replaces (→WEB-62).
+              client.replaceOnCreate(client.gameId);
+              return client.importFile(pendingImport);
+            }}
+          />
         ),
       )}
     </div>

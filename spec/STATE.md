@@ -68,7 +68,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T1042 | Refresh League standings, fixtures and rank trends | ARCH HIST SAVE WEB | - | todo |
 | T1039 | Fix CI failure | ARCH SAVE | - | todo |
 | T1043 | Capture closing Club OVR for archived league clubs | ARCH HIST SAVE WEB | - | todo |
 | T1044 | Show Club OVR in closed league tables | ARCH HIST SAVE WEB | T1042 T1043 | todo |
@@ -93,11 +92,8 @@
 
 ## next
 - gusta-implement-task T1043 T1046 T1047
-- gusta-implement-task T1042
-- gusta-implement-task T1043 — ovr20b builds T1043/T1044 on lgux20's ready T1042 and lands them together (owner 261120).
 - gusta-implement-task T1045 — stad20 (261120): popular clubs sell out at any preset (ECON-9 r66), stadium steps to 105,000 and 120,000 (ECON-32, WEB-72 r230); T1045–T1052.
 - ovr20 (261120): season-close Club OVR landed as 0.8.20 (T1040 archive, T1041 past tables, 구단 성장 and generation champions); reports/261120-ovr20.
-- gusta-implement-task T1039 — main CI is red: 8 Chromium journeys act while the engine worker is still busy after the save redesign (CI 44590362467, 0.8.19); six stop at 다음 이벤트 opening no card.
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
 - x10 (261119): landed as 0.8.15 (9c3a60796) — unwatched own matches without script/material, heat maps removed, slow view reads only on a stopped clock with dimmed places, fixture helpers from three cores (three on 6–12 cores); a 10x automatic-play day ×0.72 on own match days and ×0.11 on other days (reports/261119-x10). T989 withdrawn, T1019 parked until T1003/T1004.
 - Speed follow-up (261119): the engine's other days are ×7.26 slower than 0.8.12 since mr18 (0.8.13); profile and cut them result-preserving first (leads in reports/261119-x10).
@@ -107,3 +103,5 @@
 - Historical era rules parked in ideation/historical-era-rules.
 - gusta-implement-task T1003 T989 T991
 - gusta-implement-task T953 T954
+- gusta-implement-task T1043 — ovr20b continues T1043 and T1044 on top of lgux20's T1042.
+- T1039 Chromium follow-up: the 0.8.21 candidate includes fixes for the observed worker and fixture boundary failures. Check the post-push CI against this code. See reports/261120-lgux20.

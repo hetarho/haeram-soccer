@@ -263,7 +263,7 @@ for (const viewport of [
     await expectCompactMatch(page, viewport);
     await openLeague(page);
     const leagueTabs = page.getByRole('tablist', { name: '리그 보기' }).getByRole('tab');
-    await expect(leagueTabs).toHaveText(['순위표', '일정·결과', '팀 기록', '선수 기록']);
+    await expect(leagueTabs).toHaveText(['순위표', '일정·결과', '순위 추이', '선수 기록']);
     for (const tab of await leagueTabs.all()) {
       // The protocol rounds 44px at fractional positions below 44; read the DOM size itself.
       const bounds = await tab.evaluate((element) => {
@@ -281,12 +281,6 @@ for (const viewport of [
     await expect(page.getByRole('tab', { name: '선수 기록', exact: true })).toBeFocused();
     await page.keyboard.press('ArrowRight');
     await expect(overviewTab).toBeFocused();
-    await page.getByRole('tab', { name: '팀 기록', exact: true }).click();
-    await page
-      .getByRole('group', { name: '팀 기록 보기' })
-      .getByRole('button', { name: '순위 추이', exact: true })
-      .click();
-    await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
     // The league is a primary entry, so back leads straight to the retained theatre.
     await returnToMatch(page);
     await expectCompactMatch(page, viewport);

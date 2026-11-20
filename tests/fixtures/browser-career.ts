@@ -69,6 +69,7 @@ export async function importPreparedCareer(
   await expect(page.getByRole('dialog', { name: '기록 가져오기 확인' })).toBeVisible();
   await page.getByRole('button', { name: '기록 교체하고 가져오기', exact: true }).click();
   await expect(page.getByRole('dialog', { name: '기록 가져오기 확인' })).toHaveCount(0);
+  // The confirmation stays open until the worker has adopted the imported world.
   await openClubhouse(page);
   await expect(page.getByTestId('club-hub')).toHaveAttribute('data-home-active', 'true');
 }
