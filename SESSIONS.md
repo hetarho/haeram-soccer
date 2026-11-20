@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| ovr20b | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T03:53Z | 2026-11-20T04:10Z | T1044 | gusta-session-start-ovr20b-916c8e5f | 8e3908017e30 | 638d095296286bb62a147c78 |
+| ovr20b | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T03:53Z | 2026-11-20T04:17Z | - | gusta-session-start-ovr20b-916c8e5f | 8e3908017e30 | 638d095296286bb62a147c78 |
 | stad20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T03:53Z | 2026-11-20T04:05Z | T1046 | gusta-session-start-stad20-a4e0e490 | f1be765cde35 | 59bbbe573858883ac186b857 |
 
 ## inbox
@@ -232,8 +232,10 @@
 | T1042 | lgux20 | gusta-session-start-lgux20-8a35ba80 | b113a0b8409d | 2026-11-20T03:42Z |
 | T1045 | stad20 | gusta-session-start-stad20-a4e0e490 | 11a71bcbb35c | 2026-11-20T04:04Z |
 | T1043 | ovr20b | gusta-session-start-ovr20b-916c8e5f | ead29c5864ae | 2026-11-20T04:09Z |
+| T1044 | ovr20b | gusta-session-start-ovr20b-916c8e5f | 8e3908017e30 | 2026-11-20T04:17Z |
 
 ## log
+- 261120 T1044 done
 - 261120 T1043 done
 - 261120 T1045 done
 - 261120 ovr20b re-planned onto T1042 as WEB r229 (a8d053944) and put on main by a spec-only fast-forward; T1044 now depends on T1042
@@ -253,4 +255,3 @@
 - 261120 gusta-update-ssot WEB start
 - 261120 T1041 done
 - 261120 T1040 done
-- 261120 ovr20 planning 33cba0145 put on main by a spec-only fast-forward (gate f96fd6c3 still frozen, same as T1039)
