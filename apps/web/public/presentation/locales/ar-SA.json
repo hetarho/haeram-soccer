@@ -4810,6 +4810,8 @@
     "copy.facility_model.4ccce8b5ed": "ملعب كبير",
     "copy.facility_model.0e3316fb01": "امتداد الزاوية",
     "copy.facility_model.23ef72e0aa": "ملعب مرموق",
+    "facility.stadium.grandGround": "ملعب عملاق",
+    "facility.stadium.upperTier": "مدرج الطابق الثالث",
     "copy.fan_mood.8447102cff": "{p0} · محبي الرأي العام {p1}{p2} → {p3}",
     "copy.fan_mood.dc235a5468": "المشاعر العامة للمشجعين {p0} · {p1}جولة متتالية {p2} أدناه · سأغادر النادي بسبب مطالبة المشجعين باستقالتي.",
     "copy.fan_mood.0590215d59": "الضغط من أجل الاستقالة · ارتفعت المشاعر العامة لدى المعجبين إلى {p1} أو أعلى خلال جولة {p0}",

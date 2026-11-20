@@ -1,0 +1,5 @@
+# Large stadium scenes
+
+Implemented artwork for stadium steps 9 and 10, in the heritage, terraces and contemporary eras: twelve original built-in image-generation sources and their responsive WebP deployments. The existing stadium and locker stage 8 artwork supplied style references. The new large bowl and its additional upper tier use the same flat cartoon colours and dark contours; locker rooms use period equipment. No club identity or game facts are embedded. In-app review remains with the shared stadium candidate.
+
+The generation inventory at `apps/web/public/art/sticker-club/generation.json` records sources, prompts, dimensions, sizes and hashes. To regenerate the two deployment sizes from these source PNGs and verify them, run `node apps/web/design/sticker-club/stadium-large-v1/verify.mjs --encode`; omit `--encode` to verify the existing files. The script uses the shared `encodeFacilityPanorama` and checks source/deployment uniqueness, decoding, dimensions, hashes and current byte budgets.

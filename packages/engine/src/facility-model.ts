@@ -2,7 +2,7 @@ import { message as sourceMessage } from '../../contracts/src/messages';
 import type { FacilityPart, World } from '../../contracts/src/types';
 
 /**
- * The facility parts (→ECON-32): a stadium of eight steps, each an expansion or a rebuild, and a
+ * The facility parts (→ECON-32): a stadium of ten steps, each an expansion or a rebuild, and a
  * training ground and academy facilities of five levels. Costs and upkeep are units on the
  * football index (→ECON-26), so the ladders keep their weight against football's income in every
  * era; each step costs a fixed multiple of the one before (stadium ×2.5, training ground and
@@ -65,6 +65,18 @@ export const STADIUM_STEPS = [
     capacity: 90000,
     work: 'expansion',
     cost: 366000,
+  },
+  {
+    name: sourceMessage('facility.stadium.grandGround'),
+    capacity: 105000,
+    work: 'rebuild',
+    cost: 915000,
+  },
+  {
+    name: sourceMessage('facility.stadium.upperTier'),
+    capacity: 120000,
+    work: 'expansion',
+    cost: 2287500,
   },
 ] as const;
 export type StadiumWork = 'expansion' | 'rebuild';

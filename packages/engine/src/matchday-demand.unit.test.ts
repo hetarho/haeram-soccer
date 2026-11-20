@@ -8,7 +8,7 @@ import { stadiumCapacity } from './facilities';
 import { withOwner } from './testing';
 import { worldMarketFixture } from './world-market.testkit';
 
-/** The owned club at a reputation and ground: step 8 holds 90,000 seats, step 5 holds 40,000. */
+/** The owned club at a reputation and ground: step 9 holds 105,000 seats, step 8 90,000, step 5 40,000. */
 function fixture(reputation: number, stadium: number, owned = true) {
   const w = worldMarketFixture();
   const club = w.clubs[0]!;
@@ -30,6 +30,18 @@ describe('a popular owned club’s matchday demand (→ECON-9)', () => {
       expect(projection.travellingSupporters).toBeGreaterThan(0);
       expect(projection.attendanceLow).toBe(90_000);
       expect(projection.attendanceHigh).toBe(90_000);
+    },
+  );
+
+  it.each(TICKET_PRESETS)(
+    'fills every seat of the 105,000-seat rebuild at preset %s with a following of 80 (→ECON-29)',
+    (ticket) => {
+      const w = fixture(80, 9);
+      w.ticket = ticket;
+      const projection = gateProjection(w);
+      expect(projection.capacity).toBe(105_000);
+      expect(projection.attendanceLow).toBe(105_000);
+      expect(projection.attendanceHigh).toBe(105_000);
     },
   );
 

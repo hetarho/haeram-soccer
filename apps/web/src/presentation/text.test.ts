@@ -40,6 +40,28 @@ const select = (messages: LocalePack['messages']) =>
 afterEach(() => setTextLocale());
 
 describe('source prose and display translation', () => {
+  it('resolves the two elite stadium step names from stored source prose in every pack (→ECON-32)', () => {
+    const registry = JSON.parse(
+      readFileSync(
+        new URL('../../public/presentation/locales/index.json', import.meta.url),
+        'utf8',
+      ),
+    ) as { entries: { resource: string }[] };
+    for (const { resource } of registry.entries) {
+      const pack: LocalePack = JSON.parse(
+        readFileSync(
+          new URL(`../../public/presentation/locales/${resource}`, import.meta.url),
+          'utf8',
+        ),
+      );
+      select(pack.messages);
+      for (const id of ['facility.stadium.grandGround', 'facility.stadium.upperTier'] as const) {
+        expect(pack.messages[id]).toBeTruthy();
+        expect(localizeValue(message(id))).toBe(pack.messages[id]);
+      }
+    }
+  });
+
   it('keeps every canonical source message unchanged without reading a locale', () => {
     for (const id of Object.keys(sourceMessages) as SourceMessageId[])
       expect(message(id)).toBe(sourceMessages[id]);

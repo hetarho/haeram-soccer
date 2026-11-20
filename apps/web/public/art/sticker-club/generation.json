@@ -2399,6 +2399,270 @@
         "bytes": 20072,
         "sha256": "8ae98a21d80cb1048da1c86000d4f4afcc1856e68f04a7755d0c3da3aaadaac6"
       }
+    },
+    {
+      "id": "heritage-stadium-9",
+      "asset": "heritage/stadium-9",
+      "kind": "stadium",
+      "era": "heritage",
+      "stage": 9,
+      "prompt": "Original flat colourful cartoon heritage stadium, completed stage 9; new large bowl; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "source": "apps/web/design/sticker-club/stadium-large-v1/sources/heritage-stadium-9.png",
+      "sourceBytes": 2679539,
+      "sourceSha256": "417cf2e9e2272a7a65f0d1a3edea32b26d33823ce18bafdabe160f18a0b7f74a",
+      "width": 960,
+      "height": 320,
+      "bytes": 82918,
+      "sha256": "6744189bd4b98cd5dd066df79572107fb8fc9ff64b75c401dc1138a6c102716a",
+      "small": {
+        "file": "heritage/stadium-9.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 21534,
+        "sha256": "ffa3a4e008d7bd3251d6506d9b64f592be17b7cdeea514153ad1028dff145567"
+      }
+    },
+    {
+      "id": "heritage-stadium-10",
+      "asset": "heritage/stadium-10",
+      "kind": "stadium",
+      "era": "heritage",
+      "stage": 10,
+      "prompt": "Original flat colourful cartoon heritage stadium, completed stage 10; additional upper tier; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "source": "apps/web/design/sticker-club/stadium-large-v1/sources/heritage-stadium-10.png",
+      "sourceBytes": 3442780,
+      "sourceSha256": "a44a3c605534d160a778d17840b30f9021793e5d1206f8b1bf5578cae6e04e87",
+      "width": 960,
+      "height": 320,
+      "bytes": 117612,
+      "sha256": "b16b9c9beb3072d853ab067f97409c084f28dad7e246726894c77cfd525c5659",
+      "small": {
+        "file": "heritage/stadium-10.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 28642,
+        "sha256": "cbe5370f934b688d9e2c5898763595ac6e22a42320bf2dbff65619b40e9bc392"
+      }
+    },
+    {
+      "id": "heritage-locker-9",
+      "asset": "heritage/locker-9",
+      "kind": "locker",
+      "era": "heritage",
+      "stage": 9,
+      "prompt": "Original flat colourful cartoon heritage locker, completed stage 9; large period-appropriate locker room; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "source": "apps/web/design/sticker-club/stadium-large-v1/sources/heritage-locker-9.png",
+      "sourceBytes": 2742169,
+      "sourceSha256": "c4ea9e40d8d70ff557cf60b47f7383b3c37b88ab151a44097f3808bcc62e5c9b",
+      "width": 960,
+      "height": 320,
+      "bytes": 80122,
+      "sha256": "c5c76e0f6aac387ec8df68783b1ae182ce4c86ba3bdaf243137542694a07ba7b",
+      "small": {
+        "file": "heritage/locker-9.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 23508,
+        "sha256": "6f6e441563d1805273257de4ea6980764562600581c440d718052a09b1cf9c3d"
+      }
+    },
+    {
+      "id": "heritage-locker-10",
+      "asset": "heritage/locker-10",
+      "kind": "locker",
+      "era": "heritage",
+      "stage": 10,
+      "prompt": "Original flat colourful cartoon heritage locker, completed stage 10; large period-appropriate locker room; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "source": "apps/web/design/sticker-club/stadium-large-v1/sources/heritage-locker-10.png",
+      "sourceBytes": 2631906,
+      "sourceSha256": "621f5781d37c6aa22ec9d85d0f0e69ccd50407e54916052828dcbe427bcde0cb",
+      "width": 960,
+      "height": 320,
+      "bytes": 80260,
+      "sha256": "6def8707be4795c26b4d9211a37cd4bb7098cdd7deea6a1cc7c03cd0aa8f3cc0",
+      "small": {
+        "file": "heritage/locker-10.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 22672,
+        "sha256": "a07a2dfcbb7a2ea819cea52215045bd69ade5497a74f21ed33b9d474a0202a7d"
+      }
+    },
+    {
+      "id": "terraces-stadium-9",
+      "asset": "terraces/stadium-9",
+      "kind": "stadium",
+      "era": "terraces",
+      "stage": 9,
+      "prompt": "Original flat colourful cartoon terraces stadium, completed stage 9; new large bowl; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "source": "apps/web/design/sticker-club/stadium-large-v1/sources/terraces-stadium-9.png",
+      "sourceBytes": 3469119,
+      "sourceSha256": "c376f19179a8a9e1f8a65871c0fa34ccea53b3e9bfb6330ca9a2acf5945e0fc6",
+      "width": 960,
+      "height": 320,
+      "bytes": 99584,
+      "sha256": "f94ff867547f609de78d4111455cc3c265ffb2b536f53c229b2bcd8da8f284f0",
+      "small": {
+        "file": "terraces/stadium-9.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 23424,
+        "sha256": "d723baf7088e2c40b6ddd1abca81ed45da6108fe7bd2c97916e2be24c220a3d0"
+      }
+    },
+    {
+      "id": "terraces-stadium-10",
+      "asset": "terraces/stadium-10",
+      "kind": "stadium",
+      "era": "terraces",
+      "stage": 10,
+      "prompt": "Original flat colourful cartoon terraces stadium, completed stage 10; additional upper tier; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "source": "apps/web/design/sticker-club/stadium-large-v1/sources/terraces-stadium-10.png",
+      "sourceBytes": 3606455,
+      "sourceSha256": "f73738fceda72a0b20c8d3c9038f63978fec53e51e28e7d4199dfa865bf28196",
+      "width": 960,
+      "height": 320,
+      "bytes": 113042,
+      "sha256": "295f4b476f22b96876077c1a755e1d6da4bfc1b169ad9d989962bd50d6ca40f3",
+      "small": {
+        "file": "terraces/stadium-10.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 26480,
+        "sha256": "a250a79d29e435a7bdbeeefbe1ff71a9ec762551d2db00165eaf3c993f83d4a1"
+      }
+    },
+    {
+      "id": "terraces-locker-9",
+      "asset": "terraces/locker-9",
+      "kind": "locker",
+      "era": "terraces",
+      "stage": 9,
+      "prompt": "Original flat colourful cartoon terraces locker, completed stage 9; large period-appropriate locker room; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "source": "apps/web/design/sticker-club/stadium-large-v1/sources/terraces-locker-9.png",
+      "sourceBytes": 2709112,
+      "sourceSha256": "e63749a7d899ba8c4c554bfabf7cde8680b77e2449ab4e424cad544ca09591fc",
+      "width": 960,
+      "height": 320,
+      "bytes": 68046,
+      "sha256": "268e09e5653dadb6bf21b2104b53c9bfd6599ebfa43004968d862942d3a70e20",
+      "small": {
+        "file": "terraces/locker-9.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 19620,
+        "sha256": "25236d7b8a2a6edb6cc20e285efe469b4978b4318d49c3779018f94c78c3966c"
+      }
+    },
+    {
+      "id": "terraces-locker-10",
+      "asset": "terraces/locker-10",
+      "kind": "locker",
+      "era": "terraces",
+      "stage": 10,
+      "prompt": "Original flat colourful cartoon terraces locker, completed stage 10; large period-appropriate locker room; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "source": "apps/web/design/sticker-club/stadium-large-v1/sources/terraces-locker-10.png",
+      "sourceBytes": 2683715,
+      "sourceSha256": "e99545578e1666298a592334a7dcd90989f8b667e7dab94ce1633e655752b806",
+      "width": 960,
+      "height": 320,
+      "bytes": 79786,
+      "sha256": "63fd9dfe98f6877bd3c28d0206605477befef2199202133b099da2db5ebb77c1",
+      "small": {
+        "file": "terraces/locker-10.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 23364,
+        "sha256": "87a2055fc03eec979a0aef150edf3f3471a0aca149825eb6b5aac3775e4fab29"
+      }
+    },
+    {
+      "id": "contemporary-stadium-9",
+      "asset": "contemporary/stadium-9",
+      "kind": "stadium",
+      "era": "contemporary",
+      "stage": 9,
+      "prompt": "Original flat colourful cartoon contemporary stadium, completed stage 9; new large bowl; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "source": "apps/web/design/sticker-club/stadium-large-v1/sources/contemporary-stadium-9.png",
+      "sourceBytes": 3055532,
+      "sourceSha256": "05c1a303f783fca776467ae7f29cbdce7f61f0ccfa50ffcce7c4c39eb2a04ff1",
+      "width": 960,
+      "height": 320,
+      "bytes": 99874,
+      "sha256": "65719db114b519537c0d19aa12d6d0fae533bb00edfd210420945af84562eec3",
+      "small": {
+        "file": "contemporary/stadium-9.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 25612,
+        "sha256": "ac53dbe5b0ed4dd39589dd6c3fde872d4c96f6d2033c2b368dbe72669dce139b"
+      }
+    },
+    {
+      "id": "contemporary-stadium-10",
+      "asset": "contemporary/stadium-10",
+      "kind": "stadium",
+      "era": "contemporary",
+      "stage": 10,
+      "prompt": "Original flat colourful cartoon contemporary stadium, completed stage 10; additional upper tier; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "source": "apps/web/design/sticker-club/stadium-large-v1/sources/contemporary-stadium-10.png",
+      "sourceBytes": 3029208,
+      "sourceSha256": "e8ea0c7fd987444b755d232a1ca5e1ca9ca4760ee0af7e5b8d0eee4a948e35e6",
+      "width": 960,
+      "height": 320,
+      "bytes": 97550,
+      "sha256": "bb13485d09704f5c0b29412273d3474ab7beec6da2da1a1351252d92b8d9914c",
+      "small": {
+        "file": "contemporary/stadium-10.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 24962,
+        "sha256": "620f367c2cee5c81135d7429b3ecc365c41301ab285a0e27d9692a9950442a20"
+      }
+    },
+    {
+      "id": "contemporary-locker-9",
+      "asset": "contemporary/locker-9",
+      "kind": "locker",
+      "era": "contemporary",
+      "stage": 9,
+      "prompt": "Original flat colourful cartoon contemporary locker, completed stage 9; large period-appropriate locker room; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "source": "apps/web/design/sticker-club/stadium-large-v1/sources/contemporary-locker-9.png",
+      "sourceBytes": 2506829,
+      "sourceSha256": "fe2677b7cc1e04db10be570ff1380b2e54dae631961060703137dbe442d7c45c",
+      "width": 960,
+      "height": 320,
+      "bytes": 76640,
+      "sha256": "2341bf0a4e36b7233f8f34e1a2ce86849e088b2b9624c7e5312e8cace334b99f",
+      "small": {
+        "file": "contemporary/locker-9.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 23798,
+        "sha256": "d4ebf93c0d8b45cd199bb1d08cc418216ee50437dd44a0c39c76d4cc342dd909"
+      }
+    },
+    {
+      "id": "contemporary-locker-10",
+      "asset": "contemporary/locker-10",
+      "kind": "locker",
+      "era": "contemporary",
+      "stage": 10,
+      "prompt": "Original flat colourful cartoon contemporary locker, completed stage 10; large period-appropriate locker room; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "source": "apps/web/design/sticker-club/stadium-large-v1/sources/contemporary-locker-10.png",
+      "sourceBytes": 2435721,
+      "sourceSha256": "4841d8e4b3b40f2ed064ca490887a563401ab77098c063876d4d269396600b41",
+      "width": 960,
+      "height": 320,
+      "bytes": 77188,
+      "sha256": "025f446dbd89022c166038d92ce99bd302822abcbf835575394a879786a9b271",
+      "small": {
+        "file": "contemporary/locker-10.small.webp",
+        "width": 480,
+        "height": 160,
+        "bytes": 23744,
+        "sha256": "7339047541fa99954d5e0e37fb8c9d020df2256d8ab7f4613dd2dfe10d4d41f0"
+      }
     }
   ]
 }

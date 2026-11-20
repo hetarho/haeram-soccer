@@ -5026,6 +5026,8 @@
     "copy.facility_model.4ccce8b5ed": "gran estadio",
     "copy.facility_model.0e3316fb01": "extensión de esquina",
     "copy.facility_model.23ef72e0aa": "prestigioso estadio",
+    "facility.stadium.grandGround": "estadio monumental",
+    "facility.stadium.upperTier": "tercera grada",
     "copy.fan_mood.8447102cff": "{p0} · Opinión pública de fans {p1}{p2} → {p3}",
     "copy.fan_mood.dc235a5468": "Sentimiento del público de los fanáticos {p0} · {p1} Ronda consecutiva {p2} A continuación · Dejo el club debido a las demandas de los fanáticos de mi renuncia.",
     "copy.fan_mood.0590215d59": "Presión para la renuncia · El sentimiento del público de los fanáticos aumentó por encima de {p1} dentro de la ronda {p0}",

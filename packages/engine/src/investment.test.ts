@@ -68,6 +68,28 @@ describe('shared club investment forecasts', () => {
     expect(building.events.some((event) => event.kind === 'facility-open')).toBe(true);
   });
 
+  it('quotes the 105,000 rebuild from 90,000 seats and the 120,000 tier after it (→ECON-32)', () => {
+    const w = world();
+    w.stadium = 8;
+    const rebuild = facilityInvestmentPreview(w, 'stadium');
+    expect(rebuild).toMatchObject({
+      eligible: true,
+      capacityBefore: 90000,
+      capacityDuring: 90000,
+      capacityAfter: 105000,
+    });
+    expect(rebuild.next).toMatchObject({ to: 9, kind: 'rebuild', days: 540, units: 915000 });
+    expect(BigInt(rebuild.maintenanceIncrease)).toBeGreaterThan(0n);
+    w.stadium = 9;
+    const tier = facilityInvestmentPreview(w, 'stadium');
+    expect(tier).toMatchObject({
+      capacityBefore: 105000,
+      capacityDuring: 94500,
+      capacityAfter: 120000,
+    });
+    expect(tier.next).toMatchObject({ to: 10, kind: 'expansion', days: 180, units: 2287500 });
+  });
+
   it('shows the true cash shortfall and cannot make an unaffordable investment', () => {
     const w = world(),
       cost = facilityInvestmentPreview(w, 'training').cost;
@@ -84,14 +106,14 @@ describe('shared club investment forecasts', () => {
 
   it("has no imaginary step, bill or spend beyond a part's top", () => {
     const w = world();
-    w.stadium = 8;
+    w.stadium = 10;
     const before = canonical(w),
       preview = facilityInvestmentPreview(w, 'stadium');
     expect(preview.eligible).toBe(false);
     expect(preview.next).toBeUndefined();
     expect(preview.cost).toBe('0');
     expect(preview.cashAfter).toBe(w.cash);
-    expect(preview.capacityAfter).toBe(90000);
+    expect(preview.capacityAfter).toBe(120000);
     expect(preview.annualAfter).toBe(preview.annualBefore);
     expect(preview.maintenanceIncrease).toBe('0');
     expect(() => startWork(w, 'stadium')).toThrow('최고');

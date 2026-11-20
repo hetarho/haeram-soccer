@@ -4989,6 +4989,8 @@
     "copy.facility_model.4ccce8b5ed": "large stadium",
     "copy.facility_model.0e3316fb01": "corner extension",
     "copy.facility_model.23ef72e0aa": "prestigious stadium",
+    "facility.stadium.grandGround": "grand stadium",
+    "facility.stadium.upperTier": "third-tier stand",
     "copy.fan_mood.8447102cff": "{p0} · Fan public opinion {p1}{p2} → {p3}",
     "copy.fan_mood.dc235a5468": "Fan Public Sentiment {p0} · {p1} Round Consecutive {p2} Below · I am leaving the club due to fans' demands for my resignation.",
     "copy.fan_mood.0590215d59": "Pressure for resignation · Fan public sentiment increased above {p1} within the {p0} round",

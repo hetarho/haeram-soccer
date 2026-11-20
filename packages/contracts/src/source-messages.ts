@@ -5683,6 +5683,8 @@ export const sourceMessages = {
   'copy.facility_model.4ccce8b5ed': '대형 경기장',
   'copy.facility_model.0e3316fb01': '코너 증축',
   'copy.facility_model.23ef72e0aa': '명문 구장',
+  'facility.stadium.grandGround': '초대형 구장',
+  'facility.stadium.upperTier': '3층 스탠드',
   'copy.fan_mood.8447102cff': '{p0} · 팬 민심 {p1}{p2} → {p3}',
   'copy.fan_mood.dc235a5468':
     '팬 민심 {p0} · {p1}라운드 연속 {p2} 아래 · 팬들의 퇴진 요구에 구단을 떠나요.',

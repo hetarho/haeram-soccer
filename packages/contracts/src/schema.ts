@@ -1091,6 +1091,11 @@ const takeoverLoan = z.strictObject({
   seasonsLeft: z.number().int().min(0).max(100),
 });
 export const facilityPartSchema = z.enum(['stadium', 'training', 'academy']);
+/** The stadium's top step (→ECON-32): ten steps above the founding ground, 120,000 seats. */
+const STADIUM_TOP = 10;
+/** A work under way and the step it builds; the other parts keep their earlier target bound. */
+const facilityWork = (top: number) =>
+  z.strictObject({ to: z.number().int().min(1).max(top), year: season, day: seasonDay });
 
 const worldSchema: z.ZodType<World> = z.object({
   schema: z.literal(1),
@@ -1374,14 +1379,15 @@ const worldSchema: z.ZodType<World> = z.object({
   operatingExpenses: amount.optional(),
   currency: text,
   priceIndex: number,
-  stadium: z.number().int().min(0).max(8),
+  stadium: z.number().int().min(0).max(STADIUM_TOP),
   trainingGround: z.number().int().min(0).max(5),
   academyFacility: z.number().int().min(0).max(5),
   facilityWorks: z
-    .partialRecord(
-      facilityPartSchema,
-      z.strictObject({ to: z.number().int().min(1).max(8), year: season, day: seasonDay }),
-    )
+    .strictObject({
+      stadium: facilityWork(STADIUM_TOP).optional(),
+      training: facilityWork(8).optional(),
+      academy: facilityWork(8).optional(),
+    })
     .optional(),
   facilityAutoUpgrade: z
     .partialRecord(facilityPartSchema, z.enum(['armed', 'awaiting-funds']))

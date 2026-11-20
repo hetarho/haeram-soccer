@@ -5061,6 +5061,8 @@
     "copy.facility_model.4ccce8b5ed": "büyük stadyum",
     "copy.facility_model.0e3316fb01": "köşe uzantısı",
     "copy.facility_model.23ef72e0aa": "prestijli stadyum",
+    "facility.stadium.grandGround": "dev stadyum",
+    "facility.stadium.upperTier": "üçüncü kat tribünü",
     "copy.fan_mood.8447102cff": "{p0} · Hayran kamuoyu {p1}{p2} → {p3}",
     "copy.fan_mood.dc235a5468": "Taraftarın Halkın Duygusu {p0} · {p1}Yuvarlak Ardışık {p2} Aşağıda · Taraftarların istifam yönündeki talepleri nedeniyle kulüpten ayrılıyorum.",
     "copy.fan_mood.0590215d59": "İstifa baskısı · {p0} turunda taraftar kamuoyunun duyarlılığı {p1} veya daha yüksek bir seviyeye yükseldi",

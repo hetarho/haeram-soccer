@@ -254,6 +254,28 @@
       "crop": [1450, 485, 720, 237]
     },
     {
+      "era": "heritage",
+      "kind": "stadium",
+      "stage": 9,
+      "file": "/art/scenes/heritage/stadium-9.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 1576,
+      "sha256": "823784a49e7f3d1cb7b909cc804406da94cf5d362cc9276058f09ba887fbda88",
+      "generation": "apps/web/design/pixel/large-stadium-v1/generation.json"
+    },
+    {
+      "era": "heritage",
+      "kind": "stadium",
+      "stage": 10,
+      "file": "/art/scenes/heritage/stadium-10.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 1666,
+      "sha256": "8dabb8696be1de3cd27c7904df6f28c2e527b177a6df3bfb810f8e7412effc6e",
+      "generation": "apps/web/design/pixel/large-stadium-v1/generation.json"
+    },
+    {
       "era": "terraces",
       "kind": "stadium",
       "stage": 0,
@@ -360,6 +382,28 @@
       "sha256": "5c9260988b9a379cc7dde6dcf7d169c20d26ba32513d70617452948615560341",
       "atlas": "stadium-terraces",
       "crop": [1450, 485, 720, 237]
+    },
+    {
+      "era": "terraces",
+      "kind": "stadium",
+      "stage": 9,
+      "file": "/art/scenes/terraces/stadium-9.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 1556,
+      "sha256": "4811f0bdbbe1ac4fa9a3b0229cac5caf2b1a6fcb88c300afd76f2de54b67ef1f",
+      "generation": "apps/web/design/pixel/large-stadium-v1/generation.json"
+    },
+    {
+      "era": "terraces",
+      "kind": "stadium",
+      "stage": 10,
+      "file": "/art/scenes/terraces/stadium-10.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 1668,
+      "sha256": "1279a20ae5f17a8576615f21f007b6dc53c15ac7bd9776dd2a29c9c11d5fd489",
+      "generation": "apps/web/design/pixel/large-stadium-v1/generation.json"
     },
     {
       "era": "contemporary",
@@ -470,6 +514,28 @@
       "crop": [1450, 485, 720, 237]
     },
     {
+      "era": "contemporary",
+      "kind": "stadium",
+      "stage": 9,
+      "file": "/art/scenes/contemporary/stadium-9.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 1550,
+      "sha256": "d9c88c2e0a08ae65cfcaebb6907d7b16b493a858fde2eb2bdde188e2ccefe80a",
+      "generation": "apps/web/design/pixel/large-stadium-v1/generation.json"
+    },
+    {
+      "era": "contemporary",
+      "kind": "stadium",
+      "stage": 10,
+      "file": "/art/scenes/contemporary/stadium-10.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 1642,
+      "sha256": "4e45eb3e9d17eb7025e68ce54d99f919880153d383f591e4f33736437ee6c9de",
+      "generation": "apps/web/design/pixel/large-stadium-v1/generation.json"
+    },
+    {
       "era": "heritage",
       "kind": "locker",
       "stage": 0,
@@ -576,6 +642,28 @@
       "sha256": "a1346084bc60acfedd169d3b7ae681d0451afdf7e237f551f2583afd49455869",
       "atlas": "locker-heritage",
       "crop": [1450, 485, 720, 237]
+    },
+    {
+      "era": "heritage",
+      "kind": "locker",
+      "stage": 9,
+      "file": "/art/scenes/heritage/locker-9.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 1664,
+      "sha256": "5d700308297cb813c3bf8ad7f94bb6c192b65647f6acf79c0fd5c23fb9db2d44",
+      "generation": "apps/web/design/pixel/large-stadium-v1/generation.json"
+    },
+    {
+      "era": "heritage",
+      "kind": "locker",
+      "stage": 10,
+      "file": "/art/scenes/heritage/locker-10.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 1710,
+      "sha256": "0028a0470101ece0598e8a11a4a0f237a0fee2f66551d4cca588a79d616e5c40",
+      "generation": "apps/web/design/pixel/large-stadium-v1/generation.json"
     },
     {
       "era": "terraces",
@@ -686,6 +774,28 @@
       "crop": [1450, 485, 720, 237]
     },
     {
+      "era": "terraces",
+      "kind": "locker",
+      "stage": 9,
+      "file": "/art/scenes/terraces/locker-9.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 1668,
+      "sha256": "d246abe9ca4341501eae491400ba499f5e081b67cb03b92be5c2100d9dc95105",
+      "generation": "apps/web/design/pixel/large-stadium-v1/generation.json"
+    },
+    {
+      "era": "terraces",
+      "kind": "locker",
+      "stage": 10,
+      "file": "/art/scenes/terraces/locker-10.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 1718,
+      "sha256": "00659e91b4cdfe3ca4854505067ba6098868cd04d3613001cdaa65beab95b56b",
+      "generation": "apps/web/design/pixel/large-stadium-v1/generation.json"
+    },
+    {
       "era": "contemporary",
       "kind": "locker",
       "stage": 0,
@@ -792,6 +902,28 @@
       "sha256": "21d5593da1acf6081d76536d42d6b5211d5052b46e39ccd0a23886efe116d444",
       "atlas": "locker-contemporary",
       "crop": [1450, 485, 720, 237]
+    },
+    {
+      "era": "contemporary",
+      "kind": "locker",
+      "stage": 9,
+      "file": "/art/scenes/contemporary/locker-9.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 1612,
+      "sha256": "d01536a420d791614630a6af2aa28c5f96fccece5926a4394d77772d2fee214f",
+      "generation": "apps/web/design/pixel/large-stadium-v1/generation.json"
+    },
+    {
+      "era": "contemporary",
+      "kind": "locker",
+      "stage": 10,
+      "file": "/art/scenes/contemporary/locker-10.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 1690,
+      "sha256": "51c245101628bbd5c4fdee8cf6139d1110ecbb032cd10f5ac22473df790b86ff",
+      "generation": "apps/web/design/pixel/large-stadium-v1/generation.json"
     },
     {
       "era": "heritage",

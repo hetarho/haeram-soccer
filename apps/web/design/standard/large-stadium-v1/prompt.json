@@ -24,8 +24,8 @@
         "smallWidth": 480,
         "smallHeight": 160
       },
-      "source": null,
-      "status": "awaiting-image-generation"
+      "source": "apps/web/design/standard/large-stadium-v1/sources/heritage-stadium-9.png",
+      "status": "generated"
     },
     {
       "id": "heritage-stadium-10",
@@ -47,8 +47,8 @@
         "smallWidth": 480,
         "smallHeight": 160
       },
-      "source": null,
-      "status": "awaiting-image-generation"
+      "source": "apps/web/design/standard/large-stadium-v1/sources/heritage-stadium-10.png",
+      "status": "generated"
     },
     {
       "id": "terraces-stadium-9",
@@ -70,8 +70,8 @@
         "smallWidth": 480,
         "smallHeight": 160
       },
-      "source": null,
-      "status": "awaiting-image-generation"
+      "source": "apps/web/design/standard/large-stadium-v1/sources/terraces-stadium-9.png",
+      "status": "generated"
     },
     {
       "id": "terraces-stadium-10",
@@ -93,8 +93,8 @@
         "smallWidth": 480,
         "smallHeight": 160
       },
-      "source": null,
-      "status": "awaiting-image-generation"
+      "source": "apps/web/design/standard/large-stadium-v1/sources/terraces-stadium-10.png",
+      "status": "generated"
     },
     {
       "id": "contemporary-stadium-9",
@@ -116,8 +116,8 @@
         "smallWidth": 480,
         "smallHeight": 160
       },
-      "source": null,
-      "status": "awaiting-image-generation"
+      "source": "apps/web/design/standard/large-stadium-v1/sources/contemporary-stadium-9.png",
+      "status": "generated"
     },
     {
       "id": "contemporary-stadium-10",
@@ -139,8 +139,8 @@
         "smallWidth": 480,
         "smallHeight": 160
       },
-      "source": null,
-      "status": "awaiting-image-generation"
+      "source": "apps/web/design/standard/large-stadium-v1/sources/contemporary-stadium-10.png",
+      "status": "generated"
     },
     {
       "id": "heritage-locker-9",
@@ -162,8 +162,8 @@
         "smallWidth": 480,
         "smallHeight": 160
       },
-      "source": null,
-      "status": "awaiting-image-generation"
+      "source": "apps/web/design/standard/large-stadium-v1/sources/heritage-locker-9.png",
+      "status": "generated"
     },
     {
       "id": "heritage-locker-10",
@@ -185,8 +185,8 @@
         "smallWidth": 480,
         "smallHeight": 160
       },
-      "source": null,
-      "status": "awaiting-image-generation"
+      "source": "apps/web/design/standard/large-stadium-v1/sources/heritage-locker-10.png",
+      "status": "generated"
     },
     {
       "id": "terraces-locker-9",
@@ -208,8 +208,8 @@
         "smallWidth": 480,
         "smallHeight": 160
       },
-      "source": null,
-      "status": "awaiting-image-generation"
+      "source": "apps/web/design/standard/large-stadium-v1/sources/terraces-locker-9.png",
+      "status": "generated"
     },
     {
       "id": "terraces-locker-10",
@@ -231,8 +231,8 @@
         "smallWidth": 480,
         "smallHeight": 160
       },
-      "source": null,
-      "status": "awaiting-image-generation"
+      "source": "apps/web/design/standard/large-stadium-v1/sources/terraces-locker-10.png",
+      "status": "generated"
     },
     {
       "id": "contemporary-locker-9",
@@ -254,8 +254,8 @@
         "smallWidth": 480,
         "smallHeight": 160
       },
-      "source": null,
-      "status": "awaiting-image-generation"
+      "source": "apps/web/design/standard/large-stadium-v1/sources/contemporary-locker-9.png",
+      "status": "generated"
     },
     {
       "id": "contemporary-locker-10",
@@ -277,8 +277,8 @@
         "smallWidth": 480,
         "smallHeight": 160
       },
-      "source": null,
-      "status": "awaiting-image-generation"
+      "source": "apps/web/design/standard/large-stadium-v1/sources/contemporary-locker-10.png",
+      "status": "generated"
     }
   ]
 }

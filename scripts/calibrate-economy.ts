@@ -61,7 +61,13 @@ import {
   readGateDetail,
   MARKET_CONFIG,
 } from '../packages/engine/src/index';
-import { country, footballIndex } from '../packages/catalogs/src/index';
+import { country, currency, footballIndex, SPONSOR_SLOTS } from '../packages/catalogs/src/index';
+import { worldMarketFixture } from '../packages/engine/src/world-market.testkit';
+import { withOwner } from '../packages/engine/src/testing';
+import { DEFAULT_TICKET, TICKET_PRESETS } from '../packages/engine/src/presets';
+import { FINANCE_CONFIG, leagueMerit, leagueShare } from '../packages/engine/src/finance';
+import { sponsorOffers, sponsorSlotOpen } from '../packages/engine/src/sponsors';
+import { exp } from '../packages/engine/src/portable-math';
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const args = process.argv.slice(2);
@@ -132,9 +138,10 @@ function fail(message: string): never {
   process.exit(1);
 }
 // Every engine income kind has its source. Any other `sponsor:` kind is commercial, so the
-// table's kinds are all there is to check.
+// table's kinds are all there is to check. Owner capital is no turnover (→ECON-36, OWNER-9).
 for (const kind of INCOME_KINDS)
-  if (sourceOf(kind) === 'other') fail(`income kind ${kind} has no source in sourceOf`);
+  if (sourceOf(kind) === 'other' && kind !== 'owner-injection')
+    fail(`income kind ${kind} has no source in sourceOf`);
 
 interface Season {
   year: number;
@@ -728,6 +735,111 @@ function report(careers: Career[]) {
   }
 }
 
+// ---- Top-flight sellout probe (ECON-29, ECON-9; T1052) ---------------------------------------
+/**
+ * One small deterministic owned English top-flight fixture (the matchday-demand unit fixture): the
+ * owner's club at a reputation with the following it commands (→ECON-23), neutral fan mood, form,
+ * opponent, build and policy, at a stadium step, in a season year with its 38 league fixtures
+ * (20 clubs, →ECON-19 ×46/38). `owned: false` reads the same club without an owner: the
+ * catchment-only gate (→ECON-36).
+ */
+function selloutFixture(reputation: number, stadium: number, year: number, owned = true) {
+  const w = worldMarketFixture();
+  const club = w.clubs[0]!;
+  club.reputation = reputation;
+  club.fans = fanFollowing(reputation);
+  w.stadium = stadium;
+  w.year = year;
+  w.currency = currency('ENG', year).code;
+  const clubs = country('ENG').groups[0]![0]!;
+  w.fixtures = Array.from({ length: 2 * (clubs - 1) }, (_, i) => ({
+    id: `probe:${i}`,
+    year,
+    round: i + 1,
+    kind: 'league' as const,
+    home: i % 2 ? w.playerClub : 'rival',
+    away: i % 2 ? 'rival' : w.playerClub,
+    country: 'ENG',
+    groupKey: 'ENG.0.0',
+  }));
+  if (owned) withOwner(w);
+  return w;
+}
+/** Default-price demand beyond the seats, as gateProjection reads it (→ECON-9). */
+function pressureOf(w: World, pool: number, capacity: number) {
+  return Math.max(
+    0,
+    (pool * exp(-DEFAULT_TICKET / FINANCE_CONFIG.ticketDemandScale)) / capacity - 1,
+  );
+}
+function selloutProbe() {
+  const pounds = (minor: string | bigint, year: number) =>
+    Number(minor) / currency('ENG', year).units;
+  const money = (value: number) => `£${Math.round(value).toLocaleString('en-GB')}`;
+  console.log('# T1052 top-flight sellout probe (ECON-9, ECON-29)\n');
+  console.log(
+    `FINANCE_CONFIG.travellingShare ${FINANCE_CONFIG.travellingShare}, premiumEasing ${FINANCE_CONFIG.premiumEasing}; fixture worldMarketFixture (seed market-unit, club own), owned, fan mood 60, form 0.5, even opponent, no build/policy/campaign\n`,
+  );
+  console.log('## Attendance cases\n');
+  console.log(
+    '| case | ticket | catchment | following | travelling | pressure | low | high | capacity |',
+  );
+  console.log('|---|---:|---:|---:|---:|---:|---:|---:|---:|');
+  const row = (label: string, w: World) => {
+    const gate = gateProjection(w),
+      pool = gate.supporters + gate.travellingSupporters;
+    console.log(
+      `| ${label} | ${w.ticket} | ${catchment(w)} | ${clubOf(w).fans} | ${Math.round(gate.travellingSupporters)} | ${pressureOf(w, pool, gate.capacity).toFixed(3)} | ${gate.attendanceLow} | ${gate.attendanceHigh} | ${gate.capacity} |`,
+    );
+    return gate;
+  };
+  for (const ticket of TICKET_PRESETS) {
+    const w = selloutFixture(80, 9, 1950);
+    w.ticket = ticket;
+    row('rep 80, step 9', w);
+  }
+  for (const owned of [true, false]) {
+    const w = selloutFixture(50, 5, 1950, owned);
+    w.ticket = 0.12;
+    row(owned ? 'rep 50, step 5, owned' : 'rep 50, step 5, catchment only', w);
+  }
+  console.log('\n## Income grid: reputation 90, ticket 0.12, home league gate (19 home games)\n');
+  console.log(
+    '| year | seats | attendance low–high | per match | season gate | distribution (rank 10.5 of 20) | commercial (guaranteed, slots) | turnover | matchday share | matchday share at 0.05 |',
+  );
+  console.log('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|');
+  for (const year of [1980, 2000, 2020])
+    for (const stadium of [8, 9, 10]) {
+      const w = selloutFixture(90, stadium, year);
+      w.ticket = 0.12;
+      const gate = gateProjection(w);
+      const homeGames = w.fixtures.filter((f) => f.home === w.playerClub).length,
+        clubs = country('ENG').groups[0]![0]!;
+      const seasonGate = BigInt(gate.incomeHigh) * BigInt(homeGames);
+      // The neutral place: the mean of the 10th and 11th merit payments (→ECON-28).
+      const merit = (BigInt(leagueMerit(w, 10, clubs)) + BigInt(leagueMerit(w, 11, clubs))) / 2n;
+      const distribution = BigInt(leagueShare(w)) + merit;
+      const slots = SPONSOR_SLOTS.filter((slot) => sponsorSlotOpen(w, slot));
+      const commercial = slots.reduce(
+        (sum, slot) =>
+          sum + BigInt(sponsorOffers(w, slot).find((o) => o.kind === 'stable')!.annual),
+        0n,
+      );
+      const turnover = seasonGate + distribution + commercial;
+      // The same sellout at the default preset, for comparison.
+      const atDefault = selloutFixture(90, stadium, year);
+      atDefault.ticket = DEFAULT_TICKET;
+      const defaultGate = BigInt(gateProjection(atDefault).incomeHigh) * BigInt(homeGames);
+      console.log(
+        `| ${year} | ${gate.capacity.toLocaleString('en-GB')} | ${gate.attendanceLow}–${gate.attendanceHigh} | ${money(pounds(gate.incomeHigh, year))} | ${money(pounds(seasonGate, year))} | ${money(pounds(distribution, year))} | ${money(pounds(commercial, year))} (${slots.join('+')}) | ${money(pounds(turnover, year))} | ${pct(Number(seasonGate) / Number(turnover))} | ${pct(Number(defaultGate) / Number(defaultGate + distribution + commercial))} |`,
+      );
+    }
+}
+
+if (args.includes('--sellout')) {
+  selloutProbe();
+  process.exit(0);
+}
 const started = performance.now();
 const careers: Career[] = [];
 const saved = option('in', '');

@@ -1458,7 +1458,7 @@ export interface World {
   operatingExpenses?: string;
   currency: string;
   priceIndex: number;
-  /** The stadium's step 0–8 (→ECON-32): 2,500 seats at founding, 90,000 at the top. */
+  /** The stadium's step 0–10 (→ECON-32): 2,500 seats at founding, 120,000 at the top. */
   stadium: number;
   /** Training ground level 0–5 (→ECON-32). */
   trainingGround: number;

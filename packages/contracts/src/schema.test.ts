@@ -30,6 +30,32 @@ it('keeps older work and validates only known facility continuation states', () 
   }
 });
 
+it('validates the 105,000 and 120,000-seat steps and their works, and rejects an eleventh (→ECON-32)', () => {
+  const w = world();
+  for (const stadium of [0, 8, 9, 10]) {
+    w.stadium = stadium;
+    expect(validateWorld(w, LOAD_CATALOG).stadium).toBe(stadium);
+  }
+  for (const [stadium, to] of [
+    [8, 9],
+    [9, 10],
+  ]) {
+    w.stadium = stadium;
+    w.facilityWorks = { stadium: { to, year: w.year, day: 0 } };
+    expect(validateWorld(w, LOAD_CATALOG).facilityWorks).toEqual(w.facilityWorks);
+  }
+  // The training ground and academy keep their earlier work bound.
+  w.facilityWorks = { training: { to: 8, year: w.year, day: 0 } };
+  expect(validateWorld(w, LOAD_CATALOG).facilityWorks).toEqual(w.facilityWorks);
+  for (const invalid of [
+    { stadium: 11 },
+    { stadium: 10, facilityWorks: { stadium: { to: 11, year: w.year, day: 0 } } },
+    { facilityWorks: { academy: { to: 9, year: w.year, day: 0 } } },
+    { facilityWorks: { offices: { to: 1, year: w.year, day: 0 } } },
+  ])
+    expect(() => validateWorld({ ...w, ...invalid } as World, LOAD_CATALOG)).toThrow(ZodError);
+});
+
 describe('owner interventions withdrawn (→SAVE-25)', () => {
   it('drops removed care state from an older save', () => {
     const w = world();

@@ -4891,6 +4891,8 @@
     "copy.facility_model.4ccce8b5ed": "stadion besar",
     "copy.facility_model.0e3316fb01": "ekstensi sudut",
     "copy.facility_model.23ef72e0aa": "stadion bergengsi",
+    "facility.stadium.grandGround": "stadion raksasa",
+    "facility.stadium.upperTier": "tribun tingkat tiga",
     "copy.fan_mood.8447102cff": "{p0} · Opini publik penggemar {p1}{p2} → {p3}",
     "copy.fan_mood.dc235a5468": "Sentimen Publik Penggemar {p0} · {p1}Putaran Berturut-turut {p2} Di Bawah · Saya meninggalkan klub karena tuntutan penggemar agar saya mengundurkan diri.",
     "copy.fan_mood.0590215d59": "Tekanan untuk mengundurkan diri · Sentimen publik penggemar meningkat menjadi {p1} atau lebih tinggi dalam putaran {p0}",
