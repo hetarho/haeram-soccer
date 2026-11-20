@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| stad20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T04:58Z | 2026-11-20T04:58Z | T1049 | gusta-session-start-stad20-a4e0e490 | ee25397e273d | 59bbbe573858883ac186b857 |
+| stad20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T04:58Z | 2026-11-20T05:07Z | - | gusta-session-start-stad20-a4e0e490 | 14170b928 | 59bbbe573858883ac186b857 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -240,8 +240,10 @@
 | T1044 | ovr20b | gusta-session-start-ovr20b-916c8e5f | 8e3908017e30 | 2026-11-20T04:17Z |
 | T1046 | stad20 | gusta-session-start-stad20-a4e0e490 | 973231ed6e30 | 2026-11-20T04:22Z |
 | T1048 | stad20 | gusta-session-start-stad20-a4e0e490 | d4916c21445a | 2026-11-20T04:41Z |
+| T1049 | stad20 | gusta-session-start-stad20-a4e0e490 | 14170b928 | 2026-11-20T05:07Z |
 
 ## log
+- 261120 T1049 done
 - 261120 T1048 done
 - 261120 T1046 done
 - 261120 T1044 done
@@ -261,4 +263,3 @@
 - 261120 gusta-create-task WEB r228: T1042 plans standings, round and own fixtures, rank trend, and compatible patch preparation
 - 261120 gusta-create-task WEB start
 - 261120 gusta-update-ssot WEB r228: WEB-30/40/41/47/65 amended; no active task references those decisions
-- 261120 gusta-update-ssot WEB start
