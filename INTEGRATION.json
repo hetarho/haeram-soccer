@@ -2189,8 +2189,8 @@
       "branch": "gusta-session-start-fs24c-364d564d",
       "head": "3a8fbc1628eef5e1666718f10c6da869712416aa",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-24T10:50:37.199Z",
+      "status": "ready",
+      "at": "2026-11-24T10:50:42.840Z",
       "agentChecks": [
         {
           "id": "T1061-host-batch",
