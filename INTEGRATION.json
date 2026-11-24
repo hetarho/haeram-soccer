@@ -2333,11 +2333,94 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-fs24f-22ddbbef",
-      "head": "f4b8bedca4288d3dd0b2a041767786939f4c1e25",
+      "head": "060a5b77f846a3210bd724ffb4b605cbd6703518",
       "land": "main",
       "status": "working",
-      "at": "2026-11-24T13:36:40.494Z",
-      "agentChecks": [],
+      "at": "2026-11-24T13:46:19.344Z",
+      "agentChecks": [
+        {
+          "id": "T1065-review-regressions",
+          "scenario": "Two cases from the review, run through the real Host over an in-memory game database. (1) A club-ticket decision whose request also links an existing player record through the engine's linkPlayer writer. (2) Season archives 1948 and 1949 with historyBase 1949, saved twice.",
+          "steps": [
+            "pnpm exec vitest run --project unit apps/web/src/runtime/host.saveRows.test.ts on the candidate",
+            "git show b2b0b80ef -- apps/web/src/adapters/rowSaver.ts apps/web/src/adapters/worldRows.ts apps/web/src/runtime/host.ts | git apply, rerun the same test, then git checkout those three files"
+          ],
+          "expected": "Both tests fail on b2b0b80ef's code and pass on the candidate. After the second save, every stored in-memory row equals worldToRows of the world.",
+          "observed": "Candidate: 2 passed (5.7 s). With b2b0b80ef applied: 2 failed. The record case failed with 'expected false to be true' and the archive case with 'expected 1949 to be 1948'.",
+          "evidence": [
+            "apps/web/src/runtime/host.saveRows.test.ts",
+            "vibe check --tier task affected-units: 2 passed (log check-c8575cc8-7149-4007-ba9c-544592f057b7)"
+          ],
+          "status": "pass",
+          "reason": "",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "worker",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1065-detection-cost",
+          "scenario": "Whether a complete check for unchanged records can cost less than encoding them, measured on the same world in one process (1930 e2e start, after six stops, 2,856 rows).",
+          "steps": [
+            "node_modules/.bin/tsx recipe.mts (the recipe in artifacts/benchmarks/T1065/README.md)"
+          ],
+          "expected": "Keep a variant only if its detection costs less than the encoding it would skip.",
+          "observed": "Medians: JSON.stringify 60.1 ms; deep equality 57.3 ms when every record is unchanged (best case); fingerprint 184.5 ms; taking the copies 254.3 ms. RowSaver.save with nothing changed took 75-107 ms, almost all of it encoding. No variant was kept and no paired run was taken.",
+          "evidence": [
+            "artifacts/benchmarks/T1065/README.md"
+          ],
+          "status": "pass",
+          "reason": "",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "worker",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1065-integration-handoff",
+          "scenario": "Save-related integration files that T1061's limits named",
+          "steps": [
+            "pnpm run verify:batch on the shared candidate"
+          ],
+          "expected": "worldRows.world.test.ts, coldPeople.integration.test.ts, saveRoundTrip.test.ts and host.test.ts pass",
+          "observed": "Not run in this unit. No production source changed, so none of these files' inputs changed.",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "Builds, integration and full suites belong to the host's shared final gate (ARCH-30).",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1066-AC4",
+          "scenario": "Management unlocks after 자동 진행 정지 following hide/show, and the mode switch to AUTO lands at a season close, on the built preview under load",
+          "steps": [
+            "CI=1 PREVIEW_BUILD=1 build and serve the candidate preview",
+            "Run pnpm exec playwright test tests/e2e/progression-settings.spec.ts:201 tests/e2e/second-career.spec.ts:292 --project=chromium --repeat-each=4 while another Chromium spec file runs beside them"
+          ],
+          "expected": "8 of 8 pass: 부재 중에도 업무 계속 is enabled after the stop, and progression-mode shows AUTO after the confirmed change",
+          "observed": "Not run in this unit. Browser journeys run only in CI or the host gate under ARCH-30.",
+          "evidence": [
+            "spec/tasks/done/T1066.unlock-controls-after-stop-under-load.md result",
+            "apps/web/src/runtime/progression.runahead.test.ts › the lock after a stop under load (T1066, WEB-97)"
+          ],
+          "status": "not-run",
+          "reason": "Integration-stage browser check on the shared candidate. It belongs to the capable host. This unit runs no browser specs (ARCH-30).",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host (fs24e-stuck-progression shared candidate)",
+          "candidate": null,
+          "duplicationReason": ""
+        }
+      ],
       "verificationCommands": []
     },
     "dd13fcedfe300ee2bae85ba3": {
