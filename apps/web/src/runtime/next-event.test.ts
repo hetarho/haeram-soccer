@@ -16,10 +16,12 @@ import { pendingDecisions, stoppingReasons } from '../../../../packages/engine/s
 import { req, startedHost } from './host.testkit';
 async function host() {
   const progress: Reply[] = [];
+  // A frozen clock keeps the wall-clock heartbeat (NEXT_EVENT_BEAT_MS) out of these one-day events,
+  // so a loaded host cannot add a progress reply; the 14-day beat still applies.
   const { host: h } = await startedHost(
     'worker-next-event',
     undefined,
-    new Host((reply) => progress.push(reply)),
+    new Host((reply) => progress.push(reply), { now: () => 0 }),
   );
   h.world!.cash = h.world!.income = '999999999999';
   h.world!.settings!.mode = 'manual';
