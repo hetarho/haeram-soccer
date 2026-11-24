@@ -217,6 +217,8 @@ for (const [label, viewport] of [['390x844', { width: 390, height: 844 }]] as co
       await expect(metrics.getByRole('button')).toHaveText([
         '리그 위치',
         'Elo',
+        // The own club's archived season OVR shares the season chart (→WEB-54 r227).
+        'OVR',
         '선수단 가치',
         '구단 가치',
         '서포터',
