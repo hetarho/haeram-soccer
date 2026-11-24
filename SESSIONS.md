@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| fs24f | hq-dev1-pve2-vm2 | autopilot | 2026-11-24T13:25Z | 2026-11-24T13:36Z | T1066 | gusta-session-start-fs24f-22ddbbef | f4b8bedca428 | 24c1265ae653a21637098ba4 |
+| fs24f | hq-dev1-pve2-vm2 | autopilot | 2026-11-24T13:25Z | 2026-11-24T13:45Z | - | gusta-session-start-fs24f-22ddbbef | 6e216564bdc9 | 24c1265ae653a21637098ba4 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -247,8 +247,10 @@
 | id | tag | branch | commit | at |
 |---|---|---|---|---|
 | T1065 | fs24f | gusta-session-start-fs24f-22ddbbef | e5a8b643ebf2 | 2026-11-24T13:35Z |
+| T1066 | fs24f | gusta-session-start-fs24f-22ddbbef | 6e216564bdc9 | 2026-11-24T13:45Z |
 
 ## log
+- 261124 T1066 done
 - 261124 T1065 done
 - 261124 T1064 done
 - 261124 T1063 done
@@ -268,4 +270,3 @@
 - 261124 T1059 done
 - 261124 T1053 done
 - 261124 T1039 done
-- 261124 T1039 runnable after plan-push bcce73b9. Expired gate f96fd6c3 remains in integration history with failed receipts. Fresh scope is CI 44697908305.
