@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| fs24f | hq-dev1-pve2-vm2 | autopilot | 2026-11-24T13:25Z | 2026-11-24T13:25Z | T1065 | gusta-session-start-fs24f-22ddbbef | e5a8b643ebf2 | 24c1265ae653a21637098ba4 |
+| fs24f | hq-dev1-pve2-vm2 | autopilot | 2026-11-24T13:25Z | 2026-11-24T13:35Z | - | gusta-session-start-fs24f-22ddbbef | e5a8b643ebf2 | 24c1265ae653a21637098ba4 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -243,7 +243,13 @@
 - 261124 suggest T1064 ARCH-34 ARCH-6: Own match day engine after T1064 (Node, Xeon Silver 4214, 1930 e2e start, no helpers): the day lives 225 fixtures through simulateAggregate once each, about 4.5 ms a fixture, 88% of a 0.9-1.2 s day (attributePlayerFacts 61%, fitMoves 30% with fitPlaceWeights 19%, settleParticipation 19%; recordMatch 5%, clubDay 2%), and no pure computation repeats on the same inputs. Result-identical candidates stayed in the noise: a shared sum in fitPlaceWeights (aggregate A/B 1.0007 [0.990, 1.011]) and numbered fitMoves classes (aggregate 0.988 [0.969, 1.004], own match day 0.995 [0.976, 1.016], 36/36 eve hashes and 152/152 replies equal); fitPlaceWeights micro variants all at its floor (iterations 87% of it, about 33 a call). Next levers are outside a result-identical aggregate cut: (1) measure the own match day with the two helpers in a locked Chromium repro (ARCH-6), since players on 3+ cores do not pay the Node figure; (2) a faster place fit (fewer iterations or a closed form) changes weights, so it is a result-model change for planning under SAVE-23/MATCH-28. Evidence: artifacts/benchmarks/T1064.
 - 261124 suggest T1065 SAVE-3 ARCH-34: Save row skipping after T1065: a complete check of unchanged records costs what encoding them costs (1930 e2e start, 2,856 rows: JSON.stringify 60.1 ms, deep equality with committed copies 57.3 ms at best plus 254 ms to take the copies, 32-bit fingerprint 184.5 ms; artifacts/benchmarks/T1065), and the engine changes squads, people, npcSeason and playerRecords in place, so no row skipping is possible inside rowSaver/worldRows/host. Re-landing T1061 needs change marks at the engine write sites (a per-record touch passed to the host RowSaver), proven by a parity mode running the full diff beside it on the host, save-round-trip and long-career suites; host.saveRows.test.ts holds the two review cases as regression tests.
 
+## unlanded
+| id | tag | branch | commit | at |
+|---|---|---|---|---|
+| T1065 | fs24f | gusta-session-start-fs24f-22ddbbef | e5a8b643ebf2 | 2026-11-24T13:35Z |
+
 ## log
+- 261124 T1065 done
 - 261124 T1064 done
 - 261124 T1063 done
 - 261124 T1062 done
@@ -263,4 +269,3 @@
 - 261124 T1053 done
 - 261124 T1039 done
 - 261124 T1039 runnable after plan-push bcce73b9. Expired gate f96fd6c3 remains in integration history with failed receipts. Fresh scope is CI 44697908305.
-- 261124 gusta-create-task T1053 T1054 T1055 T1056 T1057 T1058: planned six follow-ups, refreshed T1039, spec lint and task tier passed
