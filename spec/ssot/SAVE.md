@@ -1,5 +1,5 @@
 # SAVE Game persistence and protocol
-> r75 | Define the game database, its saves, backups and portable files, shared by the web and the app.
+> r76 | Define the game database, its saves, backups and portable files, shared by the web and the app.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -9,9 +9,11 @@
   - the engine worker writes its own game's database between simulation steps (→!ARCH-6); there is no codec worker, candidate copy, previous checkpoint or commit manifest.
   - a committed transaction verifies a save; the whole world is validated when a game opens or is imported (→SAVE-5), not on every save.
   - storage unavailable or a failed write ⇒ report the storage error, keep the last committed save and the exportable in-memory progress, never acknowledge the failed save.
+  - Incremental row encoding may skip families or records whose saved inputs are known to be unchanged. After any save sequence, the reopened database must match a full-world diff in rows, metadata and stored bytes.
 - SAVE-4 [o] A game's database has no application size budget: the browser's actual storage quota bounds it, and a quota failure is a storage error (→SAVE-3). An export file is at most 256 MiB and the database it carries at most 1 GiB; import stops decompressing at that limit. ← the browser's database quota, not a fixed text budget, is the real limit
 - SAVE-5 [o] Validate DTO schema and world references before load/import; unsupported versions, wrong checksum, corrupted slots and missing catalogs are actionable errors and cannot overwrite a good save.
   - Beta storage compatibility and retired cleanup paths follow →!SAVE-29; validation errors never authorize deleting saved data.
+  - Faster validation applies every existing check. It preserves the accept/reject results for every portable-save case and schema fixture, the parsed facts of accepted saves and the actionable errors of rejected saves.
 - SAVE-6 [o] One tab at a time plays a game, holding an exclusive Web Lock on its open database (→!ARCH-17). Another tab of the app shows that the game is playing in another tab, with 여기서 이어 하기: the playing tab saves, closes the database and releases it, then this tab opens the game and becomes the writer. There is no read-only view of a game in play. ← the database opens in one tab only, and a mirrored read-only view costs more than it gives
   - the tab that gave the game up shows that it moved to another tab and offers to take it back the same way.
   - a playing tab that does not answer keeps the game until it closes; the other tab says so and takes the game once the lock frees.
@@ -125,6 +127,7 @@
 - SAVE-33 [o] Facility continuation (→~ECON-43) is saved with the owned club. Each part's off, enabled without pending authorization and enabled awaiting funds states are distinct. The active work record stays separate. A supported save without a setting defaults to off for that part, preserving any work under way. Loading or reading a game does not start work or charge the club.
 
 ## chg
+- r76 261124 SAVE-3✎ changed-row writes→also allow selective encoding with full-diff row and byte parity on reopen · SAVE-5✎ schema and reference validation→faster validation allowed with every check and the same acceptance, parsed facts and error behavior
 - r75 261120 SAVE-27✎ optional own-club and champion OVR→optional full club snapshot keyed by club ID, six-column standings retained and earlier snapshots preserved without migration
 - r74 261120 SAVE-27✎ season archive row without closing Club OVR coverage→optional closing Club OVR with validated values, earlier absence preserved without migration
 - r73 261119 SAVE-33+ per-part continuation and pending authorization survive save and load; absent settings default to off
