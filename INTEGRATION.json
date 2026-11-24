@@ -2187,11 +2187,123 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-fs24c-364d564d",
-      "head": "dab5e3b8dcde82c92c88d1c7e533afdabe9aab0d",
+      "head": "3a8fbc1628eef5e1666718f10c6da869712416aa",
       "land": "main",
       "status": "working",
-      "at": "2026-11-24T10:47:30.162Z",
-      "agentChecks": [],
+      "at": "2026-11-24T10:50:37.199Z",
+      "agentChecks": [
+        {
+          "id": "T1061-host-batch",
+          "scenario": "The shared final gate checks the tracked RowSaver and the host's per-request field touches against the integration save tests and the browser journeys.",
+          "steps": [
+            "Sync latest main and run pnpm run release:prepare (SAVE-10)",
+            "Run pnpm run verify:batch on the fixed candidate (includes apps/web/src/adapters/worldRows.world.test.ts, apps/web/src/runtime/coldPeople.integration.test.ts, apps/web/src/runtime/saveRoundTrip.test.ts, apps/web/src/runtime/host.test.ts)",
+            "After the push, read the Chromium CI shards 1/3, 2/3 and 3/3"
+          ],
+          "expected": "Batch and CI pass. Saved, reopened and exported games match the full-diff behaviour.",
+          "observed": "Not run in this unit. Unit-tier evidence only: vibe check --tier task passed twice, the T1061-save-parity unit test passed, and paired Node waits showed equal world, reopen and reply hashes, including export bytes.",
+          "evidence": [
+            "artifacts/benchmarks/T1061/README.md",
+            "spec/tasks/done/T1061.skip-encoding-unchanged-save-rows.md result"
+          ],
+          "status": "not-run",
+          "reason": "Integration, batch and browser journeys belong to the host's shared final gate (ARCH-30). This unit runs only the task tier.",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1062-batch-gate",
+          "scenario": "Shared final batch gate covers T1062's contract fixtures and the integration tests that open or import games",
+          "steps": [
+            "pnpm run verify:batch on the shared candidate including commits 38e390308 and 80b9cf604"
+          ],
+          "expected": "Contract (schema.contract, identity.contract, tests/fixtures/portable.contract) and integration tests (host.test, client.test, seasonBackup.host.test, coldPeople.integration, persistence.history, saveRoundTrip, host.database) pass with the zodParse validation path",
+          "observed": "Not run in this unit; under a temporary parity hook these files' validateWorld calls (250) matched the baseline and their 185 tests passed locally",
+          "evidence": [
+            "artifacts/benchmarks/T1062/parity/parity-tests.log",
+            "artifacts/benchmarks/T1062/parity/parity-hostdb.log"
+          ],
+          "status": "not-run",
+          "reason": "ARCH-30: integration, contract and full suites belong to the initiating host's shared final batch gate",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1062-ci-chromium",
+          "scenario": "Browser journeys with save export/import and reopen on the declared supported browser after the code push",
+          "steps": [
+            "pnpm exec playwright test --project=chromium --shard=1/3",
+            "pnpm exec playwright test --project=chromium --shard=2/3",
+            "pnpm exec playwright test --project=chromium --shard=3/3"
+          ],
+          "expected": "All Chromium shards pass in GitHub Actions on the pushed candidate",
+          "observed": "Not run; browser journeys run only in CI after the host's push",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "ARCH-30/ARCH-23: browser journeys run only in CI after a code push, owned by the host",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1063-paired-waits",
+          "scenario": "Paired worker waits for the result-identical representative-squad skip in disciplineNames, against baseline 3da8ed6ba",
+          "steps": [
+            "git archive baseline and candidate trees into .tmp/t1063-base and .tmp/t1063-cand",
+            "tsx scripts/perf/waits-pair.ts --base .tmp/t1063-base --candidate .tmp/t1063-cand --rounds 8 --steps 10 --out artifacts/benchmarks/T1063/pair-1930",
+            "node artifacts/benchmarks/T1063/parts.cjs.txt on each pair directory"
+          ],
+          "expected": "The stopped-read, manual-stop or decision wait is faster, with its 95% interval below 1, and reply and world hashes stay equal",
+          "observed": "Every request kind showed no difference: stopped-reads 0.943 [0.811, 1.214], next-event 0.973 [0.867, 1.141], decision 0.948 [0.812, 1.166], open-game 0.994 [0.894, 1.065]. The world hash was 8e9033c3e3ae93af on every run, and all 304 matched replies and row puts were equal. The variant was reverted.",
+          "evidence": [
+            "artifacts/benchmarks/T1063/pair-1930/summary.json",
+            "artifacts/benchmarks/T1063/pair-1930-first/summary.json",
+            "artifacts/benchmarks/T1063/README.md"
+          ],
+          "status": "fail",
+          "reason": "The representative draw moved to the projection's rating instead of going away, so no targeted wait cleared the ARCH-34 bound. The candidate was reverted as the exit criterion requires.",
+          "replaces": [],
+          "stage": "unit",
+          "required": false,
+          "owner": "implementer",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1063-read-parity",
+          "scenario": "The candidate's discipline names compared with a full scan of every squad after squad invalidation",
+          "steps": [
+            "Run the unit case T1063-read-parity: worldMarketFixture with a representative club, an arrival playing for it, and stored, own and departed entries",
+            "Run artifacts/benchmarks/T1063/parity.mts.txt on takeover-2000 and on a 1930 start after each stop"
+          ],
+          "expected": "Identical names maps",
+          "observed": "The unit case passed on both candidate versions. takeover-2000 was identical over 4 stops (863–2,454 entries) before the run hit its 1 h background limit. The 1930 start played on unattended until its career ended in 1976; its one comparison there was identical (100 entries, 28 of them held by 23 representative clubs).",
+          "evidence": [
+            "artifacts/benchmarks/T1063/candidate.diff",
+            "artifacts/benchmarks/T1063/parity.mts.txt",
+            "artifacts/benchmarks/T1063/README.md"
+          ],
+          "status": "pass",
+          "reason": "Parity holds for the measured variant over the coverage that ran. The variant is not kept.",
+          "replaces": [],
+          "stage": "unit",
+          "required": false,
+          "owner": "implementer",
+          "candidate": null,
+          "duplicationReason": ""
+        }
+      ],
       "verificationCommands": []
     },
     "576f25ed4f2b9834fa839fa7": {
