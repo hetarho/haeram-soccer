@@ -1,0 +1,32 @@
+{
+  "db": ".tmp/t1062/g1930.db",
+  "seed": "t1062",
+  "pairs": 1882,
+  "schemaLevel": {
+    "cases": 4000,
+    "bothAccept": 1530,
+    "bothReject": 2470,
+    "fastAccepted": 1530,
+    "mismatches": []
+  },
+  "worldLevel": {
+    "cases": 60,
+    "bothAccept": 21,
+    "bothReject": 39,
+    "mismatches": [],
+    "kinds": {
+      "accept": 21,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"boolean\",\n    \"code\": \"inva": 2,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"object\",\n    \"code\": \"inval": 8,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"array\",\n    \"code\": \"invali": 10,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"inval": 5,
+      "ZodError:ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [": 3,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"number\",\n    \"code\": \"inval": 5,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"record\",\n    \"code\": \"inval": 2,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"tuple\",\n    \"code\": \"invali": 1,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"int\",\n    \"format\": \"safein": 1,
+      "Error:Error: 저장된 클럽 식별자가 올바르지 않습니다.": 1,
+      "Error:Error: 리그 표 손상": 1
+    }
+  }
+}

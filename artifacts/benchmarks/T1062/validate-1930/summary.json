@@ -1,0 +1,34 @@
+{
+  "db": "g1930.db",
+  "processes": 6,
+  "reps": 6,
+  "hashes": [
+    "base:167a65e55b1f01b0",
+    "candidate:167a65e55b1f01b0"
+  ],
+  "rowAssemblyMedianMs": 197.23923850000006,
+  "loads": [
+    4.25,
+    3.53,
+    3.39,
+    3.15,
+    2.82,
+    3.15
+  ],
+  "cpu": {
+    "ratio": 0.5152,
+    "lo": 0.482,
+    "hi": 0.5485,
+    "call": "faster",
+    "baseMedianMs": 862.8679999999999,
+    "candidateMedianMs": 446.44050000000004
+  },
+  "wall": {
+    "ratio": 0.4661,
+    "lo": 0.4482,
+    "hi": 0.4874,
+    "call": "faster",
+    "baseMedianMs": 681.1400799999997,
+    "candidateMedianMs": 312.296633500001
+  }
+}

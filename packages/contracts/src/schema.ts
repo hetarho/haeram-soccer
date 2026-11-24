@@ -1097,7 +1097,7 @@ const STADIUM_TOP = 10;
 const facilityWork = (top: number) =>
   z.strictObject({ to: z.number().int().min(1).max(top), year: season, day: seasonDay });
 
-const worldSchema: z.ZodType<World> = z.object({
+export const worldSchema: z.ZodType<World> = z.object({
   schema: z.literal(1),
   engine: text,
   catalog: text,
@@ -1561,6 +1561,263 @@ function scorerClubsValid<C extends string | number>(
   );
 }
 
+/*
+ * A world's parse without Zod's per-node bookkeeping (→SAVE-5, →ARCH-34). The CSP forbids Zod's
+ * compiled objects (`jitless` above), and its interpreter allocates a result and an issue list for
+ * every property and element it visits: about 0.6 s of a 1930 save's open and most of a 2000
+ * takeover's. `zodParse` reads the same schemas: objects, arrays, records, tuples and optionals
+ * become closures that follow Zod's own rules for keys, absence and output order, and every other
+ * schema — strings, numbers, enums, unions, transforms, preprocessors — and every check, refinements
+ * included, runs through Zod itself. The first value Zod would reject stops it, and Zod's parse then
+ * runs from the start, so a rejected save fails with exactly Zod's error.
+ */
+interface ZodPayload {
+  value: unknown;
+  issues: unknown[];
+}
+interface ZodNode {
+  _zod: {
+    def: {
+      type: string;
+      checks?: {
+        _zod: { def: { when?: (p: ZodPayload) => boolean }; check: (p: ZodPayload) => unknown };
+      }[];
+      shape?: Record<string, ZodNode>;
+      catchall?: ZodNode;
+      element?: ZodNode;
+      innerType?: ZodNode;
+      items?: ZodNode[];
+      rest?: ZodNode | null;
+      keyType?: ZodNode;
+      valueType?: ZodNode;
+      partial?: boolean;
+      mode?: string;
+    };
+    traits: Set<string>;
+    optin?: string;
+    optout?: string;
+    values?: Set<unknown>;
+    run: (p: ZodPayload, ctx: object) => ZodPayload | Promise<ZodPayload>;
+  };
+}
+const REJECTED = Symbol('rejected');
+type FastParse = (value: unknown) => unknown;
+/** Zod's own parse runs with this context; `run` reads nothing else from it. */
+const PARSE_CONTEXT = { async: false };
+/** One payload the leaves reuse: a leaf never calls back into a fast parse. */
+const leafPayload: ZodPayload = { value: undefined, issues: [] };
+const LEAF_TYPES = new Set(['string', 'number', 'boolean', 'enum', 'literal', 'template_literal']);
+const fastParses = new WeakMap<ZodNode, FastParse>();
+/** Optionals of this parse: `undefined` passes them untouched, with no schema of its own to run. */
+const quietOnAbsence = new WeakSet<FastParse>();
+/**
+ * Checks that read nothing but the value and never replace it, so a number or string Zod accepted
+ * once it accepts again, unchanged.
+ */
+const PURE_CHECKS: Record<string, Set<string>> = {
+  number: new Set(['number_format', 'greater_than', 'less_than', 'multiple_of']),
+  string: new Set(['min_length', 'max_length', 'length_equals', 'string_format']),
+};
+/** Values kept per schema during one parse: a world repeats its counters, years and club IDs. */
+const ACCEPTED_VALUE_LIMIT = 4096;
+/** Every schema's accepted values, emptied after each parse so no world outlives its own. */
+const acceptedValues: Set<unknown>[] = [];
+const isObjectValue = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
+
+/** Zod's `run` on a leaf value, reusing one payload: its value, or REJECTED on any issue. */
+function leafRun(node: ZodNode): FastParse {
+  return (value) => {
+    leafPayload.value = value;
+    const result = node._zod.run(leafPayload, PARSE_CONTEXT) as ZodPayload;
+    if (result.issues.length === 0) return result.value;
+    leafPayload.issues = [];
+    return REJECTED;
+  };
+}
+/** Zod's `run` on one value: its value, or REJECTED when Zod reports any issue. */
+function zodRun(node: ZodNode): FastParse {
+  const { def, traits } = node._zod;
+  if (traits.has('$ZodCheck') || !LEAF_TYPES.has(def.type))
+    return (value) => {
+      const result = node._zod.run({ value, issues: [] }, PARSE_CONTEXT);
+      return result instanceof Promise || result.issues.length ? REJECTED : result.value;
+    };
+  const run = leafRun(node);
+  const pure = PURE_CHECKS[def.type];
+  if (
+    !pure ||
+    (def as { coerce?: boolean }).coerce ||
+    !(def.checks ?? []).every((check) =>
+      pure.has((check._zod.def as { check?: string }).check ?? ''),
+    )
+  )
+    return run;
+  const accepted = new Set<unknown>();
+  acceptedValues.push(accepted);
+  // Zod returns an accepted value itself; −0 is left to Zod, since a Set does not tell it from 0.
+  return (value) => {
+    if (accepted.has(value) && !Object.is(value, -0)) return value;
+    const result = run(value);
+    if (result === value && accepted.size < ACCEPTED_VALUE_LIMIT && !Object.is(value, -0))
+      accepted.add(value);
+    return result;
+  };
+}
+/** A container's checks after its parse, as Zod's `runChecks` runs them on a valid value. */
+function withChecks(node: ZodNode, parse: FastParse): FastParse {
+  const checks = node._zod.def.checks ?? [];
+  if (!checks.length) return parse;
+  return (value) => {
+    const parsed = parse(value);
+    if (parsed === REJECTED) return REJECTED;
+    const payload: ZodPayload = { value: parsed, issues: [] };
+    for (const check of checks) {
+      const when = check._zod.def.when;
+      if (when && !when(payload)) continue;
+      if (check._zod.check(payload) instanceof Promise || payload.issues.length) return REJECTED;
+    }
+    return payload.value;
+  };
+}
+function fastParse(node: ZodNode): FastParse {
+  let parse = fastParses.get(node);
+  if (!parse) {
+    const container = containerParse(node);
+    parse = container ? withChecks(node, container) : zodRun(node);
+    fastParses.set(node, parse);
+  }
+  return parse;
+}
+/** The closure for an object, array, record, tuple or optional Zod parses alike; else undefined. */
+function containerParse(node: ZodNode): FastParse | undefined {
+  const { def, traits } = node._zod;
+  if (traits.has('$ZodCheck')) return undefined;
+  if (def.type === 'object' && traits.has('$ZodObject')) {
+    const shape = def.shape!;
+    const strict = def.catchall?._zod.def.type === 'never';
+    if ((def.catchall && !strict) || Object.getOwnPropertySymbols(shape).length) return undefined;
+    const keys = Object.keys(shape);
+    const known = new Set(keys);
+    const fields = keys
+      .filter((key) => key !== '__proto__')
+      .map((key) => {
+        const parse = fastParse(shape[key]);
+        const { optin, optout } = shape[key]._zod;
+        // Zod ignores an absent optional's result; only a schema of its own may still throw.
+        const absentOptional = optin === 'optional' && optout === 'optional';
+        return { key, parse, optin, optout, absentOptional, quiet: quietOnAbsence.has(parse) };
+      });
+    const count = fields.length;
+    return (input) => {
+      if (!isObjectValue(input)) return REJECTED;
+      const out: Record<string, unknown> = {};
+      for (let i = 0; i < count; i++) {
+        const { key, parse, optin, optout, absentOptional, quiet } = fields[i];
+        const value = input[key];
+        const present = value !== undefined || key in input;
+        if (!present && absentOptional) {
+          if (!quiet) parse(value);
+          continue;
+        }
+        const result = parse(value);
+        // Zod's handlePropertyResult on a property without issues, and the issues it ignores.
+        if (result === REJECTED) {
+          if (optin !== undefined && optout === 'optional' && !present) continue;
+          return REJECTED;
+        }
+        if (!present && optin === undefined) return REJECTED;
+        if (result !== undefined) out[key] = result;
+        else if (present || (optin === 'defaulted' && optout !== 'optional')) out[key] = undefined;
+      }
+      if (strict) for (const key in input) if (!known.has(key)) return REJECTED;
+      return out;
+    };
+  }
+  if (def.type === 'array' && traits.has('$ZodArray')) {
+    const element = fastParse(def.element!);
+    return (input) => {
+      if (!Array.isArray(input)) return REJECTED;
+      const out = new Array<unknown>(input.length);
+      for (let i = 0; i < input.length; i++) {
+        const result = element(input[i]);
+        if (result === REJECTED) return REJECTED;
+        out[i] = result;
+      }
+      return out;
+    };
+  }
+  if (def.type === 'record' && traits.has('$ZodRecord')) {
+    // An exhaustive enumerated key and a loose record take Zod's own parse.
+    if (def.mode === 'loose' || (def.keyType!._zod.values && !def.partial)) return undefined;
+    const key = fastParse(def.keyType!);
+    const value = fastParse(def.valueType!);
+    return (input) => {
+      if (!z.core.util.isPlainObject(input)) return REJECTED;
+      const out: Record<PropertyKey, unknown> = {};
+      for (const name of Reflect.ownKeys(input)) {
+        if (name === '__proto__' || !Object.prototype.propertyIsEnumerable.call(input, name))
+          continue;
+        let parsed = key(name);
+        // Zod reads a numeric key again as a number when the string fails.
+        if (parsed === REJECTED && typeof name === 'string' && z.core.regexes.number.test(name))
+          parsed = key(Number(name));
+        if (parsed === REJECTED) return REJECTED;
+        if (parsed === '__proto__') continue;
+        const result = value((input as Record<PropertyKey, unknown>)[name]);
+        if (result === REJECTED) return REJECTED;
+        out[parsed as PropertyKey] = result;
+      }
+      return out;
+    };
+  }
+  if (def.type === 'tuple' && traits.has('$ZodTuple')) {
+    const items = def.items!;
+    // Only fixed tuples: optional tails and rest elements take Zod's own parse.
+    if (def.rest || items.some((item) => item._zod.optin !== undefined || item._zod.optout))
+      return undefined;
+    const parses = items.map(fastParse);
+    return (input) => {
+      if (!Array.isArray(input) || input.length !== parses.length) return REJECTED;
+      const out: unknown[] = [];
+      for (let i = 0; i < parses.length; i++) {
+        const result = parses[i](input[i]);
+        if (result === REJECTED) return REJECTED;
+        out[i] = result;
+      }
+      return out;
+    };
+  }
+  if (
+    def.type === 'optional' &&
+    traits.has('$ZodOptional') &&
+    !traits.has('$ZodExactOptional') &&
+    def.innerType!._zod.optin !== 'defaulted'
+  ) {
+    const inner = fastParse(def.innerType!);
+    const optional: FastParse = (input) => (input === undefined ? undefined : inner(input));
+    quietOnAbsence.add(optional);
+    return optional;
+  }
+  return undefined;
+}
+/**
+ * `schema.parse(input)` with Zod's result and errors: the fast parse when it accepts, otherwise
+ * Zod's own parse, which throws Zod's error (or a preprocessor's) for the input as given.
+ */
+export function zodParse<T>(schema: z.ZodType<T>, input: unknown): T {
+  let parsed: unknown = REJECTED;
+  leafPayload.issues = [];
+  try {
+    parsed = fastParse(schema as unknown as ZodNode)(input);
+  } catch {
+    parsed = REJECTED;
+  } finally {
+    for (const accepted of acceptedValues) accepted.clear();
+  }
+  return parsed === REJECTED ? schema.parse(input) : (parsed as T);
+}
+
 export function validateWorld(
   input: unknown,
   catalog?: LoadCatalog,
@@ -1568,7 +1825,7 @@ export function validateWorld(
 ): World {
   assertIdentityFormatVersions(input);
   assertMatchModelFormat(input);
-  const w = worldSchema.parse(input);
+  const w = zodParse(worldSchema, input);
   type Person = NonNullable<typeof w.people>[string];
   // A person memory no longer holds resolves through his cold row in the game's store (→SAVE-32).
   const coldPeople = new Map<string, Person | undefined>();
@@ -1847,18 +2104,19 @@ export function validateWorld(
         }
       }
     }
+    // Every pair of jobs, each job's dates read once: a long career holds 40 jobs.
+    const starts = person.employment.map((job) => dateNumber(job.from));
+    const ends = person.employment.map((job) => dateNumber(job.to ?? today));
     for (let a = 0; a < person.employment.length; a++)
       for (let b = a + 1; b < person.employment.length; b++) {
+        if (!(Math.max(starts[a], starts[b]) < Math.min(ends[a], ends[b]))) continue;
         const left = person.employment[a],
           right = person.employment[b];
-        const overlap =
-          Math.max(dateNumber(left.from), dateNumber(right.from)) <
-          Math.min(dateNumber(left.to ?? today), dateNumber(right.to ?? today));
         const playingCoach =
           left.club === right.club &&
           ((left.role === 'player' && isCoach(right.role)) ||
             (right.role === 'player' && isCoach(left.role)));
-        if (overlap && !playingCoach) throw new Error(sourceMessage('copy.schema.2e81209877'));
+        if (!playingCoach) throw new Error(sourceMessage('copy.schema.2e81209877'));
       }
     if (
       (person.retirement?.at &&

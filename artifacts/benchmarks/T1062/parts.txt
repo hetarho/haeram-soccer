@@ -1,0 +1,15 @@
+open-game    base       ms 1090  publish 171  projection 154  slowReads 142  delta 17  cloneMs 2 n=8 hashes 1
+open-game    candidate  ms 752  publish 182  projection 158  slowReads 147  delta 16  cloneMs 2 n=8 hashes 1
+import-game  base       ms 1198  publish 155  projection 146  slowReads 134  delta 9  cloneMs 0 n=8 hashes 1
+import-game  candidate  ms 883  publish 163  projection 154  slowReads 142  delta 9  cloneMs 0 n=8 hashes 1
+open-game    base       ms 1154  publish 187  projection 169  slowReads 155  delta 18  cloneMs 2 n=8 hashes 1
+open-game    candidate  ms 813  publish 186  projection 165  slowReads 152  delta 18  cloneMs 2 n=8 hashes 1
+import-game  base       ms 1325  publish 177  projection 166  slowReads 150  delta 10  cloneMs 0 n=8 hashes 1
+import-game  candidate  ms 927  publish 175  projection 165  slowReads 151  delta 9  cloneMs 0 n=8 hashes 1
+open-game    base       ms 4887  publish 391  projection 325  slowReads 311  delta 65  cloneMs 17 n=8 hashes 1
+open-game    candidate  ms 3249  publish 394  projection 333  slowReads 321  delta 64  cloneMs 16 n=8 hashes 1
+import-game  base       ms 6139  publish 334  projection 311  slowReads 295  delta 23  cloneMs 0 n=8 hashes 1
+import-game  candidate  ms 4951  publish 352  projection 328  slowReads 311  delta 24  cloneMs 0 n=8 hashes 1
+pair1930f matched 304 differing 0 {}
+pair1930 matched 304 differing 0 {}
+pair2000 matched 80 differing 0 {}

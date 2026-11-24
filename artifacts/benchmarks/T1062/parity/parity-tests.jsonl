@@ -1,0 +1,240 @@
+{"where":"identity.contract.test.ts:269:20","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:20:17","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"sponsors.migration.test.ts:22:31)","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:25:10","ok":true,"baseOk":true,"same":true}
+{"where":"identity.contract.test.ts:279:20","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:27:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"offices\"\n    ],\n    \"path\": [\n      \"fac"}
+{"where":"sponsors.migration.test.ts:22:31)","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:27:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"armed\",\n      \"awaiting-funds\"\n    ],\n    "}
+{"where":"identity.contract.test.ts:285:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      1\n    ],\n    \"path\": [\n      \"schema\"\n    ]"}
+{"where":"identity.contract.test.ts:298:18","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 지원하지 않는 저장 버전 또는 카탈로그입니다. 원본 파일을 내보내 보관하세요."}
+{"where":"schema.test.ts:37:12","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:37:12","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:37:12","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:37:12","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:45:12","ok":true,"baseOk":true,"same":true}
+{"where":"identity.contract.test.ts:309:20","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:45:12","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:49:10","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:56:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_big\",\n    \"maximum\": 10,\n    \"inclusive\": true,\n    \""}
+{"where":"schema.test.ts:56:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_big\",\n    \"maximum\": 10,\n    \"inclusive\": true,\n    \""}
+{"where":"schema.test.ts:56:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_big\",\n    \"maximum\": 8,\n    \"inclusive\": true,\n    \"p"}
+{"where":"schema.test.ts:56:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"offices\"\n    ],\n    \"path\": [\n      \"fac"}
+{"where":"identity.contract.test.ts:354:12","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"identity.contract.test.ts:361:18","ok":false,"baseOk":false,"same":true,"error":"Error: 경기 복장 기록 참조 손상"}
+{"where":"schema.test.ts:68:20","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:71:28","ok":true,"baseOk":true,"same":true}
+{"where":"identity.contract.test.ts:371:12","ok":true,"baseOk":true,"same":true}
+{"where":"identity.contract.test.ts:399:12","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:101:20","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"identity.contract.test.ts:413:20","ok":false,"baseOk":false,"same":true,"error":"Error: 경기 복장 선택 참조 손상"}
+{"where":"schema.test.ts:110:28","ok":true,"baseOk":true,"same":true}
+{"where":"identity.contract.test.ts:413:20","ok":false,"baseOk":false,"same":true,"error":"Error: 경기 복장 선택 참조 손상"}
+{"where":"identity.contract.test.ts:413:20","ok":false,"baseOk":false,"same":true,"error":"Error: 경기 복장 선택 참조 손상"}
+{"where":"schema.test.ts:134:20","ok":true,"baseOk":true,"same":true}
+{"where":"identity.contract.test.ts:421:18","ok":false,"baseOk":false,"same":true,"error":"Error: 경기 복장 선택 참조 손상"}
+{"where":"schema.test.ts:140:28","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:157:20","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:160:28","ok":true,"baseOk":true,"same":true}
+{"where":"identity-workload.test.ts:272:22","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:183:20","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:186:28","ok":true,"baseOk":true,"same":true}
+{"where":"identity-workload.test.ts:56:40)","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:197:20","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:201:28","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"identity-workload.test.ts:56:40)","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:211:20","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"identity-workload.test.ts:56:40)","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:213:28","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:222:20","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:224:28","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:281:20","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:49:20","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:293:12","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:77:12","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:298:19","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:155:22","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:355:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"array\",\n    \"code\": \"too_big\",\n    \"maximum\": 5,\n    \"inclusive\": true,\n    \"pa"}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:355:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"custom\",\n    \"path\": [\n      \"owner\",\n      \"traits\"\n    ],\n    \"message\": \"Inval"}
+{"where":"schema.contract.test.ts:174:14","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:355:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_big\",\n    \"maximum\": 100,\n    \"inclusive\": true,\n    "}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"extra\"\n    ],\n    \"path\": [\n      \"spons"}
+{"where":"persistence.history.test.ts:28:20","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:355:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"expected\": \"int\",\n    \"format\": \"safeint\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n    "}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"Error: 후원 계약 손상"}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"string\",\n    \"code\": \"invalid_format\",\n    \"format\": \"regex\",\n    \"pattern\": \"/"}
+{"where":"schema.test.ts:355:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      0,\n      25,\n      50,\n      75,\n      100\n"}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"custom\",\n    \"path\": [\n      \"sponsors\",\n      0\n    ],\n    \"message\": \"Invalid i"}
+{"where":"schema.test.ts:355:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_big\",\n    \"maximum\": 100,\n    \"inclusive\": true,\n    "}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"local\",\n      \"kit\",\n      \"shirt\",\n      "}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:355:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"summer\",\n      \"winter\"\n    ],\n    \"path\":"}
+{"where":"schema.contract.test.ts:174:14","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:355:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"expected\": \"int\",\n    \"format\": \"safeint\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n    "}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      1,\n      2,\n      3,\n      4,\n      5\n    ]"}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_small\",\n    \"minimum\": 1,\n    \"inclusive\": true,\n    "}
+{"where":"schema.test.ts:365:22","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_big\",\n    \"maximum\": -1,\n    \"inclusive\": true,\n    \""}
+{"where":"schema.test.ts:374:14","ok":true,"baseOk":true,"same":true}
+{"where":"persistence.history.test.ts:33:18","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:174:14","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:374:14","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"wage\"\n    ],\n    \"path\": [\n      \"player"}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"string\",\n    \"code\": \"invalid_format\",\n    \"format\": \"regex\",\n    \"pattern\": \"/"}
+{"where":"schema.test.ts:383:12","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"renewal-declined\",\n      \"improve-declined"}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:391:9","ok":false,"baseOk":false,"same":true,"error":"Error: 누적 통계의 범위가 올바르지 않습니다."}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"by\"\n    ],\n    \"path\": [\n      \"players\""}
+{"where":"schema.test.ts:391:9","ok":false,"baseOk":false,"same":true,"error":"Error: 누적 통계의 범위가 올바르지 않습니다."}
+{"where":"schema.test.ts:391:9","ok":false,"baseOk":false,"same":true,"error":"Error: 누적 통계의 범위가 올바르지 않습니다."}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      1,\n      2,\n      3,\n      4,\n      5\n    ]"}
+{"where":"schema.test.ts:391:9","ok":false,"baseOk":false,"same":true,"error":"Error: 누적 통계의 범위가 올바르지 않습니다."}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      1,\n      2,\n      3,\n      4,\n      5\n    ]"}
+{"where":"schema.test.ts:411:20","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 지원하지 않는 저장 버전 또는 카탈로그입니다. 원본 파일을 내보내 보관하세요."}
+{"where":"schema.contract.test.ts:174:14","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"match\",\n      \"window-open\",\n      \"window"}
+{"where":"schema.test.ts:411:20","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 지원하지 않는 저장 버전 또는 카탈로그입니다. 원본 파일을 내보내 보관하세요."}
+{"where":"schema.contract.test.ts:220:18","ok":false,"baseOk":false,"same":true,"error":"Error: 이전 규칙의 후원 계약을 옮길 카탈로그가 없습니다."}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:221:18","ok":false,"baseOk":false,"same":true,"error":"Error: 후원 계약 손상"}
+{"where":"schema.test.ts:411:20","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 지원하지 않는 저장 버전 또는 카탈로그입니다. 원본 파일을 내보내 보관하세요."}
+{"where":"schema.contract.test.ts:226:7","ok":false,"baseOk":false,"same":true,"error":"Error: 후원 계약 손상"}
+{"where":"schema.test.ts:411:20","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 지원하지 않는 저장 버전 또는 카탈로그입니다. 원본 파일을 내보내 보관하세요."}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:411:20","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 지원하지 않는 저장 버전 또는 카탈로그입니다. 원본 파일을 내보내 보관하세요."}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:411:20","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 지원하지 않는 저장 버전 또는 카탈로그입니다. 원본 파일을 내보내 보관하세요."}
+{"where":"schema.contract.test.ts:247:20","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:411:20","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 지원하지 않는 저장 버전 또는 카탈로그입니다. 원본 파일을 내보내 보관하세요."}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:411:20","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 지원하지 않는 저장 버전 또는 카탈로그입니다. 원본 파일을 내보내 보관하세요."}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:263:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"custom\",\n    \"path\": [\n      \"players\",\n      0\n    ],\n    \"message\": \"선수 포지션 또는 "}
+{"where":"schema.test.ts:418:20","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_small\",\n    \"minimum\": 0,\n    \"inclusive\": true,\n    "}
+{"where":"schema.contract.test.ts:266:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"custom\",\n    \"path\": [\n      \"players\",\n      0\n    ],\n    \"message\": \"선수 포지션 또는 "}
+{"where":"host.test.ts:508:12","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:418:20","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"expected\": \"number\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"careerReads\",\n     "}
+{"where":"schema.contract.test.ts:267:12","ok":true,"baseOk":true,"same":true}
+{"where":"host.test.ts:510:60","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:419:12","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:321:22","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:430:22","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:430:22","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:324:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_key\",\n    \"origin\": \"record\",\n    \"issues\": [\n      {\n        \"code\": \"in"}
+{"where":"schema.test.ts:440:20","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_small\",\n    \"minimum\": 1,\n    \"inclusive\": true,\n    "}
+{"where":"schema.contract.test.ts:350:20","ok":false,"baseOk":false,"same":true,"error":"Error: 경기 고급 지표 손상"}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.test.ts:440:20","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_small\",\n    \"minimum\": 1,\n    \"inclusive\": true,\n    "}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:350:20","ok":false,"baseOk":false,"same":true,"error":"Error: 경기 고급 지표 손상"}
+{"where":"schema.test.ts:440:20","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"expected\": \"int\",\n    \"format\": \"safeint\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n    "}
+{"where":"schema.test.ts:440:20","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"too_big\",\n    \"maximum\": 9007199254740991,\n    \"note\": \"Integers must be within t"}
+{"where":"schema.contract.test.ts:350:20","ok":false,"baseOk":false,"same":true,"error":"Error: 경기 고급 지표 손상"}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"host.test.ts:545:22","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:350:20","ok":false,"baseOk":false,"same":true,"error":"Error: 경기 고급 지표 손상"}
+{"where":"schema.contract.test.ts:350:20","ok":false,"baseOk":false,"same":true,"error":"Error: 경기 고급 지표 손상"}
+{"where":"host.test.ts:547:52","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:350:20","ok":false,"baseOk":false,"same":true,"error":"Error: 경기 고급 지표 손상"}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:356:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"custom\",\n    \"path\": [\n      \"ownMatches\",\n      48\n    ],\n    \"message\": \"Invali"}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:358:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_big\",\n    \"maximum\": 30,\n    \"inclusive\": true,\n    \""}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:363:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"yellow\",\n      \"secondYellow\",\n      \"red\""}
+{"where":"?","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 지원하지 않는 저장 버전 또는 카탈로그입니다. 원본 파일을 내보내 보관하세요."}
+{"where":"schema.contract.test.ts:365:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_big\",\n    \"maximum\": 130,\n    \"inclusive\": true,\n    "}
+{"where":"schema.contract.test.ts:384:12","ok":true,"baseOk":true,"same":true}
+{"where":"persistence.history.test.ts:41:20","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:385:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"short\",\n      \"replacement\",\n      \"upgrad"}
+{"where":"host.test.ts:664:19","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:388:22","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:395:3","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:439:18","ok":false,"baseOk":false,"same":true,"error":"Error: 인물의 현재 담당 자리 참조 손상"}
+{"where":"schema.contract.test.ts:439:18","ok":false,"baseOk":false,"same":true,"error":"Error: 인물의 현재 담당 자리 참조 손상"}
+{"where":"persistence.history.test.ts:67:22","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:439:18","ok":false,"baseOk":false,"same":true,"error":"Error: 선수 인물 레지스트리 참조 손상"}
+{"where":"schema.contract.test.ts:439:18","ok":false,"baseOk":false,"same":true,"error":"Error: 인물 재직 기간 손상"}
+{"where":"persistence.history.test.ts:73:20","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:439:18","ok":false,"baseOk":false,"same":true,"error":"Error: 실제 영입 인물 참조 손상"}
+{"where":"schema.contract.test.ts:439:18","ok":false,"baseOk":false,"same":true,"error":"Error: 약속 이행 영입 참조 손상"}
+{"where":"schema.contract.test.ts:439:18","ok":false,"baseOk":false,"same":true,"error":"Error: 약속 대상 또는 고정 마감일 손상"}
+{"where":"persistence.history.test.ts:81:18","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:439:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"automatic\",\n      \"manual\"\n    ],\n    \"pat"}
+{"where":"persistence.history.test.ts:84:18","ok":false,"baseOk":false,"same":true,"error":"Error: 감독 이력 경기 참조 손상"}
+{"where":"schema.contract.test.ts:439:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      1,\n      2,\n      3,\n      4,\n      5\n    ]"}
+{"where":"schema.contract.test.ts:439:18","ok":false,"baseOk":false,"same":true,"error":"Error: 인물 재직 중복 기간 손상"}
+{"where":"persistence.history.test.ts:91:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"custom\",\n    \"message\": \"Outcome is outside its responsible tenure.\",\n    \"path\":"}
+{"where":"schema.contract.test.ts:439:18","ok":false,"baseOk":false,"same":true,"error":"Error: 인물 참조 손상"}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"persistence.history.test.ts:94:18","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"custom\",\n    \"message\": \"Duplicate outcome source.\",\n    \"path\": [\n      \"manager"}
+{"where":"schema.contract.test.ts:498:20","ok":true,"baseOk":true,"same":true}
+{"where":"host.test.ts:792:24","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:508:19","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:489:7)","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 이 저장은 더 새로운 경기 모델로 기록되었습니다. 원본 파일을 내보내 보관하세요."}
+{"where":"schema.contract.test.ts:489:7)","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 이 저장은 더 새로운 경기 모델로 기록되었습니다. 원본 파일을 내보내 보관하세요."}
+{"where":"schema.contract.test.ts:489:7)","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 이 저장은 더 새로운 경기 모델로 기록되었습니다. 원본 파일을 내보내 보관하세요."}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:489:7)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"founding\",\n      \"activation\"\n    ],\n    \""}
+{"where":"host.test.ts:792:24","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:489:7)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"extra\"\n    ],\n    \"path\": [\n      \"match"}
+{"where":"schema.contract.test.ts:489:7)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"npcSeason\",\n      \""}
+{"where":"schema.contract.test.ts:489:7)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"custom\",\n    \"path\": [\n      \"npcSeason\",\n      \"competitions\",\n      0,\n      \"p"}
+{"where":"schema.contract.test.ts:489:7)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"expected\": \"number\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"npcSeason\",\n      \""}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:558:12)","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:558:12)","ok":true,"baseOk":true,"same":true}
+{"where":"host.test.ts:848:22","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"manager\",\n"}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"manager\",\n"}
+{"where":"host.test.ts:851:56","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"manager\",\n"}
+{"where":"schema.contract.test.ts:572:22","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:588:22","ok":true,"baseOk":true,"same":true}
+{"where":"host.test.ts:878:22","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"in\",\n      \"out\"\n    ],\n    \"path\": [\n    "}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"string\",\n    \"code\": \"invalid_format\",\n    \"format\": \"regex\",\n    \"pattern\": \"/"}
+{"where":"?","ok":false,"baseOk":false,"same":true,"error":"SaveCompatibilityError: 이 저장은 더 새로운 경기 모델로 기록되었습니다. 원본 파일을 내보내 보관하세요."}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"transfers\",\n      \""}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"expected\": \"boolean\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"transfers\",\n      "}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"string\",\n    \"code\": \"too_small\",\n    \"minimum\": 1,\n    \"inclusive\": true,\n    "}
+{"where":"host.test.ts:950:46","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_big\",\n    \"maximum\": 365,\n    \"inclusive\": true,\n    "}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_small\",\n    \"minimum\": 1901,\n    \"inclusive\": true,\n "}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"extra\"\n    ],\n    \"path\": [\n      \"trans"}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"transfers\",\n      \""}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_small\",\n    \"minimum\": 0,\n    \"inclusive\": true,\n    "}
+{"where":"schema.contract.test.ts:558:12)","ok":false,"baseOk":false,"same":true,"error":"ZodError: [\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"extra\"\n    ],\n    \"path\": [\n      \"trans"}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"host.test.ts:979:22","ok":true,"baseOk":true,"same":true}
+{"where":"?","ok":true,"baseOk":true,"same":true}
+{"where":"coldPeople.integration.test.ts:94:21","ok":true,"baseOk":true,"same":true}
+{"where":"coldPeople.integration.test.ts:50:31)","ok":true,"baseOk":true,"same":true}
+{"where":"coldPeople.integration.test.ts:50:31)","ok":true,"baseOk":true,"same":true}

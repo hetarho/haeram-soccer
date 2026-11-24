@@ -1,0 +1,43 @@
+{
+  "db": "g1930.db",
+  "seed": "t1062-b",
+  "pairs": 1901,
+  "schemaLevel": {
+    "cases": 6000,
+    "bothAccept": 2407,
+    "bothReject": 3593,
+    "fastAccepted": 2407,
+    "mismatches": []
+  },
+  "worldLevel": {
+    "cases": 150,
+    "bothAccept": 75,
+    "bothReject": 75,
+    "mismatches": [],
+    "kinds": {
+      "accept": 75,
+      "ZodError:ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [": 11,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"array\",\n    \"code\": \"invali": 14,
+      "ZodError:ZodError: [\n  {\n    \"origin\": \"string\",\n    \"code\": \"invalid": 4,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"number\",\n    \"code\": \"inval": 6,
+      "Error:Error: 최근 경기 기록 참조 손상": 4,
+      "ZodError:ZodError: [\n  {\n    \"code\": \"custom\",\n    \"path\": [\n      \"o": 2,
+      "ZodError:ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_big": 4,
+      "Error:Error: 리그 표 손상": 3,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"record\",\n    \"code\": \"inval": 3,
+      "ZodError:ZodError: [\n  {\n    \"origin\": \"string\",\n    \"code\": \"too_big": 1,
+      "Error:Error: 경기 지표 손상": 1,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"inval": 5,
+      "ZodError:ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_sma": 3,
+      "ZodError:ZodError: [\n  {\n    \"code\": \"invalid_union\",\n    \"errors\": [": 1,
+      "Error:Error: 중복 선수 식별자": 1,
+      "SaveCompatibilityError:SaveCompatibilityError: 이 저장은 더 새로운 경기 모델로 기록되었습니다. 원본 파일을 내": 4,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"int\",\n    \"format\": \"safein": 1,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"object\",\n    \"code\": \"inval": 2,
+      "Error:Error: 선수 인물 참조 손상": 1,
+      "Error:Error: 알 수 없는 저장 형식": 2,
+      "ZodError:ZodError: [\n  {\n    \"code\": \"too_big\",\n    \"maximum\": 2,\n   ": 1,
+      "Error:Error: 인물 참조 손상": 1
+    }
+  }
+}

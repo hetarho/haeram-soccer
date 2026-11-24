@@ -1,0 +1,4 @@
+const fs=require('fs');const dir=process.argv[2];let n=0,diff=0;const kinds={};
+for(let r=0;fs.existsSync(`${dir}/base-${r}.json`);r++){const b=JSON.parse(fs.readFileSync(`${dir}/base-${r}.json`)).rows,c=JSON.parse(fs.readFileSync(`${dir}/candidate-${r}.json`)).rows;
+ if(b.length!==c.length) console.log('length', r); for(let i=0;i<b.length;i++){n++; if(b[i].kind!==c[i].kind||b[i].replyHash!==c[i].replyHash||b[i].rowsPut!==c[i].rowsPut){diff++;kinds[b[i].kind]=(kinds[b[i].kind]||0)+1}}}
+console.log(dir,'matched',n,'differing',diff,kinds);

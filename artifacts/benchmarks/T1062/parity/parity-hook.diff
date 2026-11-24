@@ -1,0 +1,92 @@
+diff --git a/.tmp/t1062/schema.candidate.ts b/packages/contracts/src/schema.ts
+index 42a24ac04..c754c8a58 100644
+--- a/.tmp/t1062/schema.candidate.ts
++++ b/packages/contracts/src/schema.ts
+@@ -8,6 +8,8 @@ import { SaveCompatibilityError } from './versions';
+ import type { RecordStore } from './record-store';
+ import { newsJournalSchema } from './news';
+ import { z } from 'zod';
++import { appendFileSync } from 'node:fs';
++import { validateWorld as baselineValidateWorld } from '../../../.tmp/t1062/base/packages/contracts/src/schema';
+ z.config({ jitless: true });
+ import type { GenerationDigest, GenerationFeatKind, SponsorSlot, World } from './types';
+ import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from './detail';
+@@ -1813,7 +1815,7 @@ export function zodParse<T>(schema: z.ZodType<T>, input: unknown): T {
+   return parsed === REJECTED ? schema.parse(input) : (parsed as T);
+ }
+ 
+-export function validateWorld(
++function candidateValidateWorld(
+   input: unknown,
+   catalog?: LoadCatalog,
+   store?: Pick<RecordStore, 'get'>,
+@@ -2479,3 +2481,69 @@ export function validateWorld(
+   }
+   return w;
+ }
++
++// T1062 parity hook (temporary, never committed): baseline and candidate on every call.
++const t1062Spell = (value: unknown): unknown =>
++  Array.isArray(value)
++    ? value.map(t1062Spell)
++    : typeof value === 'object' && value !== null
++      ? Object.entries(value).map(([key, v]) => [key, t1062Spell(v)])
++      : Object.is(value, -0)
++        ? '-0'
++        : value === undefined
++          ? '(undefined)'
++          : typeof value === 'bigint'
++            ? `${value}n`
++            : value;
++export function validateWorld(
++  input: unknown,
++  catalog?: LoadCatalog,
++  store?: Pick<RecordStore, 'get'>,
++): World {
++  type Outcome = { ok: true; value: unknown } | { ok: false; error: any };
++  const run = (fn: () => unknown): Outcome => {
++    try {
++      return { ok: true, value: fn() };
++    } catch (error) {
++      return { ok: false, error };
++    }
++  };
++  let copy: unknown;
++  let cloneable = true;
++  try {
++    copy = structuredClone(input);
++  } catch {
++    cloneable = false;
++  }
++  const b = cloneable
++    ? run(() => baselineValidateWorld(copy, catalog as never, store as never))
++    : undefined;
++  const c = run(() => candidateValidateWorld(input, catalog, store));
++  const limit = Error.stackTraceLimit;
++  Error.stackTraceLimit = 80;
++  const where =
++    (new Error().stack ?? '')
++      .split('\n')
++      .find((line) => /\.test\.ts/.test(line))
++      ?.trim()
++      .replace(/^.*\/(?=[^/]+\.test\.ts)/, '') ?? '?';
++  Error.stackTraceLimit = limit;
++  const spell = (r: Outcome) =>
++    r.ok
++      ? JSON.stringify(t1062Spell(r.value))
++      : `${r.error?.constructor?.name}|${r.error?.message}|${JSON.stringify(r.error?.issues ?? null)}`;
++  const same = b ? spell(b) === spell(c) : null;
++  if (process.env.T1062_PARITY_LOG)
++    appendFileSync(
++      process.env.T1062_PARITY_LOG,
++      JSON.stringify({
++        where,
++        ok: c.ok,
++        baseOk: b?.ok,
++        same,
++        error: c.ok ? undefined : `${c.error?.constructor?.name}: ${String(c.error?.message).slice(0, 100)}`,
++      }) + '\n',
++    );
++  if (!c.ok) throw c.error;
++  return c.value as World;
++}

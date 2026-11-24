@@ -1,0 +1,7 @@
+const fs=require('fs');const dir=process.argv[2];
+const med=a=>{const s=[...a].sort((x,y)=>x-y);return s[s.length>>1]};
+for (const kind of ['open-game','import-game']) for (const side of ['base','candidate']) {
+  const rows=[];for(let r=0;fs.existsSync(`${dir}/${side}-${r}.json`);r++){const j=JSON.parse(fs.readFileSync(`${dir}/${side}-${r}.json`));rows.push(...j.rows.filter(x=>x.kind===kind));}
+  const keys=['ms','publish','projection','slowReads','delta','cloneMs'];
+  console.log(kind.padEnd(12),side.padEnd(10),keys.map(k=>k+' '+(rows.some(r=>r[k]!==undefined)?med(rows.map(r=>r[k]??0)).toFixed(0):'-')).join('  '), 'n='+rows.length, 'hashes', [...new Set(rows.map(r=>r.replyHash))].length);
+}

@@ -1,0 +1,95 @@
+{
+  "base": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/start-fs24c-364d564d/.tmp/t1062/base",
+  "candidate": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/start-fs24c-364d564d/.tmp/t1062/cand",
+  "seed": "records-room-journey",
+  "decade": 1930,
+  "steps": 2,
+  "rounds": 8,
+  "hashes": [
+    "base:8ccd3d5003299549:8ccd3d5003299549",
+    "candidate:8ccd3d5003299549:8ccd3d5003299549"
+  ],
+  "loads": [
+    1.2,
+    2.16,
+    2.42,
+    2.67,
+    3.13,
+    3.93,
+    4.7,
+    5.45,
+    5.2,
+    4,
+    3.38,
+    2.71,
+    2.75,
+    3.06,
+    3.41,
+    2.99
+  ],
+  "calls": {
+    "next-event": {
+      "ratio": 0.9382,
+      "lo": 0.9132,
+      "hi": 0.9821,
+      "call": "faster",
+      "samples": 8,
+      "baseMedianMs": 5537.019467,
+      "candidateMedianMs": 5167.6707125
+    },
+    "advance-days": {
+      "ratio": 0.9604,
+      "lo": 0.9344,
+      "hi": 1.0185,
+      "call": "no difference",
+      "samples": 8,
+      "baseMedianMs": 1688.7248354999992,
+      "candidateMedianMs": 1662.1089119999997
+    },
+    "save": {
+      "ratio": 0.9242,
+      "lo": 0.8537,
+      "hi": 1.0214,
+      "call": "no difference",
+      "samples": 16,
+      "baseMedianMs": 1064.8149504999992,
+      "candidateMedianMs": 1008.7274209999996
+    },
+    "stopped-reads": {
+      "ratio": 0.9288,
+      "lo": 0.8341,
+      "hi": 1.0365,
+      "call": "no difference",
+      "samples": 16,
+      "baseMedianMs": 122.59149300000081,
+      "candidateMedianMs": 109.0702620000011
+    },
+    "open-game": {
+      "ratio": 0.6761,
+      "lo": 0.6346,
+      "hi": 0.7178,
+      "call": "faster",
+      "samples": 8,
+      "baseMedianMs": 4845.242580000002,
+      "candidateMedianMs": 3156.9042550000013
+    },
+    "export-game": {
+      "ratio": 0.9826,
+      "lo": 0.91,
+      "hi": 1.0298,
+      "call": "no difference",
+      "samples": 8,
+      "baseMedianMs": 2987.447008000001,
+      "candidateMedianMs": 3013.2485159999997
+    },
+    "import-game": {
+      "ratio": 0.8067,
+      "lo": 0.7716,
+      "hi": 0.8477,
+      "call": "faster",
+      "samples": 8,
+      "baseMedianMs": 6116.074642000003,
+      "candidateMedianMs": 4947.515058999999
+    }
+  }
+}

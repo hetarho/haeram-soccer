@@ -1,0 +1,32 @@
+{
+  "db": "g2000.db",
+  "seed": "t1062-2000",
+  "pairs": 2584,
+  "schemaLevel": {
+    "cases": 3000,
+    "bothAccept": 1202,
+    "bothReject": 1798,
+    "fastAccepted": 1202,
+    "mismatches": []
+  },
+  "worldLevel": {
+    "cases": 40,
+    "bothAccept": 21,
+    "bothReject": 19,
+    "mismatches": [],
+    "kinds": {
+      "accept": 21,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"array\",\n    \"code\": \"invali": 2,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"inval": 3,
+      "Error:Error: 인물 중복 재직": 3,
+      "ZodError:ZodError: [\n  {\n    \"expected\": \"record\",\n    \"code\": \"inval": 1,
+      "ZodError:ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [": 2,
+      "Error:Error: 인물 재직 기간 손상": 2,
+      "ZodError:ZodError: [\n  {\n    \"origin\": \"array\",\n    \"code\": \"too_big\"": 1,
+      "Error:Error: 인물 재직 중복 기간 손상": 2,
+      "ZodError:ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_sma": 1,
+      "ZodError:ZodError: [\n  {\n    \"origin\": \"number\",\n    \"code\": \"too_big": 1,
+      "Error:Error: 알 수 없는 저장 형식": 1
+    }
+  }
+}
