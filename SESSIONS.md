@@ -230,6 +230,7 @@
 - 261124 decided T1058 ARCH-34: 조작·저장·열기의 주 측정값과 기준판 → T1039 수정 뒤 같은 경로에서 응답 또는 저장 확정까지의 벽시계 시간을 재고 큐·CPU·저장소 비용을 나눕니다 (alt: 기존 엔진 CPU 지표만 사용). 플레이어 대기에 포함되는 작업자 대기와 저장 비용까지 비교할 수 있습니다.
 
 ## log
+- 261124 gusta-create-task T1053 T1054 T1055 T1056 T1057 T1058: planned six follow-ups, refreshed T1039, spec lint and task tier passed
 - 261124 gusta-create-task ARCH WEB ECON start
 - 261124 gusta-update-ssot ARCH@53 WEB@231 ECON@68: preview WASM, worker waits, facility scenes, ticket forecast and career reads pending
 - 261124 gusta-update-ssot ARCH WEB ECON start
@@ -249,4 +250,3 @@
 - 261120 T1042 done
 - 261120 gusta-create-task HIST@30 SAVE@75 WEB@228 done: T1043 T1044
 - 261120 gusta-create-task ECON WEB start
-- 261120 gusta-update-ssot ECON@66 WEB@228: owned gate, large stadium steps and matching art
