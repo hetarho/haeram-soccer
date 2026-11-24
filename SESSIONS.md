@@ -197,7 +197,6 @@
 - 261119 parked T1033 T1034 T1035 T1036 T1037: 시설 자동 증축 기획 커밋 3dccf57860e29164b1e823bf3703c15192f539ab. 기획 관문과 task-tier 정적 검사 통과(109초, 영향 단위 테스트 없음). main의 기존 공유 통합이 잠겨 plan-push가 integration-frozen으로 보류됐습니다. 잠금 해제 후 같은 기획 커밋을 vibe plan-push --commit 3dccf57860e29164b1e823bf3703c15192f539ab로 발행한 뒤 이 다섯 태스크를 진행합니다.
 - 261119 parked SAVE-3: Worker save cost after the record store: CI traces of 0.8.16-0.8.17 show 6-7 s of engine-worker save after each owner decision at a 다음 이벤트 stop, so long journeys need widened waits (T1038). Profile the changed-row save on OPFS and cut it before relying on the widened waits; not measured locally (browser journeys run only in CI).
 - 261119 parked ARCH-30: The preview server serves sqlite3 wasm as application/octet-stream, so the worker logs wasm streaming compile failed and falls back to ArrayBuffer instantiation; not fatal. Serve .wasm as application/wasm in scripts/preview.mjs if the preview owns that header.
-- 261119 parked T1039: Shared gate f96fd6c3 (candidate e16be77cf, landed on main as a fast-forward) holds four required checks recorded fail from CI 44574533210 and one optional check not-run, yet stays waiting-agent: integration finish answers waiting-agent and abandon answers integration-not-releasable, so plan-push answers integration-frozen. T1039 was put on main by a spec-only fast-forward instead. Settle the gate before the next plan-push.
 - 261120 decided HIST-12: 우승 당시의 기준 시점 → 리그 최종 순위가 확정되어 시즌 아카이브에 쓰는 순간 (alt: 우승 확정 라운드 | 시즌 평균). 모든 진행 방식에서 같은 시점을 한 번 기록하고 다음 시즌의 선수단 변경과 구분할 수 있습니다.
 - 261120 decided HIST-13: 어느 리그 우승팀을 기록할지 → 이미 아카이브에 남기는 모든 구현 국가의 디비전·지역 그룹 정규 리그 우승팀 (alt: 우리 리그만 | 각국 1부만). 과거 순위표가 탐색하는 범위와 일치하며 컵·유럽 대회는 이 선택의 범위 밖입니다.
 - 261120 decided WEB-54: 구단 성장의 OVR 시리즈 → Elo·가치와 같은 시즌 단위 차트와 선택 말풍선을 쓰고 종료 시즌만 표시 (alt: 진행 중 OVR을 마지막 점으로 추가 | 별도 연도별 표). 기존 Elo·가치 차트의 데이터는 종료된 시즌에서 오며 현재 Elo는 별도 패널입니다.
@@ -230,6 +229,7 @@
 - 261124 decided T1058 ARCH-34: 조작·저장·열기의 주 측정값과 기준판 → T1039 수정 뒤 같은 경로에서 응답 또는 저장 확정까지의 벽시계 시간을 재고 큐·CPU·저장소 비용을 나눕니다 (alt: 기존 엔진 CPU 지표만 사용). 플레이어 대기에 포함되는 작업자 대기와 저장 비용까지 비교할 수 있습니다.
 
 ## log
+- 261124 T1039 runnable after plan-push bcce73b9. Expired gate f96fd6c3 remains in integration history with failed receipts. Fresh scope is CI 44697908305.
 - 261124 gusta-create-task T1053 T1054 T1055 T1056 T1057 T1058: planned six follow-ups, refreshed T1039, spec lint and task tier passed
 - 261124 gusta-create-task ARCH WEB ECON start
 - 261124 gusta-update-ssot ARCH@53 WEB@231 ECON@68: preview WASM, worker waits, facility scenes, ticket forecast and career reads pending
@@ -249,4 +249,3 @@
 - 261120 stad20 관중 표현을 연고지 밖의 홈 관중으로 바로잡음
 - 261120 T1042 done
 - 261120 gusta-create-task HIST@30 SAVE@75 WEB@228 done: T1043 T1044
-- 261120 gusta-create-task ECON WEB start
