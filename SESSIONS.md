@@ -225,6 +225,7 @@
 - 261120 suggest ECON-29 ECON-28 ECON-9: T1052 finding: a reputation-90 ENG top-flight club sold out at 0.12 has matchday 69.7-75.4% of league-season turnover in 2000 (band 15-25%), distribution 10.3-12.7% (band 40-55%); still 51.8-58.9% matchday at the default 0.05 preset. Turnover totals (2000 GBP106-131m, 2020 GBP527-620m) are plausible, so not game-breaking; review the giant gate per spectator against the 2000s distribution and commercial curves on lived careers (artifacts/benchmarks/T1052).
 
 ## log
+- 261124 gusta-update-ssot ARCH WEB ECON start
 - 261120 T1052 done
 - 261120 T1051 done
 - 261120 T1047 done
@@ -244,4 +245,3 @@
 - 261120 gusta-update-ssot ECON@66 WEB@228: owned gate, large stadium steps and matching art
 - 261120 gusta-update-ssot ECON WEB start
 - 261120 gusta-create-task HIST SAVE WEB start
-- 261120 gusta-update-ssot HIST@30 SAVE@75 WEB@228: closing OVR coverage and final table presentation; pending task decomposition
