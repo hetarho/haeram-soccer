@@ -45,6 +45,7 @@ it('keeps host, replay, long-career and full-match checks out of the task unit p
   for (const file of [
     'packages/engine/src/feature-replay.test.ts',
     'packages/engine/src/feature-replay.retained.test.ts',
+    'packages/engine/src/feature-replay.retained-batch.test.ts',
     'apps/web/src/runtime/host.test.ts',
     'apps/web/src/adapters/persistence.long-career.test.ts',
     'packages/engine/src/scripted-match.test.ts',

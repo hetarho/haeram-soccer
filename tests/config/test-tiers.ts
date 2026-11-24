@@ -79,6 +79,7 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/economy.test.ts',
   'packages/engine/src/europe.test.ts',
   'packages/engine/src/fans.test.ts',
+  'packages/engine/src/feature-replay.retained-batch.test.ts',
   'packages/engine/src/feature-replay.retained.test.ts',
   'packages/engine/src/feature-replay.test.ts',
   'packages/engine/src/finance.commercial.test.ts',

@@ -14,7 +14,10 @@ export const WARMED: readonly string[] = [
 
 export const COLD_COSTS: Readonly<Record<string, number>> = {
   'packages/engine/src/transfers.incoming.test.ts': 599,
+  // The retained replay's two halves keep the whole case's cold cost until a cold gate measures them
+  // apart (fs24 split daily and batch, 261124), so both still start first.
   'packages/engine/src/feature-replay.retained.test.ts': 483,
+  'packages/engine/src/feature-replay.retained-batch.test.ts': 483,
   'packages/engine/src/sponsors.test.ts': 468,
   'packages/engine/src/world.capacities.test.ts': 442,
   'apps/web/src/runtime/host.test.ts': 345,
