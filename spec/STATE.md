@@ -68,7 +68,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T1053 | Redraw two Sticker Club stage-10 locker rooms | WEB ECON ARCH SAVE | - | todo |
 | T1054 | Explain the highest ticket preset from its forecast | WEB ECON ARCH SAVE | - | todo |
 | T1055 | Align facility artwork alt text with the completed stage | WEB ECON ARCH SAVE | - | todo |
 | T1056 | Measure the sellout response on reference careers | ECON ARCH SAVE | - | todo |
@@ -87,7 +86,8 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
-- gusta-implement-task T1053 T1054 T1055
+- gusta-implement-task T1056
+- gusta-implement-task T1054 T1055
 - fs24 (261124): T1039 tracks the two remaining Chromium failures. T1053–T1056 cover the stad20 follow-ups (reports/261120-stad20), T1057 fixes the preview Wasm MIME type, and T1058 profiles player-facing waits after T1039.
 - ovr20 (261120): season-close Club OVR landed as 0.8.20 (T1040 archive, T1041 past tables, 구단 성장 and generation champions); reports/261120-ovr20.
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
