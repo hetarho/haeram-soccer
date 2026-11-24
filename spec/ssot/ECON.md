@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r67 | Define the browser-demo rules for historical club economy.
+> r68 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -191,6 +191,7 @@
       | 2000 | 90,000 / 105,000 / 120,000 | £74.1m / £86.5m / £98.8m | £13.6m | £18.7m (with stadium naming) | 69.7% / 72.8% / 75.4% (51.8% / 55.6% / 58.9%) |
       | 2020 | 90,000 / 105,000 / 120,000 | £280m / £326m / £373m | £170m | £78.0m (with sleeve) | 53.0% / 56.8% / 60.1% (34.5% / 38.1% / 41.3%) |
     - outside the 2000s top-flight mix: matchday 69.7–75.4% against 15–25% and distribution 10.3–12.7% against 40–55%, already 51.8–58.9% matchday at the default price; turnover £106–131m in 2000 and £527–620m in 2020. A giant's sellout of 90,000+ makes the gate its largest income in every era measured.
+  - Measure matchday share and operating result on lived reference takeovers under the owned-club sellout response (→!ECON-9/17). Record the preset, demand relative to usable seats, fixture coverage, reference bands and measured gaps. Identify sampled windows separately from whole-career results. A correction requires a demonstrated game-breaking result such as severe financial failure or runaway wealth and must model its football cause. Band misses alone are recorded as findings. Constant retuning and artificial gates are out of scope for these corrections.
   - wage/income recalibration reports exact settled player payroll, manager/coaching payroll, their modeled total, operating expenses, central distribution, purchases and sales separately; a pre-round wage sample is not cash paid. NPC book wages are players only, with other staff in operating expenses (→ECON-30), whereas the owned-club wage bill includes its modeled manager/coaches. Real all-employee ratios are context and never silently substituted for player-only payroll.
   - test new wage quotes and the English package separately and together on matched worlds, read contract-transition and mature years separately, then validate the selected candidate on worlds lived under its rules and held-out seeds/countries. Preserve signed contracts and the existing career, books, champions and solvency gates; a short screening experiment does not replace the50-season reference gate. Central commercial money inside the league package remains in the distribution category and is not club sponsorship; state that definition when comparing real broadcast-only income shares.
   - revenue is competition money, matchday and commercial income; player trading is reported beside the bands: the delegated staff sell, and sign only to fill short roles or upgrade by the 단장's plan (→CLUB-33), so the reference club stays a net seller with a youth-heavy wage bill; the measurements below were taken under the retired 재정 기조, before the spending request (→ECON-33). ← net results including those sales measured 10–17% on every constant set that kept every career solvent
@@ -287,6 +288,7 @@
   - funded operating deficits and wages above turnover are permitted. Exhausted backing and unsupported commitments remain observable. No support is chosen to force a title or strength target.
 
 ## chg
+- r68 261124 ECON-29✎ owned-club sellout fixture spot check→also lived reference-career matchday share and operating results, with measured gaps and a football-cause requirement for game-breaking corrections
 - r67 261120 ECON-29✎ sellout spot check unrecorded→measured attendance cases and 1980/2000/2020 receipts and income mix
 - r66 261120 ECON-9✎ local gate and fixed price response→travelling demand and eased premiums; ECON-23✎ sponsors only→also gate demand; ECON-29✎ career measurements only→also sellout and ticket-response probes; ECON-32✎ 8 steps to 90,000→10 steps to 120,000 via 105,000; ECON-36✎ shared owner gate reference→explicit local book gate
 - r65 261119 ECON-32✎ owner starts each quoted work→owner manual quote plus authorized continuation; ECON-43+ per-part automatic continuation after completion, funding retries and cancellation

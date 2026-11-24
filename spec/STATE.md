@@ -20,8 +20,8 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 52 | 52 | - | 2 |
-| WEB | 230 | 230 | - | 0 |
+| ARCH | 53 | 53 | - | 2 |
+| WEB | 231 | 231 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 18 | 18 | - | 0 |
 | KIT | 11 | 11 | - | 0 |
@@ -29,7 +29,7 @@
 | MATCH | 70 | 70 | - | 0 |
 | LEAGUE | 23 | 23 | - | 0 |
 | STAFF | 44 | 44 | - | 0 |
-| ECON | 67 | 67 | - | 0 |
+| ECON | 68 | 68 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 30 | 30 | - | 0 |
 | SAVE | 75 | 75 | - | 0 |
@@ -69,6 +69,12 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1039 | Fix CI failure | ARCH SAVE | - | todo |
+| T1053 | Redraw two Sticker Club stage-10 locker rooms | WEB ECON ARCH SAVE | - | todo |
+| T1054 | Explain the highest ticket preset from its forecast | WEB ECON ARCH SAVE | - | todo |
+| T1055 | Align facility artwork alt text with the completed stage | WEB ECON ARCH SAVE | - | todo |
+| T1056 | Measure the sellout response on reference careers | ECON ARCH SAVE | - | todo |
+| T1057 | Serve WebAssembly with its streaming MIME type | ARCH SAVE | - | todo |
+| T1058 | Profile and shorten player-facing worker waits | ARCH SAVE WEB LAB | T1039 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -82,9 +88,8 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
-- no runnable task: resolve blocked, parked or deps
-- gusta-implement-task T1043
-- stad20 (261120): popular owned clubs sell out at every preset when demand exceeds seats (ECON-9 r66, travelling share of the following), and the stadium climbs to 105,000 and 120,000 seats (ECON-32, WEB-72 r230). Landed as 0.8.23 (7dddfeca3); reports/261120-stad20. Follow-ups are in that report: sticker-club locker-10 redraw (helmets), top-preset copy, ECON-29 career re-measure, alt-text stage number.
+- gusta-implement-task T1039
+- fs24 (261124): T1039 tracks the two remaining Chromium failures. T1053–T1056 cover the stad20 follow-ups (reports/261120-stad20), T1057 fixes the preview Wasm MIME type, and T1058 profiles player-facing waits after T1039.
 - ovr20 (261120): season-close Club OVR landed as 0.8.20 (T1040 archive, T1041 past tables, 구단 성장 and generation champions); reports/261120-ovr20.
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
 - x10 (261119): landed as 0.8.15 (9c3a60796) — unwatched own matches without script/material, heat maps removed, slow view reads only on a stopped clock with dimmed places, fixture helpers from three cores (three on 6–12 cores); a 10x automatic-play day ×0.72 on own match days and ×0.11 on other days (reports/261119-x10). T989 withdrawn, T1019 parked until T1003/T1004.
