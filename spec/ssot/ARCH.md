@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r52 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r53 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -175,6 +175,7 @@
   - Deploy to Netlify using the same pinned build command and output directory; preview branches do not replace production.
   - Configure a stable production origin before public saves are created; changing origin requires export/import, not an assumed browser-storage transfer.
   - SPA deep-link reloads, module workers, missing assets, and HTTPS capability checks must pass on the built preview.
+  - The built preview serves `.wasm` with `Content-Type: application/wasm` so the engine worker can stream the SQLite WebAssembly module (→!ARCH-11).
   - Versioned assets/catalogs use immutable caching; entry HTML uses revalidation. Do not add a service-worker cache in the initial release.
   - Rollback the code deployment without clearing local saves; incompatible new saves remain recoverable/exportable rather than being silently downgraded.
   - Provider references: [Git integration](https://docs.netlify.com/build/git-workflows/overview/), [previews](https://docs.netlify.com/deploy/deploy-types/deploy-previews/), [rollbacks](https://docs.netlify.com/deploy/manage-deploys/manage-deploys/).
@@ -251,6 +252,7 @@
   - `scripts/perf/ab.mjs` measures it: both sides are bundled the same way from their own trees (identical sources give byte-identical bundles), each process loads both and alternates their reps, and the side loaded first alternates across processes. Main-thread CPU time is the primary measure; wall time is reported beside it.
   - the call: per process the median log-ratio of its pairs, over processes a trimmed mean with a 95% bootstrap interval; faster means the whole interval lies below 1. A small gain that clears the noise counts; a gain inside the noise is not claimed.
   - a result-identical speed-up keeps every workload's output hash (own match, aggregate, staging, day) equal to its baseline's; changing results makes it a model change (→SAVE-23), not a speed-up.
+  - For a player-facing worker wait, the primary measure is paired elapsed time from request to the visible reply or durable save acknowledgement. Separate queue wait, worker computation and storage when they contribute. Use the same inputs, toolchain and storage backend for each pair. A result-identical change keeps the canonical world hashes equal and preserves the relevant replies and committed or reopened facts (→!SAVE-3/5/8).
   - a result names the machine, its load, the interval and the hashes; a figure from another machine is context only.
 - ARCH-35 [o] Product stage and support scope. ← the game is not public yet; one browser keeps the gates and CI short until external players arrive
   - product-stage: alpha
@@ -284,6 +286,7 @@
 - Current product rules live in `spec/ssot/` (repository-relative path); archived ideation under `spec/ideation/done/` is background, never a current rule.
 
 ## chg
+- r53 261124 ARCH-23✎ generic preview asset MIME fallback→WebAssembly streaming MIME on the static preview · ARCH-34✎ CPU-primary engine workload comparison→also wall-time-primary worker wait comparisons with canonical world parity
 - r52 261119 ARCH-6✎ two helpers from two cores→from three cores, fewer cores compute on the engine worker alone (two cores measured 9% slower)
 - r51 261119 ARCH-2✎ +SQLite save database · ARCH-3✎ runtime codec worker, adapters save codec and packing→SQLite record store, game files, export/import · ARCH-4✎ engine imports DTOs and catalogs→+an injected record store · ARCH-6✎ +the engine worker owns the game database; restores the last committed checkpoint→save · ARCH-11✎ IndexedDB checkpoints with UI-thread storage and worker codec→one SQLite database per game shared by web and app (official WASM build, OPFS pool), schema version · ARCH-12✎ JSON envelope with gzip/pure-JS Brotli and .haeram-save.json→gzip database behind a versioned SHA-256 header, no other codec/encoding/packing · ARCH-13✎ validated candidate in a codec worker with verified predecessor→changed rows in one transaction, season-backup recovery offered · ARCH-14✎ UTF-16 localStorage budgets, optimize encoding→SAVE-4 limits, database size/save/open/memory measured, schema change within retention · ARCH-16✎ envelope/codec validation→header/integrity validation · ARCH-17✎ read-only second tab→one playing tab, another offers 여기서 이어 하기 · ARCH-36+ record-store port, ordered reads, synchronous in the engine worker
 - r50 261119 ARCH-6✎ helpers from four cores, the engine worker idle while they run→two helpers from two cores (never one), more only where measured faster, the engine worker takes a share
