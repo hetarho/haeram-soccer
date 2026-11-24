@@ -245,6 +245,7 @@
 | T1055 | fs24 | gusta-session-start-fs24-0f2a0f35 | 515b4f9acac2 | 2026-11-24T04:32Z |
 
 ## log
+- 261124 gusta-create-task T1061 T1062 T1063 T1064 planned and published at 4cee344a3e5a; spec lint and task tier passed
 - 261124 gusta-create-task SAVE WEB ARCH start
 - 261124 gusta-update-ssot SAVE@76 WEB@232 ARCH@54: result-identical performance changes; no active tasks affected
 - 261124 gusta-update-ssot SAVE WEB ARCH start
@@ -264,4 +265,3 @@
 - 261124 gusta-update-ssot ARCH@53 WEB@231 ECON@68: preview WASM, worker waits, facility scenes, ticket forecast and career reads pending
 - 261124 gusta-update-ssot ARCH WEB ECON start
 - 261120 T1052 done
-- 261120 T1051 done
