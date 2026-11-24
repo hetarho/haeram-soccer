@@ -1882,11 +1882,30 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-fs24b-ce328e4b",
-      "head": "3070f87b29466aa0b42bd69d439359eaff76aa50",
+      "head": "2a96146a99e1f5753ffbbfa15c96f791a6cb2b27",
       "land": "main",
       "status": "working",
-      "at": "2026-11-24T01:46:40.621Z",
-      "agentChecks": [],
+      "at": "2026-11-24T01:47:07.540Z",
+      "agentChecks": [
+        {
+          "id": "T1059-AC2",
+          "scenario": "Heritage stage-10 locker room at phone size",
+          "steps": [
+            "On the shared candidate, open a completed heritage-era stadium-step-10 career, select Sticker Club, and open 팀 › 1군 at 390×844."
+          ],
+          "expected": "All footballs are round, no helmets appear, and the T1053 room composition and style are preserved.",
+          "observed": "Not observed on a shared integration candidate.",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "The fixed integration candidate and capable computer-use host are not available in this unit.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "fs24b-heritage-locker-balls",
+          "candidate": null,
+          "duplicationReason": ""
+        }
+      ],
       "verificationCommands": []
     }
   },
