@@ -27,10 +27,11 @@ export function facilityScene(
   const stage = facilityStage(kind, w);
   const { t } = presentation.locale;
   const image = presentation.theme.facility({ era, kind, stage, view: presentation.view });
+  // A named stage is the completed stage the facility counter shows (WEB-72, ECON-32).
   const label =
     kind === 'training' || kind === 'academy'
       ? t(stage ? `facility.${kind}.stage` : `facility.${kind}.base`, { stage })
-      : t(`facility.${kind}`, { stage: stage + 1 });
+      : t(`facility.${kind}`, { stage });
   return {
     ...image,
     alt:

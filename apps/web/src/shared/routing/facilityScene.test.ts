@@ -28,8 +28,8 @@ const base = { year: 1950, round: 0, stadium: 0, trainingGround: 0, academyFacil
 
 describe('facility artwork follows the current club', () => {
   it('keeps the current Korean descriptions and resolves synthetic resources through the same service', () => {
-    expect(facilityScene('stadium', base).alt).toBe('1950–60년대 구장 1단계 픽셀아트');
-    expect(facilityScene('locker', base).alt).toBe('1950–60년대 구장 1단계 라커룸 픽셀아트');
+    expect(facilityScene('stadium', base).alt).toBe('1950–60년대 구장 0단계 픽셀아트');
+    expect(facilityScene('locker', base).alt).toBe('1950–60년대 구장 0단계 라커룸 픽셀아트');
     expect(facilityScene('training', base).alt).toBe('1950–60년대 기본 훈련장 픽셀아트');
     expect(facilityScene('academy', base).alt).toBe('1950–60년대 기본 유소년 시설 픽셀아트');
     const theme = createThemeResolver(
@@ -48,7 +48,7 @@ describe('facility artwork follows the current club', () => {
       themeLabel: 'Synthetic art',
     });
     expect(scene.src).toBe('/presentation/themes/unseen/stadium/heritage/0.webp');
-    expect(scene.alt).toBe('1950–60년대 구장 1단계 Synthetic art');
+    expect(scene.alt).toBe('1950–60년대 구장 0단계 Synthetic art');
   });
   it.each([
     [1969, 152, 'heritage'],
@@ -67,6 +67,33 @@ describe('facility artwork follows the current club', () => {
     expect(facilityScene('stadium', { ...base, year: 1969, round: 22 }).era).toBe('terraces');
   });
 
+  it.each([
+    [0, 'heritage', '1950–60년대'],
+    [8, 'terraces', '1970–90년대'],
+    [10, 'contemporary', '2000년 이후'],
+  ] as const)(
+    'names the completed stadium stage %i in stadium and locker descriptions',
+    (stadium, era, eraLabel) => {
+      const year = { heritage: 1950, terraces: 1980, contemporary: 2010 }[era];
+      const w = { ...base, year, stadium };
+      expect(facilityScene('stadium', w).alt).toBe(`${eraLabel} 구장 ${stadium}단계 픽셀아트`);
+      expect(facilityScene('locker', w).alt).toBe(
+        `${eraLabel} 구장 ${stadium}단계 라커룸 픽셀아트`,
+      );
+      expect(facilityScene('stadium', w).src).toBe(`/art/scenes/${era}/stadium-${stadium}.webp`);
+      expect(facilityScene('locker', w).src).toBe(`/art/scenes/${era}/locker-${stadium}.webp`);
+    },
+  );
+
+  it('keeps the exterior description stage-free and training and academy descriptions intact', () => {
+    const w = { ...base, stadium: 8, trainingGround: 3, academyFacility: 4 };
+    const exterior = resolveFacilityScene('stadium', w, { ...presentation, view: 'exterior' });
+    expect(exterior.view).toBe('exterior');
+    expect(exterior.alt).toBe('경기장 외관');
+    expect(facilityScene('training', w).alt).toBe('1950–60년대 3단계 훈련장 픽셀아트');
+    expect(facilityScene('academy', w).alt).toBe('1950–60년대 4단계 유소년 시설 픽셀아트');
+  });
+
   it('changes facility artwork only when the actual work completes', () => {
     const w = careerWorld({ country: 'ENG', seed: 'art-upgrades' });
     w.cash = '999999999999';
@@ -77,6 +104,8 @@ describe('facility artwork follows the current club', () => {
     expect(w.facilityWorks?.stadium?.to).toBe(2);
     expect(facilityScene('stadium', w).src).toBe('/art/scenes/heritage/stadium-1.webp');
     expect(facilityScene('locker', w).src).toBe('/art/scenes/heritage/locker-1.webp');
+    expect(facilityScene('stadium', w).alt).toBe('1950–60년대 구장 1단계 픽셀아트');
+    expect(facilityScene('locker', w).alt).toBe('1950–60년대 구장 1단계 라커룸 픽셀아트');
     expect(facilityScene('training', w).src).toBe('/art/scenes/heritage/training-2.webp');
     expect(w.facilityWorks?.academy?.to).toBe(3);
     expect(facilityScene('academy', w).src).toBe('/art/scenes/heritage/academy-2.webp');
@@ -86,6 +115,8 @@ describe('facility artwork follows the current club', () => {
     progressFacilityWorks(w);
     expect(facilityScene('stadium', w).src).toBe('/art/scenes/heritage/stadium-2.webp');
     expect(facilityScene('locker', w).src).toBe('/art/scenes/heritage/locker-2.webp');
+    expect(facilityScene('stadium', w).alt).toBe('1950–60년대 구장 2단계 픽셀아트');
+    expect(facilityScene('locker', w).alt).toBe('1950–60년대 구장 2단계 라커룸 픽셀아트');
     expect(facilityScene('training', w).src).toBe('/art/scenes/heritage/training-3.webp');
     expect(facilityScene('academy', w).src).toBe('/art/scenes/heritage/academy-3.webp');
     expect(facilityScene('academy', w).alt).toContain('3단계 유소년 시설');
