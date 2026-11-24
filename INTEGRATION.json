@@ -2173,7 +2173,7 @@
       "host": "hq-dev1-pve2-vm2",
       "pid": 4133982
     },
-    "phase": "preparing",
+    "phase": "checking",
     "land": "main",
     "base": "cccc05acd4671484dde87ca23b1c639c6f6b7ea1",
     "cohort": [
@@ -2514,10 +2514,17 @@
     ],
     "at": "2026-11-24T04:32:54.408Z",
     "deadline": "2026-11-24T11:14:12.287Z",
-    "candidate": null,
+    "candidate": "c6824c4a7c802ebd923647bf90b02eb1ba8fb0dd",
     "checks": [],
     "agentChecks": [],
-    "rounds": []
+    "rounds": [],
+    "path": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3",
+    "branch": "integration/14d911dd-d011-4fde-90c1-0176ff6958d3",
+    "version": {
+      "level": "patch",
+      "from": "0.8.23",
+      "to": "0.8.24"
+    }
   },
   "history": [
     {
