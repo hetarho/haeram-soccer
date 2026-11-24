@@ -2459,10 +2459,17 @@
       "branch": "gusta-session-start-fs24h-dbfd0a77",
       "head": "446c52baab93a3fe15e74fbbd8d9e791e1d31979",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-24T17:09:10.463Z",
+      "status": "landed",
+      "at": "2026-11-24T17:12:01.774Z",
       "agentChecks": [],
-      "verificationCommands": []
+      "verificationCommands": [],
+      "landed": "4d269684cad278bffee4997306a2b6a5f1f7309f",
+      "reconciled": {
+        "at": "2026-11-24T17:12:01.774Z",
+        "from": "working",
+        "reason": "T1067 + 0.8.27 landed by fast-forward push 4d269684c after task tier, runtime tests, two-core e2e repro and three Codex reviews",
+        "verified": false
+      }
     }
   },
   "gate": null,
