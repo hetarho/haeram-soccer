@@ -977,3 +977,86 @@ describe('the client holds the days computed ahead (WEB-18)', () => {
     expect(c.reveal()).toBe(0);
   });
 });
+
+describe('the lock after a stop under load (T1066, WEB-97)', () => {
+  /** A worker whose steps take `slow` ms each while `load.on`, as a loaded host's would. */
+  function loaded(slow = 3000) {
+    const load = { on: false };
+    const fake = worker(quiet(), () => (load.on ? slow : 20));
+    return { fake, load };
+  }
+  it('a stop while a hidden tab’s catch-up step is still in flight after it is shown unlocks once it lands', async () => {
+    const { fake, load } = loaded();
+    const controller = clock(fake);
+    controller.start();
+    await vi.advanceTimersByTimeAsync(2500);
+    load.on = true;
+    // Hidden, the next tick plays the day owed as one catch-up step, which the load holds up.
+    controller.setHidden(true);
+    await vi.advanceTimersByTimeAsync(PACE_MS.x1 + 10);
+    expect(fake.command.mock.settledResults.at(-1)?.type).toBe('incomplete');
+    // Shown again while it runs, then stopped by the owner.
+    controller.setHidden(false);
+    await vi.advanceTimersByTimeAsync(100);
+    controller.pause();
+    expect(locked()).toBe(true);
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(fake.command.mock.settledResults.every((r) => r.type !== 'incomplete')).toBe(true);
+    // The step landed and was shown: nothing is left to show, so management unlocks and saves.
+    expect(fake.showing()).toBe(fake.head());
+    expect(running(controller)).toBe(false);
+    expect(locked()).toBe(false);
+    expect(fake.saveSoon).toHaveBeenCalledOnce();
+    expect(fake.client.refreshStoppedReads).toHaveBeenCalled();
+    // Nothing more is computed after the stop.
+    const sent = fake.command.mock.calls.length;
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(fake.command.mock.calls.length).toBe(sent);
+  });
+  it('a stop while a return’s catch-up step is in flight unlocks once it lands (→WEB-64)', async () => {
+    const data = new Map<string, string>();
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => data.get(key) ?? null,
+      setItem: (key: string, value: string) => void data.set(key, value),
+      removeItem: (key: string) => void data.delete(key),
+    });
+    const template = quiet();
+    data.set(
+      'haeram-soccor:clock',
+      JSON.stringify({ [template.id]: { running: true, pace: 'x1', at: Date.now() - 10_000 } }),
+    );
+    const fake = worker(template, () => 300);
+    const controller = clock(fake);
+    controller.resumeAway();
+    await vi.advanceTimersByTimeAsync(100);
+    expect(fake.command.mock.settledResults.at(-1)?.type).toBe('incomplete');
+    controller.pause();
+    await vi.advanceTimersByTimeAsync(10 * 300);
+    expect(fake.showing()).toBe(fake.head());
+    expect(running(controller)).toBe(false);
+    expect(locked()).toBe(false);
+    expect(fake.saveSoon).toHaveBeenCalledOnce();
+  });
+  it('a mode change published past the days held stops the clock and leaves management unlocked', async () => {
+    const fake = worker(quiet());
+    const controller = clock(fake);
+    controller.setPace('x10');
+    controller.start();
+    // At 0.35 s seven days are held and none is in flight: the engine worker answers in order, so
+    // the decision's view comes after every automatic step it holds.
+    await vi.advanceTimersByTimeAsync(350);
+    expect(fake.held).toHaveLength(RUN_AHEAD_DAYS.x10);
+    expect(fake.command.mock.settledResults.every((r) => r.type !== 'incomplete')).toBe(true);
+    // A command's view stands past whatever was held (`GameClient.take`).
+    const world = structuredClone(fake.held.at(-1)!.world) as World;
+    world.settings!.mode = 'manual';
+    fake.held.length = 0;
+    gameStore.publish({ ...gameStore.getSnapshot(), view: { world } as View });
+    expect(running(controller)).toBe(false);
+    expect(locked()).toBe(false);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(running(controller)).toBe(false);
+    expect(locked()).toBe(false);
+    expect(gameStore.getSnapshot().view!.world.settings!.mode).toBe('manual');
+  });
+});

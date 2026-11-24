@@ -68,7 +68,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T1066 | Unlock management after a stop under load | WEB SAVE ARCH | - | todo |
+| T1066 | Unlock management after a stop under load | WEB SAVE ARCH | - | doing@261124.fs24f |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |

@@ -42,6 +42,26 @@ export async function dismissMatchReport(page: Page) {
   if (await eve.isVisible())
     await eve.getByRole('button', { name: '창 닫기', exact: true }).click();
 }
+/**
+ * How long a confirmed mode change may wait for its answer. The engine worker answers commands in
+ * order, so the change waits behind the save already asked for, which at a season close also
+ * copies the game into its backup (→SAVE-8/31); on a loaded CI runner that outlasted the 30 s
+ * expect timeout (second-career, main 45389461640). Node without the backup copy: the season-close
+ * step 2.9 s and its save 0.18 s (T1066).
+ */
+const MODE_CHANGE_MS = 120_000;
+/** Waits for the mode change to show, failing at once with the dialog's error when it failed. */
+async function modeApplied(page: Page, mode: Locator, dialog: Locator, expected: string) {
+  const alert = dialog.getByRole('alert');
+  const deadline = Date.now() + MODE_CHANGE_MS;
+  while ((await mode.innerText()) !== expected) {
+    if (await alert.isVisible())
+      throw new Error(`The mode change to ${expected} failed: ${await alert.innerText()}`);
+    if (Date.now() > deadline)
+      throw new Error(`The mode change to ${expected} was not answered in ${MODE_CHANGE_MS} ms`);
+    await page.waitForTimeout(250);
+  }
+}
 /** Opens 위임 설정 over the current page (→WEB-79) and returns its owner-office content. */
 export async function openOffice(page: Page) {
   await dismissMatchReport(page);
@@ -147,7 +167,7 @@ export async function configureResponsibilities(
             exact: true,
           })
           .click();
-      await expect(mode).toHaveText(expected);
+      await modeApplied(page, mode, dialog, expected);
       await dismissMatchReport(page);
     }
   }

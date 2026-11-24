@@ -1083,7 +1083,10 @@ export class ProgressionController {
     if (progress.running) {
       if (this.timer === undefined) this.wake(this.hidden ? PACE_MS[progress.pace] : 0);
     }
-    // A stop that came while the step ran saved before the step landed; save what it played.
+    // An owner's stop that came while the step ran, once the tab was shown again, ends now that its
+    // day is shown, unlocking management and saving (→WEB-97). Any other stop saved before the
+    // step landed; save what it played.
+    else if (this.draining) this.drained();
     else this.client.saveSoon();
     this.restoreStoppedReads();
     this.summarize();
