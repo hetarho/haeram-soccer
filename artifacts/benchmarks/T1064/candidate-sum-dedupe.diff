@@ -1,0 +1,52 @@
+--- a/packages/engine/src/aggregate/place.ts	2026-11-24 19:07:18.648891255 +0900
++++ b/packages/engine/src/aggregate/place.ts	2026-11-24 19:24:05.045801732 +0900
+@@ -110,6 +110,12 @@
+  * call took its own. Only ever read within one call, after that call has written them.
+  */
+ let FIT_SCRATCH = new Float64Array(0);
++/**
++ * Per group of one `fitPlaceWeights` call: the first group reading the same `placed` row (its
++ * own index when none before it does), and this iteration's sum over that row (T1064).
++ */
++let FIT_FIRST = new Int32Array(0);
++let FIT_SUMS = new Float64Array(0);
+ 
+ /**
+  * One side, period and action class. Proportional fitting preserves each line's unplaced
+@@ -138,12 +144,34 @@
+       at = (3 + k) * n;
+     for (let p = 0; p < n; p++) FIT_SCRATCH[at + p] = g.count * g.placed[p]!;
+   }
++  // Groups of one cell and role share their `placed` row (`weightsAt` caches it), so its sum
++  // under the current scale is the same number for each: it is summed once per row and
++  // iteration, the same products in the same order (T1064).
++  if (FIT_FIRST.length < groups.length) {
++    FIT_FIRST = new Int32Array(Math.max(groups.length, 2 * FIT_FIRST.length));
++    FIT_SUMS = new Float64Array(FIT_FIRST.length);
++  }
++  for (let k = 0; k < groups.length; k++) {
++    const placed = groups[k]!.placed;
++    let first = k;
++    for (let j = 0; j < k; j++)
++      if (FIT_FIRST[j] === j && groups[j]!.placed === placed) {
++        first = j;
++        break;
++      }
++    FIT_FIRST[k] = first;
++  }
+   for (let iteration = 0; iteration < AC.place.iterations; iteration++) {
+     actual.fill(0);
+     for (let k = 0; k < groups.length; k++) {
+       const placed = groups[k]!.placed;
+-      let sum = 0;
+-      for (let p = 0; p < n; p++) sum += placed[p]! * scale[p]!;
++      const first = FIT_FIRST[k]!;
++      let sum: number;
++      if (first === k) {
++        sum = 0;
++        for (let p = 0; p < n; p++) sum += placed[p]! * scale[p]!;
++        FIT_SUMS[k] = sum;
++      } else sum = FIT_SUMS[first]!;
+       if (sum > 0) {
+         const at = (3 + k) * n;
+         for (let p = 0; p < n; p++) actual[p]! += (FIT_SCRATCH[at + p]! * scale[p]!) / sum;

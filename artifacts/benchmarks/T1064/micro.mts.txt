@@ -1,0 +1,195 @@
+import { readFileSync } from 'node:fs';
+const ITER = 128;
+type G = { count: number; weights: number[]; placed: number[]; pid: number };
+const cap: G[][] = JSON.parse(readFileSync('.tmp/t1064/cap.json', 'utf8'));
+// Restore shared references for `placed` rows, as weightsAt shares them.
+for (const gs of cap) { const rows = new Map<number, number[]>(); for (const g of gs) { if (!rows.has(g.pid)) rows.set(g.pid, g.placed); g.placed = rows.get(g.pid)!; } }
+let S = new Float64Array(0);
+function base(groups: G[]) {
+  const n = groups[0]!.weights.length, size = n * (groups.length + 3);
+  if (S.length < size) S = new Float64Array(Math.max(size, 2 * S.length));
+  const expected = S.subarray(0, n).fill(0), scale = S.subarray(n, 2 * n), actual = S.subarray(2 * n, 3 * n);
+  for (const g of groups) { const sum = g.weights.reduce((a, b) => a + b, 0); if (sum > 0) for (let p = 0; p < n; p++) expected[p]! += (g.count * g.weights[p]!) / sum; }
+  for (let p = 0; p < n; p++) scale[p] = expected[p]! > 0 ? 1 : 0;
+  for (let k = 0; k < groups.length; k++) { const g = groups[k]!, at = (3 + k) * n; for (let p = 0; p < n; p++) S[at + p] = g.count * g.placed[p]!; }
+  for (let it = 0; it < ITER; it++) {
+    actual.fill(0);
+    for (let k = 0; k < groups.length; k++) {
+      const placed = groups[k]!.placed; let sum = 0;
+      for (let p = 0; p < n; p++) sum += placed[p]! * scale[p]!;
+      if (sum > 0) { const at = (3 + k) * n; for (let p = 0; p < n; p++) actual[p]! += (S[at + p]! * scale[p]!) / sum; }
+    }
+    let conv = true;
+    for (let p = 0; p < n; p++) if (!(Math.abs(actual[p]! - expected[p]!) <= 1e-10 * Math.max(1, expected[p]!))) { conv = false; break; }
+    if (conv) break;
+    for (let p = 0; p < n; p++) scale[p] = actual[p]! > 0 ? (scale[p]! * expected[p]!) / actual[p]! : 0;
+  }
+  return groups.map((g) => g.placed.map((w, p) => w * scale[p]!));
+}
+// Variant: division replaced by multiplication (NOT result-identical, a ceiling only).
+function mulCeil(groups: G[]) {
+  const n = groups[0]!.weights.length, size = n * (groups.length + 3);
+  if (S.length < size) S = new Float64Array(Math.max(size, 2 * S.length));
+  const expected = S.subarray(0, n).fill(0), scale = S.subarray(n, 2 * n), actual = S.subarray(2 * n, 3 * n);
+  for (const g of groups) { const sum = g.weights.reduce((a, b) => a + b, 0); if (sum > 0) for (let p = 0; p < n; p++) expected[p]! += (g.count * g.weights[p]!) / sum; }
+  for (let p = 0; p < n; p++) scale[p] = expected[p]! > 0 ? 1 : 0;
+  for (let k = 0; k < groups.length; k++) { const g = groups[k]!, at = (3 + k) * n; for (let p = 0; p < n; p++) S[at + p] = g.count * g.placed[p]!; }
+  for (let it = 0; it < ITER; it++) {
+    actual.fill(0);
+    for (let k = 0; k < groups.length; k++) {
+      const placed = groups[k]!.placed; let sum = 0;
+      for (let p = 0; p < n; p++) sum += placed[p]! * scale[p]!;
+      if (sum > 0) { const inv = 1 / sum; const at = (3 + k) * n; for (let p = 0; p < n; p++) actual[p]! += (S[at + p]! * scale[p]!) * inv; }
+    }
+    let conv = true;
+    for (let p = 0; p < n; p++) if (!(Math.abs(actual[p]! - expected[p]!) <= 1e-10 * Math.max(1, expected[p]!))) { conv = false; break; }
+    if (conv) break;
+    for (let p = 0; p < n; p++) scale[p] = actual[p]! > 0 ? (scale[p]! * expected[p]!) / actual[p]! : 0;
+  }
+  return groups.map((g) => g.placed.map((w, p) => w * scale[p]!));
+}
+// Variant: p outer with a local accumulator; sums once per distinct row and iteration.
+let SUMS = new Float64Array(0), FIRST = new Int32Array(0);
+function inter(groups: G[]) {
+  const n = groups[0]!.weights.length, K = groups.length, size = n * (K + 3);
+  if (S.length < size) S = new Float64Array(Math.max(size, 2 * S.length));
+  if (SUMS.length < K) { SUMS = new Float64Array(2 * K); FIRST = new Int32Array(2 * K); }
+  const expected = S.subarray(0, n).fill(0), scale = S.subarray(n, 2 * n), actual = S.subarray(2 * n, 3 * n);
+  for (const g of groups) { const sum = g.weights.reduce((a, b) => a + b, 0); if (sum > 0) for (let p = 0; p < n; p++) expected[p]! += (g.count * g.weights[p]!) / sum; }
+  for (let p = 0; p < n; p++) scale[p] = expected[p]! > 0 ? 1 : 0;
+  for (let k = 0; k < K; k++) { const g = groups[k]!, at = (3 + k) * n; for (let p = 0; p < n; p++) S[at + p] = g.count * g.placed[p]!; }
+  for (let k = 0; k < K; k++) { let f = k; for (let j = 0; j < k; j++) if (FIRST[j] === j && groups[j]!.placed === groups[k]!.placed) { f = j; break; } FIRST[k] = f; }
+  for (let it = 0; it < ITER; it++) {
+    for (let k = 0; k < K; k++) {
+      const f = FIRST[k]!;
+      if (f === k) { const placed = groups[k]!.placed; let sum = 0; for (let p = 0; p < n; p++) sum += placed[p]! * scale[p]!; SUMS[k] = sum; } else SUMS[k] = SUMS[f]!;
+    }
+    for (let p = 0; p < n; p++) {
+      const sp = scale[p]!; let acc = 0;
+      for (let k = 0; k < K; k++) { const sum = SUMS[k]!; if (sum > 0) acc += (S[(3 + k) * n + p]! * sp) / sum; }
+      actual[p] = acc;
+    }
+    let conv = true;
+    for (let p = 0; p < n; p++) if (!(Math.abs(actual[p]! - expected[p]!) <= 1e-10 * Math.max(1, expected[p]!))) { conv = false; break; }
+    if (conv) break;
+    for (let p = 0; p < n; p++) scale[p] = actual[p]! > 0 ? (scale[p]! * expected[p]!) / actual[p]! : 0;
+  }
+  return groups.map((g) => g.placed.map((w, p) => w * scale[p]!));
+}
+
+// Variant: every row in one Float64Array (counts × placed, then placed), separate typed vectors.
+let B = new Float64Array(0), E = new Float64Array(0), SC = new Float64Array(0), AC2 = new Float64Array(0), SM = new Float64Array(0);
+function typed(groups: G[]) {
+  const n = groups[0]!.weights.length, K = groups.length;
+  if (B.length < 2 * n * K) B = new Float64Array(Math.max(2 * n * K, 2 * B.length));
+  if (E.length < n) { E = new Float64Array(64); SC = new Float64Array(64); AC2 = new Float64Array(64); }
+  if (SM.length < K) SM = new Float64Array(2 * K);
+  const expected = E, scale = SC, actual = AC2;
+  for (let p = 0; p < n; p++) expected[p] = 0;
+  for (const g of groups) { const sum = g.weights.reduce((a, b) => a + b, 0); if (sum > 0) for (let p = 0; p < n; p++) expected[p]! += (g.count * g.weights[p]!) / sum; }
+  for (let p = 0; p < n; p++) scale[p] = expected[p]! > 0 ? 1 : 0;
+  const PL = K * n;
+  for (let k = 0; k < K; k++) { const g = groups[k]!, at = k * n; for (let p = 0; p < n; p++) { B[at + p] = g.count * g.placed[p]!; B[PL + at + p] = g.placed[p]!; } }
+  for (let it = 0; it < ITER; it++) {
+    for (let p = 0; p < n; p++) actual[p] = 0;
+    for (let k = 0; k < K; k++) {
+      const at = k * n, pl = PL + at; let sum = 0;
+      for (let p = 0; p < n; p++) sum += B[pl + p]! * scale[p]!;
+      if (sum > 0) for (let p = 0; p < n; p++) actual[p]! += (B[at + p]! * scale[p]!) / sum;
+    }
+    let conv = true;
+    for (let p = 0; p < n; p++) if (!(Math.abs(actual[p]! - expected[p]!) <= 1e-10 * Math.max(1, expected[p]!))) { conv = false; break; }
+    if (conv) break;
+    for (let p = 0; p < n; p++) scale[p] = actual[p]! > 0 ? (scale[p]! * expected[p]!) / actual[p]! : 0;
+  }
+  return groups.map((g) => g.placed.map((w, p) => w * scale[p]!));
+}
+// Base, timing only the iterations (setup and output cost read apart).
+
+function noIter(groups: G[]) {
+  const n = groups[0]!.weights.length, size = n * (groups.length + 3);
+  if (S.length < size) S = new Float64Array(Math.max(size, 2 * S.length));
+  const expected = S.subarray(0, n).fill(0), scale = S.subarray(n, 2 * n);
+  for (const g of groups) { const sum = g.weights.reduce((a, b) => a + b, 0); if (sum > 0) for (let p = 0; p < n; p++) expected[p]! += (g.count * g.weights[p]!) / sum; }
+  for (let p = 0; p < n; p++) scale[p] = expected[p]! > 0 ? 1 : 0;
+  for (let k = 0; k < groups.length; k++) { const g = groups[k]!, at = (3 + k) * n; for (let p = 0; p < n; p++) S[at + p] = g.count * g.placed[p]!; }
+  return groups.map((g) => g.placed.map((w, p) => w * scale[p]!));
+}
+let ITS = 0;
+
+function dedupe(groups: G[]) {
+  const n = groups[0]!.weights.length, K = groups.length, size = n * (K + 3);
+  if (S.length < size) S = new Float64Array(Math.max(size, 2 * S.length));
+  if (SUMS.length < K) { SUMS = new Float64Array(2 * K); FIRST = new Int32Array(2 * K); }
+  const expected = S.subarray(0, n).fill(0), scale = S.subarray(n, 2 * n), actual = S.subarray(2 * n, 3 * n);
+  for (const g of groups) { const sum = g.weights.reduce((a, b) => a + b, 0); if (sum > 0) for (let p = 0; p < n; p++) expected[p]! += (g.count * g.weights[p]!) / sum; }
+  for (let p = 0; p < n; p++) scale[p] = expected[p]! > 0 ? 1 : 0;
+  for (let k = 0; k < K; k++) { const g = groups[k]!, at = (3 + k) * n; for (let p = 0; p < n; p++) S[at + p] = g.count * g.placed[p]!; }
+  for (let k = 0; k < K; k++) { let f = k; for (let j = 0; j < k; j++) if (FIRST[j] === j && groups[j]!.placed === groups[k]!.placed) { f = j; break; } FIRST[k] = f; }
+  for (let it = 0; it < ITER; it++) {
+    actual.fill(0);
+    for (let k = 0; k < K; k++) {
+      const f = FIRST[k]!; let sum: number;
+      if (f === k) { const placed = groups[k]!.placed; sum = 0; for (let p = 0; p < n; p++) sum += placed[p]! * scale[p]!; SUMS[k] = sum; } else sum = SUMS[f]!;
+      if (sum > 0) { const at = (3 + k) * n; for (let p = 0; p < n; p++) actual[p]! += (S[at + p]! * scale[p]!) / sum; }
+    }
+    let conv = true;
+    for (let p = 0; p < n; p++) if (!(Math.abs(actual[p]! - expected[p]!) <= 1e-10 * Math.max(1, expected[p]!))) { conv = false; break; }
+    if (conv) break;
+    for (let p = 0; p < n; p++) scale[p] = actual[p]! > 0 ? (scale[p]! * expected[p]!) / actual[p]! : 0;
+  }
+  return groups.map((g) => g.placed.map((w, p) => w * scale[p]!));
+}
+function local(groups: G[]) {
+  const n = groups[0]!.weights.length, size = n * (groups.length + 3);
+  if (S.length < size) S = new Float64Array(Math.max(size, 2 * S.length));
+  const buf = S;
+  const expected = buf.subarray(0, n).fill(0), scale = S.subarray(n, 2 * n), actual = S.subarray(2 * n, 3 * n);
+  for (const g of groups) { const sum = g.weights.reduce((a, b) => a + b, 0); if (sum > 0) for (let p = 0; p < n; p++) expected[p]! += (g.count * g.weights[p]!) / sum; }
+  for (let p = 0; p < n; p++) scale[p] = expected[p]! > 0 ? 1 : 0;
+  for (let k = 0; k < groups.length; k++) { const g = groups[k]!, at = (3 + k) * n; for (let p = 0; p < n; p++) buf[at + p] = g.count * g.placed[p]!; }
+  for (let it = 0; it < ITER; it++) {
+    actual.fill(0);
+    for (let k = 0; k < groups.length; k++) {
+      const placed = groups[k]!.placed; let sum = 0;
+      for (let p = 0; p < n; p++) sum += placed[p]! * scale[p]!;
+      if (sum > 0) { const at = (3 + k) * n; for (let p = 0; p < n; p++) actual[p]! += (buf[at + p]! * scale[p]!) / sum; }
+    }
+    let conv = true;
+    for (let p = 0; p < n; p++) if (!(Math.abs(actual[p]! - expected[p]!) <= 1e-10 * Math.max(1, expected[p]!))) { conv = false; break; }
+    if (conv) break;
+    for (let p = 0; p < n; p++) scale[p] = actual[p]! > 0 ? (scale[p]! * expected[p]!) / actual[p]! : 0;
+  }
+  return groups.map((g) => g.placed.map((w, p) => w * scale[p]!));
+}
+function rowsv(groups: G[]) {
+  const n = groups[0]!.weights.length, size = n * (groups.length + 3);
+  if (S.length < size) S = new Float64Array(Math.max(size, 2 * S.length));
+  const expected = S.subarray(0, n).fill(0), scale = S.subarray(n, 2 * n), actual = S.subarray(2 * n, 3 * n);
+  for (const g of groups) { const sum = g.weights.reduce((a, b) => a + b, 0); if (sum > 0) for (let p = 0; p < n; p++) expected[p]! += (g.count * g.weights[p]!) / sum; }
+  for (let p = 0; p < n; p++) scale[p] = expected[p]! > 0 ? 1 : 0;
+  const cp: number[][] = groups.map((g) => g.placed.map((x) => g.count * x));
+  for (let it = 0; it < ITER; it++) {
+    actual.fill(0);
+    for (let k = 0; k < groups.length; k++) {
+      const placed = groups[k]!.placed; let sum = 0;
+      for (let p = 0; p < n; p++) sum += placed[p]! * scale[p]!;
+      if (sum > 0) { const row = cp[k]!; for (let p = 0; p < n; p++) actual[p]! += (row[p]! * scale[p]!) / sum; }
+    }
+    let conv = true;
+    for (let p = 0; p < n; p++) if (!(Math.abs(actual[p]! - expected[p]!) <= 1e-10 * Math.max(1, expected[p]!))) { conv = false; break; }
+    if (conv) break;
+    for (let p = 0; p < n; p++) scale[p] = actual[p]! > 0 ? (scale[p]! * expected[p]!) / actual[p]! : 0;
+  }
+  return groups.map((g) => g.placed.map((w, p) => w * scale[p]!));
+}
+const variants: Record<string, (g: G[]) => number[][]> = { base, local, rowsv };
+const ref = cap.map((g) => base(g));
+const same = (a: number[][], b: number[][]) => a.every((r, i) => r.every((x, j) => Object.is(x, b[i]![j]!)));
+for (const [name, f] of Object.entries(variants)) if (name !== 'noIter') console.log(name, 'identical', cap.every((g, i) => same(f(g), ref[i]!)));
+const times: Record<string, number[]> = {};
+for (let round = 0; round < 12; round++)
+  for (const [name, f] of round % 2 ? Object.entries(variants).reverse() : Object.entries(variants)) {
+    const t = performance.now(); for (const g of cap) f(g); (times[name] ??= []).push(performance.now() - t);
+  }
+for (const [name, ts] of Object.entries(times)) { const s = ts.slice(2).sort((a, b) => a - b); console.log(name, s[Math.floor(s.length / 2)]!.toFixed(1), 'ms median'); }

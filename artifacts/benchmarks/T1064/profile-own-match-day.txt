@@ -1,0 +1,147 @@
+under ownMatchDay: 16398 ms
+
+self
+   2954 ms  18.0%  fitPlaceWeights aggregate/place.ts:1
+    946 ms   5.8%  attributeSide aggregate/players.ts:1
+    805 ms   4.9%  set TextDecoder :0
+    704 ms   4.3%  (anon) aggregate/players.ts:1
+    587 ms   3.6%  (anon) aggregate/team.ts:1
+    462 ms   2.8%  weightsAt aggregate/players.ts:1
+    419 ms   2.6%  __name aggregate/players.ts:1
+    377 ms   2.3%  traitVector src/match-weights.ts:1
+    363 ms   2.2%  share aggregate/players.ts:1
+    251 ms   1.5%  fitMoves aggregate/players.ts:1
+    251 ms   1.5%  multinomialInto aggregate/participation.ts:1
+    249 ms   1.5%  (anon) aggregate/place.ts:1
+    229 ms   1.4%  __name aggregate/timeline.ts:1
+    209 ms   1.3%  (anon) aggregate/participation.ts:1
+    209 ms   1.3%  passGroup aggregate/team.ts:1
+    195 ms   1.2%  within aggregate/players.ts:1
+    173 ms   1.1%  (anon) aggregate/engine.ts:1
+    170 ms   1.0%  sideCounters aggregate/ledger.ts:1
+    149 ms   0.9%  settleNpcSeason src/npc-stats.ts:1
+    144 ms   0.9%  generateTeamFacts aggregate/team.ts:1
+    142 ms   0.9%  settleNpcGrowth src/npc-careers.ts:1
+    134 ms   0.8%  sideUnits aggregate/input.ts:1
+    133 ms   0.8%  sharesOf aggregate/players.ts:1
+    128 ms   0.8%  pairParticipants aggregate/timeline.ts:1
+    124 ms   0.8%  pickAt aggregate/players.ts:1
+    123 ms   0.8%  participationTimelineIssues aggregate/participation.ts:1
+    119 ms   0.7%  (anon) src/match-weights.ts:1
+    107 ms   0.7%  (anon) src/world.ts:1
+    107 ms   0.6%  creditMove aggregate/count.ts:1
+    105 ms   0.6%  recentClubResults src/recent-results.ts:1
+
+inclusive
+  16398 ms 100.0%  advanceDays src/season.ts:1
+  16398 ms 100.0%  ownMatchDay T1064/day.ts:1
+  16395 ms 100.0%  stepDay src/season.ts:1
+  16042 ms  97.8%  playRound src/season.ts:1
+  15353 ms  93.6%  (anon) src/season.ts:1
+  14439 ms  88.1%  playFixture src/season.ts:1
+  14425 ms  88.0%  simulateMatch src/match.ts:1
+  14312 ms  87.3%  simulateAggregate aggregate/engine.ts:1
+  13304 ms  81.1%  playAggregate aggregate/engine.ts:1
+  10042 ms  61.2%  attributePlayerFacts aggregate/players.ts:1
+   9808 ms  59.8%  attributeSide aggregate/players.ts:1
+   4960 ms  30.2%  fitMoves aggregate/players.ts:1
+   3173 ms  19.4%  fitPlaceWeights aggregate/place.ts:1
+   3150 ms  19.2%  (anon) aggregate/players.ts:1
+   3125 ms  19.1%  settleParticipation aggregate/engine.ts:1
+   2493 ms  15.2%  generateTeamFacts aggregate/team.ts:1
+   1278 ms   7.8%  (anon) aggregate/team.ts:1
+   1105 ms   6.7%  share aggregate/players.ts:1
+    962 ms   5.9%  passesAndCarries aggregate/team.ts:1
+    895 ms   5.5%  __name aggregate/players.ts:1
+    893 ms   5.4%  recordMatch src/season.ts:1
+    870 ms   5.3%  pickAt aggregate/players.ts:1
+    836 ms   5.1%  weights aggregate/players.ts:1
+    825 ms   5.0%  prepareMatch src/match.ts:1
+    805 ms   4.9%  set TextDecoder :0
+    756 ms   4.6%  (anon) aggregate/engine.ts:1
+    709 ms   4.3%  sharesOf aggregate/players.ts:1
+    709 ms   4.3%  attributeFouls aggregate/players.ts:1
+    702 ms   4.3%  weightsAt aggregate/players.ts:1
+    688 ms   4.2%  actionWeight aggregate/players.ts:1
+callees of playRound
+  15344 ms  93.6%  (anon) src/season.ts:1
+    292 ms   1.8%  settleNpcGrowth src/npc-careers.ts:1
+    178 ms   1.1%  drawShortlist src/signings.ts:1
+     71 ms   0.4%  settleRound src/settlement.ts:1
+     30 ms   0.2%  settleNpcDistress src/books.ts:1
+     29 ms   0.2%  refreshFreeAgents src/free-agents.ts:1
+     23 ms   0.1%  settleTraining src/training.ts:1
+     17 ms   0.1%  refreshManagerMarket src/managerMarket.ts:1
+      8 ms   0.0%  settleCohesion src/adaptation.ts:1
+      7 ms   0.0%  advanceCups src/cups.ts:1
+      4 ms   0.0%  snapshotStandings src/season.ts:1
+      3 ms   0.0%  refreshCoachingMarket src/coaching-market.ts:1
+callees of playAggregate
+  10042 ms  61.2%  attributePlayerFacts aggregate/players.ts:1
+   3125 ms  19.1%  settleParticipation aggregate/engine.ts:1
+     72 ms   0.4%  aggregatePlan aggregate/engine.ts:1
+     25 ms   0.1%  buildAggregateInput aggregate/input.ts:1
+      8 ms   0.1%  __name aggregate/engine.ts:1
+      7 ms   0.0%  aggregateStreams aggregate/team.ts:1
+      1 ms   0.0%  (anon) aggregate/engine.ts:1
+      1 ms   0.0%  (anon) aggregate/input.ts:1
+callees of attributeSide
+   4960 ms  30.2%  fitMoves aggregate/players.ts:1
+    975 ms   5.9%  (anon) aggregate/players.ts:1
+    895 ms   5.5%  __name aggregate/players.ts:1
+    707 ms   4.3%  attributeFouls aggregate/players.ts:1
+    485 ms   3.0%  pairParticipants aggregate/timeline.ts:1
+    265 ms   1.6%  multinomialInto aggregate/participation.ts:1
+    212 ms   1.3%  within aggregate/players.ts:1
+    126 ms   0.8%  takerWeights aggregate/players.ts:1
+    105 ms   0.6%  creditMove aggregate/count.ts:1
+     61 ms   0.4%  weightsAt aggregate/players.ts:1
+     17 ms   0.1%  spans aggregate/players.ts:1
+     15 ms   0.1%  weightedIndex aggregate/participation.ts:1
+callees of fitMoves
+   3173 ms  19.4%  fitPlaceWeights aggregate/place.ts:1
+   1535 ms   9.4%  (anon) aggregate/players.ts:1
+callees of settleParticipation
+   2493 ms  15.2%  generateTeamFacts aggregate/team.ts:1
+    564 ms   3.4%  planParticipation aggregate/participation.ts:1
+     40 ms   0.2%  (anon) aggregate/engine.ts:1
+      1 ms   0.0%  (anon) aggregate/team.ts:1
+callees of simulateAggregate
+  13219 ms  80.6%  playAggregate aggregate/engine.ts:1
+    810 ms   4.9%  prepareMatch src/match.ts:1
+    131 ms   0.8%  aggregateRecord aggregate/engine.ts:1
+     96 ms   0.6%  matchdayRosters aggregate/engine.ts:1
+      2 ms   0.0%  eraRules match/rules.ts:1
+      1 ms   0.0%  ratingOf src/world.ts:1
+callees of prepareMatch
+    314 ms   1.9%  startingSquad src/world.ts:1
+    220 ms   1.3%  (anon) src/match.ts:1
+    163 ms   1.0%  ratingOf src/world.ts:1
+     47 ms   0.3%  matchForm src/match.ts:1
+     15 ms   0.1%  findClub src/world.ts:1
+     13 ms   0.1%  __name src/match.ts:1
+      5 ms   0.0%  formedStrength src/match.ts:1
+      4 ms   0.0%  synergyEffects src/synergy.ts:1
+      1 ms   0.0%  random src/primitives.ts:1
+      1 ms   0.0%  clubManager src/managerMarket.ts:1
+callees of recordMatch
+    234 ms   1.4%  assertFullMatchRecord src/match-model.ts:1
+    192 ms   1.2%  settleNpcSeason src/npc-stats.ts:1
+    174 ms   1.1%  recordRecentResult src/recent-results.ts:1
+     60 ms   0.4%  applyDiscipline src/discipline.ts:1
+     37 ms   0.2%  captureAppearance src/match-appearance.ts:1
+     30 ms   0.2%  gate src/settlement.ts:1
+     29 ms   0.2%  refreshReadModels src/read-models.ts:1
+     23 ms   0.1%  recordScorers src/scoring.ts:1
+     16 ms   0.1%  settleStarts src/adaptation.ts:1
+     11 ms   0.1%  settleElo src/ratings.ts:1
+      8 ms   0.0%  injuriesFromMatch src/season.ts:1
+      6 ms   0.0%  serveBans src/discipline.ts:1
+callees of clubDay
+    288 ms   1.8%  dailyMarket src/transfers.ts:1
+     33 ms   0.2%  settleNpcCoaching src/coaching-market.ts:1
+      6 ms   0.0%  refreshReadModels src/read-models.ts:1
+      4 ms   0.0%  contractTalks src/contracts.ts:1
+      2 ms   0.0%  qualifyManagers src/manager-entry.ts:1
+      1 ms   0.0%  sponsorEnding src/sponsors.ts:1
+      1 ms   0.0%  dailyStaff src/staff.ts:1

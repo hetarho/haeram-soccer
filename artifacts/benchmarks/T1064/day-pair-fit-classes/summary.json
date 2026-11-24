@@ -1,0 +1,33 @@
+{
+  "base": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/start-fs24c-364d564d/.tmp/t1064-base",
+  "candidate": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/start-fs24c-364d564d",
+  "rounds": 6,
+  "eves": 6,
+  "reps": 2,
+  "medianMs": {
+    "base": 915.9941069999995,
+    "candidate": 892.4750180000001
+  },
+  "ratio": 0.9948,
+  "lo": 0.9761,
+  "hi": 1.0158,
+  "call": "no difference",
+  "hashes": {
+    "equal": 36,
+    "differ": 0
+  },
+  "loads": [
+    1.26,
+    1.44,
+    1.64,
+    1.45,
+    1.61,
+    1.44,
+    1.36,
+    1.41,
+    1.53,
+    1.45,
+    1.48,
+    1.65
+  ]
+}

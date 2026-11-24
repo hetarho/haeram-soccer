@@ -1,0 +1,103 @@
+diff --git a/packages/engine/src/aggregate/players.ts b/packages/engine/src/aggregate/players.ts
+index 980681d77..9ba75fa68 100644
+--- a/packages/engine/src/aggregate/players.ts
++++ b/packages/engine/src/aggregate/players.ts
+@@ -16,7 +16,7 @@ import type { MatchAction } from '../match';
+ import { zeroMetrics } from '../primitives';
+ import { exp } from '../portable-math';
+ import { AGGREGATE_ATTRIBUTION_CONFIG as AC, AGGREGATE_CONFIG } from './config';
+-import { inBoxCell, isPassKind, looseBalls } from './ledger';
++import { inBoxCell, isPassKind, looseBalls, moveKindIndex } from './ledger';
+ import {
+   PLACE_ROWS,
+   clearPlaceTables,
+@@ -40,6 +40,7 @@ import {
+   type AggregateExposure,
+ } from './participation';
+ import { creditMove, creditShot, creditWin, creditCard, moveTraits } from './count';
++import { AGGREGATE_MOVE_KINDS } from './types';
+ import { commonSpan, pairParticipants, playingSpan } from './timeline';
+ import type {
+   AggregateAttribute,
+@@ -184,6 +185,13 @@ export function refreshAttributionRoles() {
+ const shooterRole = (shot: AggregateShot) =>
+   shot.header ? ROLES.header : inBoxCell(shot.cell) ? ROLES.shot : ROLES.outsideShot;
+ /** The role that plays a move group (corners and free kicks are their taker's). */
++/** `fitMoves`' classes: each move kind's index (→`moveKindIndex`), then interceptions and tackles. */
++const FIT_INTERCEPTION = AGGREGATE_MOVE_KINDS.length,
++  FIT_TACKLE = FIT_INTERCEPTION + 1,
++  FIT_CLASSES = FIT_TACKLE + 1;
++/** Scratch lists `fitMoves` refills on every call; read only within that call. */
++const FIT_INDEXES = Array.from({ length: FIT_CLASSES }, () => [] as number[]);
++const FIT_GROUPS = Array.from({ length: FIT_CLASSES }, () => [] as PlaceGroup[]);
+ function moveRole(move: AggregateMove): Role {
+   const band = cellBand(move.from);
+   switch (move.kind) {
+@@ -463,40 +471,49 @@ class SideLines {
+   ): Map<number, number[]> {
+     const fitted = new Map<number, number[]>();
+     if (!this.plan.placed) return fitted;
+-    const classes = new Map<string, { index: number; group: PlaceGroup }[]>();
+-    moves.forEach((move, index) => {
+-      if (move.period !== period || (!winning && move.setPiece)) return;
++    // One class per move kind (a cut-back fits with the crosses), or per kind of ball won; each
++    // class is fitted on its own, so the order they are fitted in leaves every weight as it was.
++    // Numbered classes and parallel lists instead of string keys and wrappers (T1064).
++    const indexes = FIT_INDEXES,
++      groups = FIT_GROUPS;
++    for (let c = 0; c < FIT_CLASSES; c++) {
++      indexes[c]!.length = 0;
++      groups[c]!.length = 0;
++    }
++    for (let index = 0; index < moves.length; index++) {
++      const move = moves[index]!;
++      if (move.period !== period || (!winning && move.setPiece)) continue;
+       const pass = isPassKind(move.kind);
+       const count = winning
+         ? pass
+           ? move.intercepted
+           : move.attempts - move.completed
+         : move.attempts - (pinned.get(index)?.length ?? 0);
+-      if (count <= 0) return;
++      if (count <= 0) continue;
+       const at = pass ? cellBand(move.to) : cellBand(move.from);
+       const role = winning
+         ? ROLES.defend(LAST_BAND - at, pass ? 'positioning' : 'tackling')
+         : moveRole(move);
+       const key = winning
+         ? pass
+-          ? 'interception'
+-          : 'tackle'
+-        : move.kind === 'cutBack'
+-          ? 'cross'
+-          : move.kind;
++          ? FIT_INTERCEPTION
++          : FIT_TACKLE
++        : moveKindIndex(move.kind === 'cutBack' ? 'cross' : move.kind);
+       const cell = winning ? opposingCell(pass ? move.to : move.from) : move.from;
+-      const group = {
++      indexes[key]!.push(index);
++      groups[key]!.push({
+         count,
+         weights: this.weights(period, role),
+         placed: this.weightsAt(period, role, cell, !winning),
+-      };
+-      const list = classes.get(key) ?? [];
+-      list.push({ index, group });
+-      classes.set(key, list);
+-    });
+-    for (const list of classes.values()) {
+-      const weights = fitPlaceWeights(list.map((g) => g.group));
+-      list.forEach((g, i) => fitted.set(g.index, weights[i]!));
++      });
++    }
++    for (let c = 0; c < FIT_CLASSES; c++) {
++      const list = groups[c]!;
++      if (list.length === 0) continue;
++      const weights = fitPlaceWeights(list);
++      const at = indexes[c]!;
++      for (let i = 0; i < at.length; i++) fitted.set(at[i]!, weights[i]!);
++      list.length = 0;
+     }
+     return fitted;
+   }
