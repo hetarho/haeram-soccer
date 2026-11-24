@@ -1874,7 +1874,75 @@
       "verificationCommands": []
     }
   },
-  "gate": null,
+  "gate": {
+    "token": "37219d95-fe76-470e-896d-c940814d2ccc",
+    "owner": "fs24",
+    "via": "merge",
+    "executor": {
+      "host": "hq-dev1-pve2-vm2",
+      "pid": 4016451
+    },
+    "phase": "preparing",
+    "land": "main",
+    "base": "bcce73b924e8f63c036d4cd4bedfd08e372064b6",
+    "cohort": [
+      {
+        "id": "92049d603d0990aace966255",
+        "tag": "fs24",
+        "host": "hq-dev1-pve2-vm2",
+        "device": "hq-dev1-pve2-vm2",
+        "branch": "gusta-session-start-fs24-0f2a0f35",
+        "head": "5db4c348dc4ded2181734a1c394a7baaf8324c9d",
+        "agentChecks": [],
+        "verificationCommands": [],
+        "publication": "merge"
+      }
+    ],
+    "deferred": [
+      {
+        "id": "85b2d45965b2d07e73f2e8fb",
+        "tag": "np19",
+        "host": "ihaelam-ui-MacBookPro",
+        "branch": "gusta-session-self-improve-np19-f1c9b1b9",
+        "status": "paused",
+        "at": "2026-11-18T20:53:44.088Z",
+        "reason": "session-ended"
+      },
+      {
+        "id": "ea1a0db8eec814a3c131d34b",
+        "tag": "sv19",
+        "host": "hq-dev1-pve2-vm2",
+        "branch": "gusta-session-start-sv19-0cc2a73b",
+        "status": "paused",
+        "at": "2026-11-19T13:00:21.749Z",
+        "reason": "session-ended"
+      },
+      {
+        "id": "bdd614ebd62a8dd70a0866a2",
+        "tag": "facauto",
+        "host": "ihaelam-ui-MacBookPro",
+        "branch": "gusta-session-start-facauto-7fb6ee3c",
+        "status": "paused",
+        "at": "2026-11-19T16:52:06.078Z",
+        "reason": "session-ended"
+      },
+      {
+        "id": "fb13eadd7bf9b51d38f9f565",
+        "tag": "ovr20",
+        "host": "hq-dev1-pve2-vm2",
+        "branch": "gusta-session-start-ovr20-f773a1bb",
+        "status": "paused",
+        "at": "2026-11-20T03:33:51.725Z",
+        "reason": "session-ended"
+      }
+    ],
+    "at": "2026-11-24T00:42:29.565Z",
+    "deadline": "2026-11-24T08:28:19.077Z",
+    "candidate": null,
+    "checks": [],
+    "agentChecks": [],
+    "rounds": []
+  },
   "history": [
     {
       "token": "4e0a9875-d0ce-46bc-9669-41267bc42a36",
