@@ -2435,10 +2435,17 @@
       "branch": "gusta-session-start-fs24g-57415b92",
       "head": "16b57791c8d8be9e3a1dc2b5bb0aa9b823e46e6c",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-24T13:25:21.606Z",
+      "status": "landed",
+      "at": "2026-11-24T13:55:28.471Z",
       "agentChecks": [],
-      "verificationCommands": []
+      "verificationCommands": [],
+      "landed": "16b57791c8d8be9e3a1dc2b5bb0aa9b823e46e6c",
+      "reconciled": {
+        "at": "2026-11-24T13:55:28.471Z",
+        "from": "working",
+        "reason": "gate holder for the T1065/T1066 Codex review; no changes, workspace already pruned",
+        "verified": false
+      }
     }
   },
   "gate": null,
