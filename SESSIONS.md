@@ -227,6 +227,7 @@
 - 261124 decided T1054 ARCH-32: 최고가 설명을 저장하는 가격 변경 이벤트 → 새 이벤트는 가격 사실만 쓰고 기존 ID와 번역은 유지합니다 (alt: 공유 문구 ID의 원문을 덮어쓰기). 예전 저장을 해석할 수 있고 검토 화면의 예측을 확정 사실처럼 기록하는 일을 피합니다.
 - 261124 decided T1056 ECON-29: 커리어 재측정의 시간과 우선 사례 → 45분 동안 프랑스와 잉글랜드 참조 커리어의 기본가·최고가를 같은 체크포인트에서 먼저 읽습니다 (alt: 전체 국가 장기 커리어 묶음부터 실행). 프랑스 2부의 관중 증가를 우선 확인하고 한 단위의 검사 시간도 남깁니다.
 - 261124 decided T1058 ARCH-34: 조작·저장·열기의 주 측정값과 기준판 → T1039 수정 뒤 같은 경로에서 응답 또는 저장 확정까지의 벽시계 시간을 재고 큐·CPU·저장소 비용을 나눕니다 (alt: 기존 엔진 CPU 지표만 사용). 플레이어 대기에 포함되는 작업자 대기와 저장 비용까지 비교할 수 있습니다.
+- 261124 suggest T1058 SAVE-3: Save cost after T1058 (Node, scripts/perf/waits.ts, 1930 e2e start): a save after a stop or an owner decision is 0.08-0.29 s, about 85% of it `worldToRows` writing every in-memory row's JSON to diff against the last commit; SQLite writes 1-11 ms. Likely boundary: apps/web/src/adapters/rowSaver.ts and worldRows.ts (dirty families or per-record change marks from engine mutation sites). Next experiment: measure the same split on the 2000 takeover (scripts/save-db-bench.ts build takeover-2000) and on OPFS in one locked preview repro; the 0.8.16-0.8.17 CI 6-7 s decision-save lead stays unmeasured on OPFS.
 
 ## unlanded
 | id | tag | branch | commit | at |
