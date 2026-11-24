@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r231 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r232 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -627,6 +627,7 @@
   - a place already open when the clock starts dims in place with a short reason and shows nothing stale; once the clock stops and every day computed ahead has been shown, the reads are computed for the current day and the places open again.
   - the 결재함 button, its count and the queue stay available while the clock runs (→!WEB-18); in the office only the parts built from those previews dim.
   - manual next-event processing and a stopped clock compute them as before.
+  - The stopped discipline and office reads may reuse parts across daily cache invalidation while the inputs to those parts are unchanged. Posted replies match a fresh read for the current world state.
 
 ## flow
 
@@ -637,6 +638,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r232 261124 WEB-119✎ recompute stopped reads for the current day→allow reuse of unchanged discipline and office inputs across days with fresh-read reply parity
 - r231 261124 WEB-14✎ fixed top-preset summary→localized gate-forecast summary with a factual applied-price event · WEB-72✎ art stage naming implicit and period kit generic→alt text follows the completed-stage counter and Sticker Club heritage/terraces stage-10 locker rooms depict association-football kit
 - r230 261120 WEB-72✎ distinct artwork for nine stadium stages→distinct artwork for every completed ECON-32 stadium stage, including 105,000 and 120,000
 - r229 261120 WEB-47✎ champion badge and own/champion-only OVR in closed tables→every recorded club's OVR in the sortable column and a border or outline on the champion row
