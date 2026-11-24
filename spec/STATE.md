@@ -68,7 +68,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T1067 | Keep a busy engine worker alive on slow devices | ARCH WEB SAVE | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
