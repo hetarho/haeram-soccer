@@ -225,6 +225,7 @@
 - 261120 suggest ECON-29 ECON-28 ECON-9: T1052 finding: a reputation-90 ENG top-flight club sold out at 0.12 has matchday 69.7-75.4% of league-season turnover in 2000 (band 15-25%), distribution 10.3-12.7% (band 40-55%); still 51.8-58.9% matchday at the default 0.05 preset. Turnover totals (2000 GBP106-131m, 2020 GBP527-620m) are plausible, so not game-breaking; review the giant gate per spectator against the 2000s distribution and commercial curves on lived careers (artifacts/benchmarks/T1052).
 - 261124 decided T1053 WEB-72: 스티커 클럽 그림의 실행 조합과 수정 범위 → T1050에서 사용한 codex/gpt-6.1-terra@low로 두 장면의 구도와 시대를 살려 축구 용품을 다시 그립니다 (alt: 라커룸 장면 전체를 새 구도로 제작). 기존 아트와 배포 규격을 보존하면서 잘못된 소품을 바로잡을 수 있습니다.
 - 261124 decided T1054 WEB-14: 관중 예측 상한만 만석인 최고가 안내 → 매진 가능으로 표시합니다 (alt: 상한이 만석이면 매진으로 표시). 예측 하한에는 빈자리가 남으므로 범위의 의미를 그대로 보여줍니다.
+- 261124 decided T1054 ARCH-32: 최고가 설명을 저장하는 가격 변경 이벤트 → 새 이벤트는 가격 사실만 쓰고 기존 ID와 번역은 유지합니다 (alt: 공유 문구 ID의 원문을 덮어쓰기). 예전 저장을 해석할 수 있고 검토 화면의 예측을 확정 사실처럼 기록하는 일을 피합니다.
 
 ## log
 - 261124 gusta-create-task ARCH WEB ECON start
