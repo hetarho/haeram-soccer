@@ -2333,10 +2333,10 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-fs24f-22ddbbef",
-      "head": "6ba0bbc992e62e2761959002fc8f5939e161a87f",
+      "head": "616f36f8354bb3b64f1d284d0221f77ce624825f",
       "land": "main",
-      "status": "paused",
-      "at": "2026-11-24T13:46:39.417Z",
+      "status": "working",
+      "at": "2026-11-24T13:54:47.877Z",
       "agentChecks": [
         {
           "id": "T1065-review-regressions",
