@@ -34,8 +34,9 @@ const IDLE_MS = 10_000;
 /**
  * Waits until the step `control`'s click asked for shows `moved`. While the control stays locked
  * (→WEB-97) the engine is working on that step: a long step reports itself every second and the
- * client fails an engine worker that stays silent for 30 s, so a long wait here is a step at work.
- * A click that never locks the control, or a lock released without the result, fails early.
+ * client fails an engine worker only after two minutes of silence, so a long wait here is a step
+ * at work. A click that never locks the control, or a lock released without the result, fails
+ * early.
  */
 async function stepSettles(control: Locator, moved: () => Promise<boolean>, step: string) {
   let state = 'starting',

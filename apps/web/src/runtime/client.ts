@@ -40,8 +40,13 @@ const STORAGE_TIMEOUT_MS = 600000;
  * each season it reaches is a progress message that restarts the watchdog.
  */
 const GENERATION_STEP_MS = 600000;
-/** A manual event can settle several days before its next worker heartbeat. */
-const NEXT_EVENT_TIMEOUT_MS = 30_000;
+/**
+ * How long the engine worker may stay silent on a command or a read before it is failed as hung
+ * (→ARCH-6). Its work is synchronous and reports only between days: one season-close day, or the
+ * first view the new season builds, held a busy two-core runner silent past 30 s (main
+ * 45417944693). A failed worker drops the days not yet saved, so only a real hang should end it.
+ */
+const ENGINE_SILENCE_MS = 120_000;
 /** Automatic progress waits at most this long for its background save (→SAVE-8). */
 export const AUTOSAVE_MS = 30000;
 /** The writer's notice once an activated career's updated save data is committed (→WEB-66). */
@@ -566,7 +571,7 @@ export class GameClient {
   private rpc(
     body: Body,
     requestId = this.requestId(),
-    timeout = 15000,
+    timeout = ENGINE_SILENCE_MS,
     automatic = false,
   ): Promise<Reply> {
     if (this.failed) return Promise.reject(new Error(sourceMessage('copy.client.3e8bd256a6')));
@@ -636,11 +641,7 @@ export class GameClient {
       this.state.savedRevision = -1;
       this.staging.replace();
     }
-    const timeout =
-      body.type === 'command' && body.command.type === 'next-event'
-        ? NEXT_EVENT_TIMEOUT_MS
-        : undefined;
-    const reply = await this.rpc(body, undefined, timeout, automatic);
+    const reply = await this.rpc(body, undefined, undefined, automatic);
     if (reply.playback) this.staging.replace(reply.playback);
     this.emit();
     // The engine answered without encoding; the caller asks for the background save.

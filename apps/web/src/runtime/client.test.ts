@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { initializeReadModels } from '../../../../packages/engine/src/read-models';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
@@ -475,7 +476,8 @@ describe('background worker publication', () => {
     expect(client.state.savedRevision).toBe(client.state.view!.world.revision);
   });
 
-  it('lets a slow manual event and a read waiting behind it finish past the ordinary watchdog', async () => {
+  /** Holds the engine's answers to `held` requests until released, on fake timers. */
+  async function silentEngine(held: (body: Request['body']) => boolean) {
     const client = await start();
     const settings = structuredClone(client.state.view!.world.settings!);
     settings.mode = 'manual';
@@ -485,33 +487,77 @@ describe('background worker publication', () => {
     const handle = host.handle.bind(host);
     let release!: () => void;
     const gate = new Promise<void>((resolve) => (release = resolve));
-    const held = vi.spyOn(host, 'handle').mockImplementation(async (input) => {
-      const { body } = input as Request;
-      if (
-        body.type === 'news-page' ||
-        (body.type === 'command' && body.command.type === 'next-event')
-      )
-        await gate;
+    const spy = vi.spyOn(host, 'handle').mockImplementation(async (input) => {
+      if (held((input as Request).body)) await gate;
       return handle(input);
     });
     vi.useFakeTimers();
     const browserTimeout = vi.spyOn(window, 'setTimeout').mockImplementation(setTimeout);
+    return {
+      client,
+      release: () => release(),
+      restore() {
+        release();
+        spy.mockRestore();
+        browserTimeout.mockRestore();
+        vi.useRealTimers();
+      },
+    };
+  }
+  it('lets a slow manual event and a read waiting behind it finish past a minute of silence', async () => {
+    const engine = await silentEngine(
+      (body) =>
+        body.type === 'news-page' ||
+        (body.type === 'command' && body.command.type === 'next-event'),
+    );
+    const { client } = engine;
     try {
       const advancing = client.command({ type: 'next-event' }, { background: true });
       await vi.advanceTimersByTimeAsync(0);
       const reading = client.newsPage().catch((error: unknown) => error);
-      await vi.advanceTimersByTimeAsync(16_000);
+      await vi.advanceTimersByTimeAsync(61_000);
       expect(client.state.processing).toBe(true);
       expect(client.state.error).toBeUndefined();
-      release();
+      engine.release();
       expect(await advancing).toMatchObject({ ok: true });
       expect(await reading).toMatchObject({ world: client.state.view!.world.id });
       await client.whenSaved();
     } finally {
-      release();
-      held.mockRestore();
-      browserTimeout.mockRestore();
-      vi.useRealTimers();
+      engine.restore();
+    }
+  });
+
+  it('keeps an owner decision the busy engine leaves silent past 30 s (main 45417944693)', async () => {
+    const engine = await silentEngine(
+      (body) => body.type === 'command' && body.command.type === 'settings',
+    );
+    const { client } = engine;
+    try {
+      const settings = structuredClone(client.state.view!.world.settings!);
+      settings.mode = 'automatic';
+      const switching = client.command({ type: 'settings', settings }, { background: true });
+      await vi.advanceTimersByTimeAsync(61_000);
+      expect(client.state.error).toBeUndefined();
+      engine.release();
+      expect(await switching).toMatchObject({ ok: true });
+      expect(client.state.view!.world.settings!.mode).toBe('automatic');
+    } finally {
+      engine.restore();
+    }
+  });
+
+  it('still fails an engine worker that stays silent for two minutes', async () => {
+    const engine = await silentEngine(
+      (body) => body.type === 'command' && body.command.type === 'next-event',
+    );
+    const { client } = engine;
+    try {
+      const advancing = client.command({ type: 'next-event' }, { background: true });
+      await vi.advanceTimersByTimeAsync(121_000);
+      expect(await advancing).toBeUndefined();
+      expect(client.state.error).toContain(sourceMessage('copy.client.0747dd4e85'));
+    } finally {
+      engine.restore();
     }
   });
 
