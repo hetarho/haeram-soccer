@@ -2173,7 +2173,7 @@
       "host": "hq-dev1-pve2-vm2",
       "pid": 4133982
     },
-    "phase": "checking",
+    "phase": "failed",
     "land": "main",
     "base": "cccc05acd4671484dde87ca23b1c639c6f6b7ea1",
     "cohort": [
@@ -2515,16 +2515,404 @@
     "at": "2026-11-24T04:32:54.408Z",
     "deadline": "2026-11-24T11:14:12.287Z",
     "candidate": "c6824c4a7c802ebd923647bf90b02eb1ba8fb0dd",
-    "checks": [],
-    "agentChecks": [],
-    "rounds": [],
+    "checks": [
+      {
+        "command": "verification-plan:scripts/verification-plan.json",
+        "schemaVersion": 1,
+        "ok": false,
+        "exitCode": 1,
+        "cached": false,
+        "timedOut": false,
+        "cancelled": false,
+        "stale": false,
+        "ms": 1686537,
+        "scope": {
+          "TIER": "batch",
+          "DIFF_BASE": "cccc05acd4671484dde87ca23b1c639c6f6b7ea1",
+          "TASK": "",
+          "TASKS": ""
+        },
+        "commit": "c6824c4a7c802ebd923647bf90b02eb1ba8fb0dd",
+        "tree": "b0f70b1a2eab557ea73740cf8c602547f7fe7530",
+        "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-516f67b0-138d-4c97-ad1d-6bca892e0ae0.log",
+        "tail": [
+          "      Tests  2 failed | 4550 passed | 3 skipped (4555)",
+          "   Start at  13:34:33",
+          "   Duration  1605.50s (tests 96%, import 4%)",
+          "",
+          "JSON report written to /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/vitest-results.json",
+          "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":462870,\"started\":\"2026-11-24T04:34:32.162Z\",\"exitCode\":1,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-24T05:01:18.987Z\",\"elapsedMs\":1606828,\"commandExitCode\":1,\"afterExitCode\":1}",
+          "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/report.json\"}",
+          " ELIFECYCLE  Command failed with exit code 1."
+        ],
+        "failedTests": [
+          "× keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career) 500146ms",
+          "× is every package version and the rules a world plays 16ms",
+          "FAIL  |integration| packages/engine/src/feature-replay.retained.test.ts > keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career)",
+          "FAIL  |unit| packages/contracts/src/versions.test.ts > the current game version (→SAVE-10, SAVE-26) > is every package version and the rules a world plays"
+        ],
+        "plan": {
+          "source": "scripts/verification-plan.json",
+          "checks": [
+            "verify-batch"
+          ]
+        },
+        "checks": [
+          {
+            "id": "verify-batch",
+            "command": "pnpm run verify:batch",
+            "inputs": [
+              "*.json",
+              "*.mjs",
+              "*.toml",
+              "*.ts",
+              "*.yaml",
+              ".github",
+              ".gitignore",
+              ".node-version",
+              ".prettierignore",
+              "apps",
+              "artifacts",
+              "packages",
+              "patches",
+              "scripts",
+              "tests"
+            ],
+            "inputFingerprint": "d24843401e59822b8fa72ec7e49b737c5b0f0de9af721bd1d3a1a0c133d6e854",
+            "executionFingerprint": "2da5c5d51929df8ed22e2c1906f88d088694c5fdaf2b64e9b63510986ef3e790",
+            "ok": false,
+            "status": "failed",
+            "exitCode": 1,
+            "cached": false,
+            "timedOut": false,
+            "cancelled": false,
+            "stale": false,
+            "ms": 1686216,
+            "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-516f67b0-138d-4c97-ad1d-6bca892e0ae0.log",
+            "failedTests": [
+              "× keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career) 500146ms",
+              "× is every package version and the rules a world plays 16ms",
+              "FAIL  |integration| packages/engine/src/feature-replay.retained.test.ts > keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career)",
+              "FAIL  |unit| packages/contracts/src/versions.test.ts > the current game version (→SAVE-10, SAVE-26) > is every package version and the rules a world plays"
+            ],
+            "tail": [
+              "      Tests  2 failed | 4550 passed | 3 skipped (4555)",
+              "   Start at  13:34:33",
+              "   Duration  1605.50s (tests 96%, import 4%)",
+              "",
+              "JSON report written to /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/vitest-results.json",
+              "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":462870,\"started\":\"2026-11-24T04:34:32.162Z\",\"exitCode\":1,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-24T05:01:18.987Z\",\"elapsedMs\":1606828,\"commandExitCode\":1,\"afterExitCode\":1}",
+              "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/report.json\"}",
+              " ELIFECYCLE  Command failed with exit code 1."
+            ],
+            "cleanup": {
+              "scope": "process-group",
+              "signalled": false,
+              "escalated": false
+            }
+          }
+        ],
+        "failedCheckIds": [
+          "verify-batch"
+        ],
+        "cleanup": {
+          "scope": "process-group",
+          "signalled": false,
+          "escalated": false
+        }
+      }
+    ],
+    "agentChecks": [
+      {
+        "id": "T1039-ci-chromium-season-journeys",
+        "scenario": "Post-push Chromium CI replays the two season-length journeys that stopped at the 다음 이벤트 predicate in main CI 44697908305",
+        "steps": [
+          "Push the shared candidate that includes b2d065c18 to main",
+          "Let GitHub Actions run e2e-chromium shards 1/3 and 3/3 (pnpm exec playwright test --project=chromium --shard=1/3 and --shard=3/3)",
+          "Read the results for tests/e2e/analysis.spec.ts:97 and tests/e2e/records.spec.ts:79"
+        ],
+        "expected": "Both journeys finish their 1930/31 season through real manual advances, then pass their post-season assertions without hitting a step-lock or test timeout",
+        "observed": "Not run in this unit. Browser journeys run only in CI under ARCH-30, and this unit made no push.",
+        "evidence": [
+          "Node host: records-room-journey season of 85 steps took 79-82 s; close step 4.3-4.9 s; ending hashes identical before and after the change",
+          "host.manual-progress.test.ts failed before the fix and passes after it; vibe check --tier task passed all five checks"
+        ],
+        "status": "not-run",
+        "reason": "Integration-stage browser check owned by the host's post-push Chromium CI; no browser or network run in this unit",
+        "replaces": [],
+        "stage": "integration",
+        "required": true,
+        "owner": "host",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T1053-AC2",
+        "scenario": "Inspect the heritage and terraces stage-10 Sticker Club locker rooms on the shared candidate.",
+        "steps": [
+          "At 390×844, open completed stadium-stage-10 careers for both eras, select Sticker Club, and open 팀 › 1군.",
+          "Record a screenshot of each era and inspect the equipment table and composition."
+        ],
+        "expected": "Each room loads with recognizable association-football equipment, no American-football helmets, and a readable flat-cartoon composition.",
+        "observed": "Not run; the shared integration candidate was not available to this unit.",
+        "evidence": [],
+        "status": "not-run",
+        "reason": "Computer-use acceptance is assigned to the capable host after the shared candidate is fixed.",
+        "replaces": [],
+        "stage": "integration",
+        "required": true,
+        "owner": "fs24-sticker-locker-art",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T1056-final-gate",
+        "scenario": "Shared final batch gate and CI on the integrated candidate",
+        "steps": [
+          "pnpm run verify:batch on the fixed candidate"
+        ],
+        "expected": "batch gate passes",
+        "observed": "not run in this unit",
+        "evidence": [],
+        "status": "not-run",
+        "reason": "Integration, build and full suites belong to the shared final gate (ARCH-30)",
+        "replaces": [],
+        "stage": "integration",
+        "required": true,
+        "owner": "host",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "preview-wasm-mime",
+        "scenario": "The built preview serves the emitted SQLite WebAssembly asset with the streaming MIME type so the engine worker can compile it with instantiateStreaming (ARCH-23, ARCH-11).",
+        "steps": [
+          "On the fixed shared candidate, build and start the static preview with `pnpm run preview`",
+          "Request the emitted SQLite Wasm asset under /assets/ (sqlite3*.wasm)",
+          "Read the response status and Content-Type header"
+        ],
+        "expected": "HTTP 200 and `Content-Type: application/wasm`. The Chromium startup smoke in CI shows no 'wasm streaming compile failed' fallback warning.",
+        "observed": "Not run in this unit. This worktree has no apps/web/dist build, and builds belong to the shared final gate. Unit-level evidence: the extension table in scripts/preview.mjs now maps .wasm to application/wasm, and `node --check` plus the task-tier checks passed.",
+        "evidence": [
+          "scripts/preview.mjs extension table: '.wasm': 'application/wasm' (commit 140165529f0235c930f488b96ae328feea2fa8a6)",
+          "vibe check --tier task ok on tree 06031e70 (typecheck, lint, format, i18n, affected-units), 78 s"
+        ],
+        "status": "not-run",
+        "reason": "Integration-stage HTTP check against the shared built preview. No build exists in this unit, and builds and integration belong to the shared final gate.",
+        "replaces": [],
+        "stage": "integration",
+        "required": true,
+        "owner": "capable host (shared gate)",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T1058-browser-waits",
+        "scenario": "Player-facing worker waits (manual 다음 이벤트, owner decision with its durable save, game open/import) in the built preview on Chromium with the OPFS game database and fixture helpers, after the scout-search XI cut",
+        "steps": [
+          "Build the preview from the shared candidate including fa2c9090",
+          "Run the Chromium CI journeys that play manual 다음 이벤트 steps and owner decisions with saves (pnpm exec playwright test --project=chromium --shard=N/3)",
+          "Compare their step and save timings with the previous main run"
+        ],
+        "expected": "Journeys pass; manual steps and decision saves are no slower than before; worlds identical",
+        "observed": "Not run in this unit: Node host only (다음 이벤트 x0.298 [0.269,0.344], decision x0.264 [0.232,0.299] at 1930; x0.745 and x0.368 at 1970; equal world hashes and 38/38 byte-identical replies)",
+        "evidence": [
+          "artifacts/benchmarks/T1058/pair-cut1/summary.json",
+          "artifacts/benchmarks/T1058/pair-final-1930/summary.json",
+          "artifacts/benchmarks/T1058/pair-1970/summary.json",
+          "artifacts/benchmarks/T1058/replies/"
+        ],
+        "status": "not-run",
+        "reason": "Browser journeys and OPFS run only in CI or the capable host's gate (ARCH-30); this headless unit has no browser",
+        "replaces": [],
+        "stage": "integration",
+        "required": false,
+        "owner": "host",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T1054-ci-applied-price-smoke",
+        "scenario": "Apply a ticket price in Chromium: the existing tests/e2e/business.spec.ts journey.",
+        "steps": [
+          "The host pushes the verified candidate and CI runs the Chromium shards."
+        ],
+        "expected": "The applied-price journey passes.",
+        "observed": "Not run. Browser journeys run only in CI.",
+        "evidence": [],
+        "status": "not-run",
+        "reason": "Under ARCH-30, browser journeys run only in CI after the host's batch gate and push.",
+        "replaces": [],
+        "stage": "integration",
+        "required": true,
+        "owner": "capable host",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T1055-integration-gate",
+        "scenario": "Shared final batch gate and CI browser journeys on the integration candidate",
+        "steps": [
+          "Host syncs main and runs pnpm run release:prepare",
+          "Host runs pnpm run verify:batch on the fixed candidate",
+          "CI runs the Chromium shards after push"
+        ],
+        "expected": "Batch and CI pass with the alt text change",
+        "observed": "Not run in this unit",
+        "evidence": [],
+        "status": "not-run",
+        "reason": "Builds, integration and browser journeys belong to the host's shared final gate and CI (ARCH-30)",
+        "replaces": [],
+        "stage": "integration",
+        "required": true,
+        "owner": "capable host",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T1059-AC2",
+        "scenario": "Heritage stage-10 locker room at phone size",
+        "steps": [
+          "On the shared candidate, open a completed heritage-era stadium-step-10 career, select Sticker Club, and open 팀 › 1군 at 390×844."
+        ],
+        "expected": "All footballs are round, no helmets appear, and the T1053 room composition and style are preserved.",
+        "observed": "Not observed on a shared integration candidate.",
+        "evidence": [],
+        "status": "not-run",
+        "reason": "The fixed integration candidate and capable computer-use host are not available in this unit.",
+        "replaces": [],
+        "stage": "integration",
+        "required": false,
+        "owner": "fs24b-heritage-locker-balls",
+        "candidate": null,
+        "duplicationReason": ""
+      }
+    ],
+    "rounds": [
+      {
+        "candidate": "c6824c4a7c802ebd923647bf90b02eb1ba8fb0dd",
+        "checks": [
+          {
+            "command": "verification-plan:scripts/verification-plan.json",
+            "schemaVersion": 1,
+            "ok": false,
+            "exitCode": 1,
+            "cached": false,
+            "timedOut": false,
+            "cancelled": false,
+            "stale": false,
+            "ms": 1686537,
+            "scope": {
+              "TIER": "batch",
+              "DIFF_BASE": "cccc05acd4671484dde87ca23b1c639c6f6b7ea1",
+              "TASK": "",
+              "TASKS": ""
+            },
+            "commit": "c6824c4a7c802ebd923647bf90b02eb1ba8fb0dd",
+            "tree": "b0f70b1a2eab557ea73740cf8c602547f7fe7530",
+            "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-516f67b0-138d-4c97-ad1d-6bca892e0ae0.log",
+            "tail": [
+              "      Tests  2 failed | 4550 passed | 3 skipped (4555)",
+              "   Start at  13:34:33",
+              "   Duration  1605.50s (tests 96%, import 4%)",
+              "",
+              "JSON report written to /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/vitest-results.json",
+              "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":462870,\"started\":\"2026-11-24T04:34:32.162Z\",\"exitCode\":1,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-24T05:01:18.987Z\",\"elapsedMs\":1606828,\"commandExitCode\":1,\"afterExitCode\":1}",
+              "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/report.json\"}",
+              " ELIFECYCLE  Command failed with exit code 1."
+            ],
+            "failedTests": [
+              "× keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career) 500146ms",
+              "× is every package version and the rules a world plays 16ms",
+              "FAIL  |integration| packages/engine/src/feature-replay.retained.test.ts > keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career)",
+              "FAIL  |unit| packages/contracts/src/versions.test.ts > the current game version (→SAVE-10, SAVE-26) > is every package version and the rules a world plays"
+            ],
+            "plan": {
+              "source": "scripts/verification-plan.json",
+              "checks": [
+                "verify-batch"
+              ]
+            },
+            "checks": [
+              {
+                "id": "verify-batch",
+                "command": "pnpm run verify:batch",
+                "inputs": [
+                  "*.json",
+                  "*.mjs",
+                  "*.toml",
+                  "*.ts",
+                  "*.yaml",
+                  ".github",
+                  ".gitignore",
+                  ".node-version",
+                  ".prettierignore",
+                  "apps",
+                  "artifacts",
+                  "packages",
+                  "patches",
+                  "scripts",
+                  "tests"
+                ],
+                "inputFingerprint": "d24843401e59822b8fa72ec7e49b737c5b0f0de9af721bd1d3a1a0c133d6e854",
+                "executionFingerprint": "2da5c5d51929df8ed22e2c1906f88d088694c5fdaf2b64e9b63510986ef3e790",
+                "ok": false,
+                "status": "failed",
+                "exitCode": 1,
+                "cached": false,
+                "timedOut": false,
+                "cancelled": false,
+                "stale": false,
+                "ms": 1686216,
+                "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-516f67b0-138d-4c97-ad1d-6bca892e0ae0.log",
+                "failedTests": [
+                  "× keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career) 500146ms",
+                  "× is every package version and the rules a world plays 16ms",
+                  "FAIL  |integration| packages/engine/src/feature-replay.retained.test.ts > keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career)",
+                  "FAIL  |unit| packages/contracts/src/versions.test.ts > the current game version (→SAVE-10, SAVE-26) > is every package version and the rules a world plays"
+                ],
+                "tail": [
+                  "      Tests  2 failed | 4550 passed | 3 skipped (4555)",
+                  "   Start at  13:34:33",
+                  "   Duration  1605.50s (tests 96%, import 4%)",
+                  "",
+                  "JSON report written to /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/vitest-results.json",
+                  "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":462870,\"started\":\"2026-11-24T04:34:32.162Z\",\"exitCode\":1,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-24T05:01:18.987Z\",\"elapsedMs\":1606828,\"commandExitCode\":1,\"afterExitCode\":1}",
+                  "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/report.json\"}",
+                  " ELIFECYCLE  Command failed with exit code 1."
+                ],
+                "cleanup": {
+                  "scope": "process-group",
+                  "signalled": false,
+                  "escalated": false
+                }
+              }
+            ],
+            "failedCheckIds": [
+              "verify-batch"
+            ],
+            "cleanup": {
+              "scope": "process-group",
+              "signalled": false,
+              "escalated": false
+            }
+          }
+        ],
+        "at": "2026-11-24T05:01:20.469Z"
+      }
+    ],
     "path": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3",
     "branch": "integration/14d911dd-d011-4fde-90c1-0176ff6958d3",
     "version": {
       "level": "patch",
       "from": "0.8.23",
       "to": "0.8.24"
-    }
+    },
+    "ciCommands": [
+      "pnpm exec playwright test --project=chromium --shard=1/3",
+      "pnpm exec playwright test --project=chromium --shard=2/3",
+      "pnpm exec playwright test --project=chromium --shard=3/3"
+    ]
   },
   "history": [
     {
