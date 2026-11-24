@@ -1882,10 +1882,10 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-fs24b-ce328e4b",
-      "head": "eefbc8c6e23ec1943eba7e1702846ee4e940b805",
+      "head": "33cf1418027ab08c6d9b31ccd6516fea01a6dedc",
       "land": "main",
-      "status": "ready",
-      "at": "2026-11-24T01:48:06.918Z",
+      "status": "working",
+      "at": "2026-11-24T04:09:17.722Z",
       "agentChecks": [
         {
           "id": "T1059-AC2",
