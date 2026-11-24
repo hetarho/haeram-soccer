@@ -2323,7 +2323,198 @@
       "verificationCommands": []
     }
   },
-  "gate": null,
+  "gate": {
+    "token": "e7a3d50b-488f-4826-908b-9a6822b738a4",
+    "owner": "fs24c",
+    "via": "merge",
+    "executor": {
+      "host": "hq-dev1-pve2-vm2",
+      "pid": 718441
+    },
+    "phase": "preparing",
+    "land": "main",
+    "base": "2a864dbc661b38e23b9afe09d241a1fe2c7520fa",
+    "cohort": [
+      {
+        "id": "b909ffa89a69f423cedebf74",
+        "tag": "fs24c",
+        "host": "hq-dev1-pve2-vm2",
+        "device": "hq-dev1-pve2-vm2",
+        "branch": "gusta-session-start-fs24c-364d564d",
+        "head": "3a8fbc1628eef5e1666718f10c6da869712416aa",
+        "agentChecks": [
+          {
+            "id": "T1061-host-batch",
+            "scenario": "The shared final gate checks the tracked RowSaver and the host's per-request field touches against the integration save tests and the browser journeys.",
+            "steps": [
+              "Sync latest main and run pnpm run release:prepare (SAVE-10)",
+              "Run pnpm run verify:batch on the fixed candidate (includes apps/web/src/adapters/worldRows.world.test.ts, apps/web/src/runtime/coldPeople.integration.test.ts, apps/web/src/runtime/saveRoundTrip.test.ts, apps/web/src/runtime/host.test.ts)",
+              "After the push, read the Chromium CI shards 1/3, 2/3 and 3/3"
+            ],
+            "expected": "Batch and CI pass. Saved, reopened and exported games match the full-diff behaviour.",
+            "observed": "Not run in this unit. Unit-tier evidence only: vibe check --tier task passed twice, the T1061-save-parity unit test passed, and paired Node waits showed equal world, reopen and reply hashes, including export bytes.",
+            "evidence": [
+              "artifacts/benchmarks/T1061/README.md",
+              "spec/tasks/done/T1061.skip-encoding-unchanged-save-rows.md result"
+            ],
+            "status": "not-run",
+            "reason": "Integration, batch and browser journeys belong to the host's shared final gate (ARCH-30). This unit runs only the task tier.",
+            "replaces": [],
+            "stage": "integration",
+            "required": true,
+            "owner": "host",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T1062-batch-gate",
+            "scenario": "Shared final batch gate covers T1062's contract fixtures and the integration tests that open or import games",
+            "steps": [
+              "pnpm run verify:batch on the shared candidate including commits 38e390308 and 80b9cf604"
+            ],
+            "expected": "Contract (schema.contract, identity.contract, tests/fixtures/portable.contract) and integration tests (host.test, client.test, seasonBackup.host.test, coldPeople.integration, persistence.history, saveRoundTrip, host.database) pass with the zodParse validation path",
+            "observed": "Not run in this unit; under a temporary parity hook these files' validateWorld calls (250) matched the baseline and their 185 tests passed locally",
+            "evidence": [
+              "artifacts/benchmarks/T1062/parity/parity-tests.log",
+              "artifacts/benchmarks/T1062/parity/parity-hostdb.log"
+            ],
+            "status": "not-run",
+            "reason": "ARCH-30: integration, contract and full suites belong to the initiating host's shared final batch gate",
+            "replaces": [],
+            "stage": "integration",
+            "required": true,
+            "owner": "host",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T1062-ci-chromium",
+            "scenario": "Browser journeys with save export/import and reopen on the declared supported browser after the code push",
+            "steps": [
+              "pnpm exec playwright test --project=chromium --shard=1/3",
+              "pnpm exec playwright test --project=chromium --shard=2/3",
+              "pnpm exec playwright test --project=chromium --shard=3/3"
+            ],
+            "expected": "All Chromium shards pass in GitHub Actions on the pushed candidate",
+            "observed": "Not run; browser journeys run only in CI after the host's push",
+            "evidence": [],
+            "status": "not-run",
+            "reason": "ARCH-30/ARCH-23: browser journeys run only in CI after a code push, owned by the host",
+            "replaces": [],
+            "stage": "integration",
+            "required": true,
+            "owner": "host",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T1063-paired-waits",
+            "scenario": "Paired worker waits for the result-identical representative-squad skip in disciplineNames, against baseline 3da8ed6ba",
+            "steps": [
+              "git archive baseline and candidate trees into .tmp/t1063-base and .tmp/t1063-cand",
+              "tsx scripts/perf/waits-pair.ts --base .tmp/t1063-base --candidate .tmp/t1063-cand --rounds 8 --steps 10 --out artifacts/benchmarks/T1063/pair-1930",
+              "node artifacts/benchmarks/T1063/parts.cjs.txt on each pair directory"
+            ],
+            "expected": "The stopped-read, manual-stop or decision wait is faster, with its 95% interval below 1, and reply and world hashes stay equal",
+            "observed": "Every request kind showed no difference: stopped-reads 0.943 [0.811, 1.214], next-event 0.973 [0.867, 1.141], decision 0.948 [0.812, 1.166], open-game 0.994 [0.894, 1.065]. The world hash was 8e9033c3e3ae93af on every run, and all 304 matched replies and row puts were equal. The variant was reverted.",
+            "evidence": [
+              "artifacts/benchmarks/T1063/pair-1930/summary.json",
+              "artifacts/benchmarks/T1063/pair-1930-first/summary.json",
+              "artifacts/benchmarks/T1063/README.md"
+            ],
+            "status": "fail",
+            "reason": "The representative draw moved to the projection's rating instead of going away, so no targeted wait cleared the ARCH-34 bound. The candidate was reverted as the exit criterion requires.",
+            "replaces": [],
+            "stage": "unit",
+            "required": false,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T1063-read-parity",
+            "scenario": "The candidate's discipline names compared with a full scan of every squad after squad invalidation",
+            "steps": [
+              "Run the unit case T1063-read-parity: worldMarketFixture with a representative club, an arrival playing for it, and stored, own and departed entries",
+              "Run artifacts/benchmarks/T1063/parity.mts.txt on takeover-2000 and on a 1930 start after each stop"
+            ],
+            "expected": "Identical names maps",
+            "observed": "The unit case passed on both candidate versions. takeover-2000 was identical over 4 stops (863–2,454 entries) before the run hit its 1 h background limit. The 1930 start played on unattended until its career ended in 1976; its one comparison there was identical (100 entries, 28 of them held by 23 representative clubs).",
+            "evidence": [
+              "artifacts/benchmarks/T1063/candidate.diff",
+              "artifacts/benchmarks/T1063/parity.mts.txt",
+              "artifacts/benchmarks/T1063/README.md"
+            ],
+            "status": "pass",
+            "reason": "Parity holds for the measured variant over the coverage that ran. The variant is not kept.",
+            "replaces": [],
+            "stage": "unit",
+            "required": false,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          }
+        ],
+        "verificationCommands": [],
+        "publication": "merge"
+      },
+      {
+        "id": "576f25ed4f2b9834fa839fa7",
+        "tag": "fs24d",
+        "host": "hq-dev1-pve2-vm2",
+        "device": "hq-dev1-pve2-vm2",
+        "branch": "gusta-session-start-fs24d-06588be4",
+        "head": "0175a3d1c93e5eda1461ebfbe0e23e574199ed3d",
+        "agentChecks": [],
+        "verificationCommands": [],
+        "publication": "merge"
+      }
+    ],
+    "deferred": [
+      {
+        "id": "85b2d45965b2d07e73f2e8fb",
+        "tag": "np19",
+        "host": "ihaelam-ui-MacBookPro",
+        "branch": "gusta-session-self-improve-np19-f1c9b1b9",
+        "status": "paused",
+        "at": "2026-11-18T20:53:44.088Z",
+        "reason": "session-ended"
+      },
+      {
+        "id": "ea1a0db8eec814a3c131d34b",
+        "tag": "sv19",
+        "host": "hq-dev1-pve2-vm2",
+        "branch": "gusta-session-start-sv19-0cc2a73b",
+        "status": "paused",
+        "at": "2026-11-19T13:00:21.749Z",
+        "reason": "session-ended"
+      },
+      {
+        "id": "bdd614ebd62a8dd70a0866a2",
+        "tag": "facauto",
+        "host": "ihaelam-ui-MacBookPro",
+        "branch": "gusta-session-start-facauto-7fb6ee3c",
+        "status": "paused",
+        "at": "2026-11-19T16:52:06.078Z",
+        "reason": "session-ended"
+      },
+      {
+        "id": "fb13eadd7bf9b51d38f9f565",
+        "tag": "ovr20",
+        "host": "hq-dev1-pve2-vm2",
+        "branch": "gusta-session-start-ovr20-f773a1bb",
+        "status": "paused",
+        "at": "2026-11-20T03:33:51.725Z",
+        "reason": "session-ended"
+      }
+    ],
+    "at": "2026-11-24T10:50:48.042Z",
+    "deadline": "2026-11-24T16:17:02.167Z",
+    "candidate": null,
+    "checks": [],
+    "agentChecks": [],
+    "rounds": []
+  },
   "history": [
     {
       "token": "14d911dd-d011-4fde-90c1-0176ff6958d3",
