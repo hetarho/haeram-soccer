@@ -154,6 +154,12 @@ import { requestSchema, type Request, type Reply, type View } from './protocol';
 import { ViewPublisher } from './viewPublisher';
 import { playDay, type DaySteps, type HelperPool } from './helperPool';
 const DAY_STEPS: DaySteps = { prepareRound, completeRound, advanceDays };
+/**
+ * A manual event reports itself at least this often (and every 14 days), so the client's
+ * 30-second watchdog spans one heavy day, not the days before it: a season close took 2.1 s of a
+ * 4.5 s silent stretch in Node (records-room-journey, 261124), several times that on CI.
+ */
+const NEXT_EVENT_BEAT_MS = 1000;
 /** The patch policy lives with publication; existing importers still find it here. */
 export { VIEW_PATCH } from './viewPublisher';
 import { clubRecords } from './clubRecords';
@@ -517,6 +523,7 @@ export class Host {
   /** Whether the pool's handles were given to another tab (→SAVE-6), and their return under way. */
   private poolPaused = false;
   private resuming?: Promise<void>;
+  private now: () => number;
   constructor(
     private progress: (reply: Reply) => void = () => {},
     options: {
@@ -525,9 +532,12 @@ export class Host {
       gameFiles?: GameFiles;
       databaseBytes?: DatabaseBytes;
       backupFiles?: BackupFiles;
+      /** The wall clock that paces a manual event's heartbeats. */
+      now?: () => number;
     } = {},
   ) {
     this.release = options.release ?? MATCH_MODEL_RELEASE;
+    this.now = options.now ?? (() => performance.now());
     this.files = options.gameFiles ?? {
       list: async () =>
         listFiles(await this.databases()).flatMap((name) => GAME_FILE.exec(name)?.[1] ?? []),
@@ -1359,13 +1369,15 @@ export class Host {
           if (careerEnded(w) && cmd.type !== 'read-inbox')
             throw new Error(w.bankrupt ? BANKRUPT_MESSAGE : ENDED_MESSAGE);
           if (cmd.type === 'next-event') {
-            let days = 0;
+            let days = 0,
+              beat = this.now();
             for (const day of nextEventDays(w)) {
               void day;
-              if (++days % 14 === 0) {
+              if (++days % 14 === 0 || this.now() - beat >= NEXT_EVENT_BEAT_MS) {
                 // Keep the request alive across long jumps without publishing intermediate views.
                 this.progress({ requestId: r.requestId, ok: true, progress: 0 });
                 await new Promise((resolve) => setTimeout(resolve, 0));
+                beat = this.now();
               }
             }
           } else if (cmd.type === 'advance-days' || cmd.type === 'next-match') {
