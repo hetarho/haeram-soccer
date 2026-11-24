@@ -2339,6 +2339,22 @@
       "at": "2026-11-24T13:25:05.544Z",
       "agentChecks": [],
       "verificationCommands": []
+    },
+    "dd13fcedfe300ee2bae85ba3": {
+      "id": "dd13fcedfe300ee2bae85ba3",
+      "owner": "f6b8b523-2bfb-456e-8327-c100ccba8731",
+      "tag": "fs24g",
+      "kind": "start",
+      "publication": "merge",
+      "host": "hq-dev1-pve2-vm2",
+      "device": "hq-dev1-pve2-vm2",
+      "branch": "gusta-session-start-fs24g-57415b92",
+      "head": "16b57791c8d8be9e3a1dc2b5bb0aa9b823e46e6c",
+      "land": "main",
+      "status": "working",
+      "at": "2026-11-24T13:25:21.606Z",
+      "agentChecks": [],
+      "verificationCommands": []
     }
   },
   "gate": null,
