@@ -2456,7 +2456,7 @@
       "host": "hq-dev1-pve2-vm2",
       "pid": 1860890
     },
-    "phase": "waiting-agent",
+    "phase": "verified",
     "land": "main",
     "base": "16b57791c8d8be9e3a1dc2b5bb0aa9b823e46e6c",
     "cohort": [
@@ -2699,15 +2699,17 @@
           "pnpm run verify:batch on the shared candidate"
         ],
         "expected": "worldRows.world.test.ts, coldPeople.integration.test.ts, saveRoundTrip.test.ts and host.test.ts pass",
-        "observed": "Not run in this unit. No production source changed, so none of these files' inputs changed.",
-        "evidence": [],
-        "status": "not-run",
-        "reason": "Builds, integration and full suites belong to the host's shared final gate (ARCH-30).",
+        "observed": "Shared verify:batch passed on candidate 46058e06bdba0d512e5fcdfffc3fbf6f85b8a834 (gate 205f9bf7-761d-4ff1-82f9-b5da7ec3e207, 0 failed tests, 0.8.26 prepared on the session branch). It includes worldRows.world, coldPeople.integration, saveRoundTrip and host tests and the new host.saveRows regression cases.",
+        "evidence": [
+          "Shared verify:batch passed on candidate 46058e06bdba0d512e5fcdfffc3fbf6f85b8a834 (gate 205f9bf7-761d-4ff1-82f9-b5da7ec3e207, 0 failed tests, 0.8.26 prepared on the session branch)."
+        ],
+        "status": "pass",
+        "reason": "",
         "replaces": [],
         "stage": "integration",
         "required": false,
         "owner": "host",
-        "candidate": null,
+        "candidate": "46058e06bdba0d512e5fcdfffc3fbf6f85b8a834",
         "duplicationReason": ""
       },
       {
@@ -2718,18 +2720,18 @@
           "Run pnpm exec playwright test tests/e2e/progression-settings.spec.ts:201 tests/e2e/second-career.spec.ts:292 --project=chromium --repeat-each=4 while another Chromium spec file runs beside them"
         ],
         "expected": "8 of 8 pass: 부재 중에도 업무 계속 is enabled after the stop, and progression-mode shows AUTO after the confirmed change",
-        "observed": "Not run in this unit. Browser journeys run only in CI or the host gate under ARCH-30.",
+        "observed": "CI=1 PREVIEW_BUILD=1 built preview of 46058e06bdba0d512e5fcdfffc3fbf6f85b8a834, CI worker count (2), with tests/e2e/news.spec.ts running beside: progression-settings.spec.ts:201 passed 4 of 4 (부재 중에도 업무 계속 enabled after 자동 진행 정지) and second-career.spec.ts:292 passed 4 of 4 (progression-mode AUTO after the confirmed change); 28 passed in 9.3 min. A harsher run first (3 workers, news.spec.ts also repeated 4 times) passed progression-settings 4 of 4 but failed second-career 2 of 4 before the mode change: importing its 35-round career showed \"화면을 여는 중…\" past the 15 s club-hub wait in tests/e2e/responsibility-fixtures.ts:74, a fixture wait under extra load rather than the stop lock; it is widened in a follow-up test commit.",
         "evidence": [
-          "spec/tasks/done/T1066.unlock-controls-after-stop-under-load.md result",
-          "apps/web/src/runtime/progression.runahead.test.ts › the lock after a stop under load (T1066, WEB-97)"
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/09f22f3c-c68c-4078-aaf2-d99a2b50ba12/scratchpad/f26-run-ci.log",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/09f22f3c-c68c-4078-aaf2-d99a2b50ba12/scratchpad/f26-run-harsh.log"
         ],
-        "status": "not-run",
-        "reason": "Integration-stage browser check on the shared candidate. It belongs to the capable host. This unit runs no browser specs (ARCH-30).",
+        "status": "pass",
+        "reason": "",
         "replaces": [],
         "stage": "integration",
         "required": true,
         "owner": "host (fs24e-stuck-progression shared candidate)",
-        "candidate": null,
+        "candidate": "46058e06bdba0d512e5fcdfffc3fbf6f85b8a834",
         "duplicationReason": ""
       }
     ],
