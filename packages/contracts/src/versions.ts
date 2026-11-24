@@ -6,7 +6,7 @@ import type { World } from './types';
  * screens print. 0.8.0 starts the rules-5.0.0 line, a career begun by taking a club over
  * (→SAVE-26); a match-model revision ships inside a version (→SAVE-23).
  */
-export const CURRENT_ENGINE_VERSION = '0.8.26';
+export const CURRENT_ENGINE_VERSION = '0.8.27';
 /**
  * The rules-4.0.0 line: its own label and game version 0.7.0, which continued it. Its careers were
  * written in the match-model and manager-history containers too (→SAVE-23/24), so the legacy
@@ -116,6 +116,7 @@ export const COMPATIBLE_ENGINE_VERSIONS: readonly string[] = [
   '0.8.23',
   '0.8.24',
   '0.8.25',
+  '0.8.26',
 ];
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   CURRENT_ENGINE_VERSION,
