@@ -2335,8 +2335,8 @@
       "branch": "gusta-session-start-fs24f-22ddbbef",
       "head": "6ba0bbc992e62e2761959002fc8f5939e161a87f",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-24T13:46:36.011Z",
+      "status": "paused",
+      "at": "2026-11-24T13:46:39.417Z",
       "agentChecks": [
         {
           "id": "T1065-review-regressions",
@@ -2421,7 +2421,8 @@
           "duplicationReason": ""
         }
       ],
-      "verificationCommands": []
+      "verificationCommands": [],
+      "reason": "session-ended"
     },
     "dd13fcedfe300ee2bae85ba3": {
       "id": "dd13fcedfe300ee2bae85ba3",
