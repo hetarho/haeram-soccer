@@ -69,6 +69,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1064 | Reduce engine work on own match days | ARCH LEAGUE MATCH SAVE | - | todo |
+| T1065 | Re-land save row skipping without stale rows | ARCH SAVE | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
