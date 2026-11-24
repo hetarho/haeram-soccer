@@ -1868,8 +1868,8 @@
       "branch": "gusta-session-start-fs24-0f2a0f35",
       "head": "02cd1569cdaeffe393d5fca35379b7985260fbfd",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-24T04:32:43.619Z",
+      "status": "ready",
+      "at": "2026-11-24T04:32:49.266Z",
       "agentChecks": [
         {
           "id": "T1039-ci-chromium-season-journeys",
