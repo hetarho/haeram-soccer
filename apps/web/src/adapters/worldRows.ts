@@ -66,31 +66,18 @@ export const WORLD_TABLES: readonly RecordTable[] = [
   'news_bucket',
 ];
 
-/**
- * The text a row of world field `field` already has, when its record is known to be unchanged
- * since that text was written; `undefined` encodes the record.
- */
-export type HeldText = (field: string, table: RecordTable, key: string) => string | undefined;
+function row(table: RecordTable, key: string, seq: number, value: unknown): StoredRow {
+  return { table, key, seq, cold: false, data: JSON.stringify(value) };
+}
 
-/**
- * Every row of `w`, in memory order; none is cold. A row `held` knows keeps that text instead of
- * encoding its record again: the rows are the same as without it as long as `held` answers only
- * for records unchanged since their text was written.
- */
-export function worldToRows(w: World, held?: HeldText): StoredRow[] {
+/** Every row of `w`, in memory order; none is cold. */
+export function worldToRows(w: World): StoredRow[] {
   const fields = w as unknown as Fields;
   const rows: StoredRow[] = [];
   let position = 0;
   for (const field of Object.keys(fields)) {
     const value = fields[field];
     if (value === undefined) continue;
-    const row = (table: RecordTable, key: string, seq: number, record: unknown): StoredRow => ({
-      table,
-      key,
-      seq,
-      cold: false,
-      data: held?.(field, table, key) ?? JSON.stringify(record),
-    });
     const family = FAMILIES[field];
     if (family) {
       // The field's row holds the empty container, so its presence and position survive a load.
