@@ -1,0 +1,14 @@
+const fs=require('fs'),path=require('path');
+const dir=process.argv[2];
+const s=JSON.parse(fs.readFileSync(path.join(dir,'summary.json')));
+console.log('hashes',s.hashes,'loads',s.loads.join(' '));
+const med=a=>{a=[...a].sort((x,y)=>x-y);const m=a.length>>1;return a.length%2?a[m]:(a[m-1]+a[m])/2};
+let mism=0,total=0;
+const agg={};
+for(let r=0;r<s.rounds;r++){
+  const b=JSON.parse(fs.readFileSync(path.join(dir,`base-${r}.json`))), c=JSON.parse(fs.readFileSync(path.join(dir,`candidate-${r}.json`)));
+  b.rows.forEach((x,i)=>{const y=c.rows[i]; total++; if(x.kind!==y.kind||x.replyHash!==y.replyHash||x.rowsPut!==y.rowsPut){mism++; if(mism<5) console.log('mismatch',r,i,x.kind,x.replyHash,y.replyHash,x.rowsPut,y.rowsPut)}
+    for(const [side,row] of [['base',x],['cand',y]]) for(const k of ['ms','rowSave','sqlite','rowsPut']) if(row[k]!==undefined){(agg[`${row.kind}.${side}.${k}`]??=[]).push(row[k])}});
+}
+console.log('rows compared',total,'mismatched (kind/replyHash/rowsPut)',mism);
+for(const kind of ['save','decision-save','create-game'])for(const side of ['base','cand'])console.log(kind,side,['ms','rowSave','sqlite','rowsPut'].map(k=>k+' '+(agg[`${kind}.${side}.${k}`]?med(agg[`${kind}.${side}.${k}`]).toFixed(1):'-')).join('  '));

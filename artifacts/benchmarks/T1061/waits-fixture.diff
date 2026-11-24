@@ -1,0 +1,43 @@
+114,121c114,135
+< const generated = await host.handle(
+<   req({ type: 'generate', choice: { tier: 'oil', traits: [], decade, seed } }),
+< );
+< if (!generated.ok) throw new Error(generated.error);
+< const club = generated.start.listings.find((listing: any) => listing.affordable);
+< const taken = await host.handle(req({ type: 'take-over', clubId: club.clubId }));
+< if (!taken.ok) throw new Error(taken.error);
+< viewSeq = taken.viewSeq;
+---
+> const worldFile = flag('--world');
+> if (worldFile) {
+>   // A prepared takeover world (scripts/save-db-bench.ts build), handed to the host as the
+>   // storage bench does; the read models as the host's takeover leaves them.
+>   const v8 = await import('node:v8');
+>   const fs = await import('node:fs');
+>   const fixture = v8.deserialize(fs.readFileSync(resolve(worldFile)));
+>   if (!fixture.newsJournal || !fixture.careerReads) {
+>     const { initializeReadModels } = await load<any>('packages/engine/src/read-models.ts');
+>     initializeReadModels(fixture);
+>   }
+>   host.world = fixture;
+> } else {
+>   const generated = await host.handle(
+>     req({ type: 'generate', choice: { tier: 'oil', traits: [], decade, seed } }),
+>   );
+>   if (!generated.ok) throw new Error(generated.error);
+>   const club = generated.start.listings.find((listing: any) => listing.affordable);
+>   const taken = await host.handle(req({ type: 'take-over', clubId: club.clubId }));
+>   if (!taken.ok) throw new Error(taken.error);
+>   viewSeq = taken.viewSeq;
+> }
+16c16
+< import { median, verdict } from './stats';
+---
+> import { median, verdict } from '../../scripts/perf/stats';
+32c32,33
+< const driver = resolve(import.meta.dirname, 'waits.ts');
+---
+> const driver = resolve(import.meta.dirname, 'waits-fixture.ts');
+> const world = flag('--world');
+51a53
+>       ...(world ? ['--world', resolve(world)] : []),

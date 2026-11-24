@@ -1,0 +1,11 @@
+hashes [
+  'base:2110cf362178d78a:2110cf362178d78a',
+  'candidate:2110cf362178d78a:2110cf362178d78a'
+] loads 1.88 3.96 6.09 5.54 3.86 3.86 3.39 2.84 2.71 4.11 3.39 3.42
+rows compared 432 mismatched (kind/replyHash/rowsPut) 0
+save base ms 498.0  rowSave 468.3  sqlite 8.3  rowsPut 46.5
+save cand ms 482.4  rowSave 455.4  sqlite 7.9  rowsPut 46.5
+decision-save base ms 479.6  rowSave 453.4  sqlite 0.3  rowsPut 6.0
+decision-save cand ms 100.9  rowSave 73.1  sqlite 0.3  rowsPut 6.0
+create-game base ms 1460.8  rowSave 1453.2  sqlite 715.5  rowsPut 94972.0
+create-game cand ms 1494.8  rowSave 1487.2  sqlite 694.9  rowsPut 94972.0

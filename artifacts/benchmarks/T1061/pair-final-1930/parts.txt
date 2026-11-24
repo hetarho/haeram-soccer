@@ -1,0 +1,11 @@
+hashes [
+  'base:6ae78476c2b24a2e:6ae78476c2b24a2e',
+  'candidate:6ae78476c2b24a2e:6ae78476c2b24a2e'
+] loads 1.37 2.43 2.24 1.68 1.64 1.78 1.83 1.41 1.65 1.65 1.36 1.35
+rows compared 2064 mismatched (kind/replyHash/rowsPut) 0
+save base ms 112.3  rowSave 108.3  sqlite 6.7  rowsPut 32.0
+save cand ms 109.7  rowSave 105.6  sqlite 6.7  rowsPut 32.0
+decision-save base ms 106.3  rowSave 102.6  sqlite 0.2  rowsPut 6.0
+decision-save cand ms 11.6  rowSave 7.8  sqlite 0.2  rowsPut 6.0
+create-game base ms 94.1  rowSave 91.4  sqlite 24.9  rowsPut 2483.0
+create-game cand ms 89.9  rowSave 87.5  sqlite 24.0  rowsPut 2483.0
