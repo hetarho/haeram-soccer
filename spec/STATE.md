@@ -70,7 +70,7 @@
 |---|---|---|---|---|
 | T1054 | Explain the highest ticket preset from its forecast | WEB ECON ARCH SAVE | - | todo |
 | T1055 | Align facility artwork alt text with the completed stage | WEB ECON ARCH SAVE | - | todo |
-| T1057 | Serve WebAssembly with its streaming MIME type | ARCH SAVE | - | todo |
+| T1057 | Serve WebAssembly with its streaming MIME type | ARCH SAVE | - | doing@261124.fs24 |
 | T1058 | Profile and shorten player-facing worker waits | ARCH SAVE WEB LAB | T1039 | todo |
 | T1059 | Give the heritage stage-10 locker room round footballs | WEB ECON ARCH SAVE | T1053 | todo |
 

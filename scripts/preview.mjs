@@ -38,6 +38,7 @@ const mime = {
   '.webp': 'image/webp',
   '.woff': 'font/woff',
   '.woff2': 'font/woff2',
+  '.wasm': 'application/wasm',
 };
 // A journey run asks for the same bundles thousands of times; gzip each file once per version
 // (its path, size and modification time), so a rebuilt file is compressed and served afresh.
