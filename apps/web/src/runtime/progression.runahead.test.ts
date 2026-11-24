@@ -1037,6 +1037,29 @@ describe('the lock after a stop under load (T1066, WEB-97)', () => {
     expect(locked()).toBe(false);
     expect(fake.saveSoon).toHaveBeenCalledOnce();
   });
+  it('a stop whose computed days a reopened match view interrupts shows them once the view closes', async () => {
+    // Independent review of T1066: Stop with days still to show, then browser Back reopens the
+    // match before they are shown. The tick behind the match view drops its beat, and leaving the
+    // view resumed nothing, so the days stayed hidden and management stayed locked.
+    const fake = worker(quiet());
+    // The theatre's presentation work has no part here.
+    Object.assign(fake.client, { setWatching: vi.fn() });
+    const controller = clock(fake);
+    controller.setPace('x10');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(350);
+    expect(fake.held.length).toBeGreaterThan(1);
+    controller.pause();
+    expect(locked()).toBe(true);
+    controller.setWatching(true);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(locked()).toBe(true);
+    controller.setWatching(false);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(fake.showing()).toBe(fake.head());
+    expect(running(controller)).toBe(false);
+    expect(locked()).toBe(false);
+  });
   it('a mode change published past the days held stops the clock and leaves management unlocked', async () => {
     const fake = worker(quiet());
     const controller = clock(fake);

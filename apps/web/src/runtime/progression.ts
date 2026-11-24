@@ -562,6 +562,9 @@ export class ProgressionController {
   endWatch() {
     this.client.setWatching?.(false);
     if (this.store.getState().reason === WATCH_REASON) this.store.setState({ reason: '' });
+    // A stop's computed days that a reopened match view held back are shown at the pace now, and
+    // management unlocks after them (→WEB-97): the tick behind the view dropped its beat.
+    if (this.draining && !this.store.getState().running) return this.wake();
     if (this.mode !== 'automatic' || !this.resumeAfterWatch) return;
     this.resumeAfterWatch = false;
     this.start();
