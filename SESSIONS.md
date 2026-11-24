@@ -237,23 +237,6 @@
 - 261124 suggest T1063 WEB-119 ARCH-34: Stopped/slow view reads after T1063 (Node, Xeon Silver 4214, 1930 e2e start, waits-pair 8x10, load 2-6): skipping representative squads in disciplineNames was result-identical (304 equal replies, hashes 8e9033c3e3ae93af) but no wait moved (stopped-reads 0.943 [0.811, 1.214], next-event 0.973 [0.867, 1.141]), because the projection's rating/startingSquad draws every representative club (160 euro:N) again after each day's invalidateNpcSquads; with an owner generatedSquad calls npcSquad uncached (drawnSquads only caches ownerless worlds). Next: cache the owner-world npcSquad draw by seed, year, club country/tier/strength and style in packages/engine/src/npc-continuity.ts or world.ts (engine, outside T1063's touches), measured with waits-pair; the discipline skip (artifacts/benchmarks/T1063/candidate.diff) only pays once that draw is gone. officeRead is 9.8 of a 14.5 ms stopped read: delegation plans 2.9, six ticket gateProjection copies 1.9 (only the effective price depends on the ticket), effect ledger 1.7, 25 policy operatingCosts world copies 1.3; splitting the ticket-independent gate demand out of gateProjection (finance.ts) is the next office lever.
 - 261124 suggest T1064 ARCH-34 ARCH-6: Own match day engine after T1064 (Node, Xeon Silver 4214, 1930 e2e start, no helpers): the day lives 225 fixtures through simulateAggregate once each, about 4.5 ms a fixture, 88% of a 0.9-1.2 s day (attributePlayerFacts 61%, fitMoves 30% with fitPlaceWeights 19%, settleParticipation 19%; recordMatch 5%, clubDay 2%), and no pure computation repeats on the same inputs. Result-identical candidates stayed in the noise: a shared sum in fitPlaceWeights (aggregate A/B 1.0007 [0.990, 1.011]) and numbered fitMoves classes (aggregate 0.988 [0.969, 1.004], own match day 0.995 [0.976, 1.016], 36/36 eve hashes and 152/152 replies equal); fitPlaceWeights micro variants all at its floor (iterations 87% of it, about 33 a call). Next levers are outside a result-identical aggregate cut: (1) measure the own match day with the two helpers in a locked Chromium repro (ARCH-6), since players on 3+ cores do not pay the Node figure; (2) a faster place fit (fewer iterations or a closed form) changes weights, so it is a result-model change for planning under SAVE-23/MATCH-28. Evidence: artifacts/benchmarks/T1064.
 
-## unlanded
-| id | tag | branch | commit | at |
-|---|---|---|---|---|
-| T1039 | fs24 | gusta-session-start-fs24-0f2a0f35 | b2d065c18fce | 2026-11-24T01:36Z |
-| T1053 | fs24 | gusta-session-start-fs24-0f2a0f35 | a15e234f1ab6 | 2026-11-24T01:39Z |
-| T1059 | fs24b | gusta-session-start-fs24b-ce328e4b | 3070f87b2946 | 2026-11-24T01:46Z |
-| T1056 | fs24 | gusta-session-start-fs24-0f2a0f35 | b05100f5b2e7 | 2026-11-24T02:01Z |
-| T1057 | fs24 | gusta-session-start-fs24-0f2a0f35 | 140165529f02 | 2026-11-24T02:04Z |
-| T1058 | fs24 | gusta-session-start-fs24-0f2a0f35 | fa2c9090aaf4 | 2026-11-24T03:46Z |
-| T1060 | fs24 | gusta-session-start-fs24-0f2a0f35 | 12d879fdaa11 | 2026-11-24T04:05Z |
-| T1054 | fs24 | gusta-session-start-fs24-0f2a0f35 | 7193944602c5 | 2026-11-24T04:26Z |
-| T1055 | fs24 | gusta-session-start-fs24-0f2a0f35 | 515b4f9acac2 | 2026-11-24T04:32Z |
-| T1061 | fs24c | gusta-session-start-fs24c-364d564d | b2b0b80ef | 2026-11-24T07:42Z |
-| T1062 | fs24c | gusta-session-start-fs24c-364d564d | 38e390308d7f | 2026-11-24T08:41Z |
-| T1063 | fs24c | gusta-session-start-fs24c-364d564d | 3da8ed6badfe | 2026-11-24T09:16Z |
-| T1064 | fs24c | gusta-session-start-fs24c-364d564d | dab5e3b8dcde | 2026-11-24T10:50Z |
-
 ## log
 - 261124 T1064 done
 - 261124 T1063 done
