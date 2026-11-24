@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| fs24 | hq-dev1-pve2-vm2 | autopilot | 2026-11-24T01:14Z | 2026-11-24T01:14Z | T1039 | gusta-session-start-fs24-0f2a0f35 | 4414c3d80d44 | 92049d603d0990aace966255 |
+| fs24 | hq-dev1-pve2-vm2 | autopilot | 2026-11-24T01:14Z | 2026-11-24T01:36Z | - | gusta-session-start-fs24-0f2a0f35 | b2d065c18fce | 92049d603d0990aace966255 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -228,7 +228,13 @@
 - 261124 decided T1056 ECON-29: 커리어 재측정의 시간과 우선 사례 → 45분 동안 프랑스와 잉글랜드 참조 커리어의 기본가·최고가를 같은 체크포인트에서 먼저 읽습니다 (alt: 전체 국가 장기 커리어 묶음부터 실행). 프랑스 2부의 관중 증가를 우선 확인하고 한 단위의 검사 시간도 남깁니다.
 - 261124 decided T1058 ARCH-34: 조작·저장·열기의 주 측정값과 기준판 → T1039 수정 뒤 같은 경로에서 응답 또는 저장 확정까지의 벽시계 시간을 재고 큐·CPU·저장소 비용을 나눕니다 (alt: 기존 엔진 CPU 지표만 사용). 플레이어 대기에 포함되는 작업자 대기와 저장 비용까지 비교할 수 있습니다.
 
+## unlanded
+| id | tag | branch | commit | at |
+|---|---|---|---|---|
+| T1039 | fs24 | gusta-session-start-fs24-0f2a0f35 | b2d065c18fce | 2026-11-24T01:36Z |
+
 ## log
+- 261124 T1039 done
 - 261124 T1039 runnable after plan-push bcce73b9. Expired gate f96fd6c3 remains in integration history with failed receipts. Fresh scope is CI 44697908305.
 - 261124 gusta-create-task T1053 T1054 T1055 T1056 T1057 T1058: planned six follow-ups, refreshed T1039, spec lint and task tier passed
 - 261124 gusta-create-task ARCH WEB ECON start
@@ -248,4 +254,3 @@
 - 261120 gusta-create-task ECON@66 WEB@228: T1045 T1046 T1047 T1048 T1049 T1050 T1051 T1052. Eight units with 2–5 product paths each. Read inherited spec dependencies in pages.
 - 261120 stad20 관중 표현을 연고지 밖의 홈 관중으로 바로잡음
 - 261120 T1042 done
-- 261120 gusta-create-task HIST@30 SAVE@75 WEB@228 done: T1043 T1044
