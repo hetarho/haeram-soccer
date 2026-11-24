@@ -1866,10 +1866,10 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-fs24-0f2a0f35",
-      "head": "5db4c348dc4ded2181734a1c394a7baaf8324c9d",
+      "head": "7927cbef824eea04e164d1a68177f017c8f8033d",
       "land": "main",
-      "status": "ready",
-      "at": "2026-11-24T00:58:42.698Z",
+      "status": "working",
+      "at": "2026-11-24T01:14:25.767Z",
       "agentChecks": [],
       "verificationCommands": []
     }
