@@ -25,6 +25,7 @@ import { clubOf } from '../../../../../../packages/engine/src/player-state';
 import type { GameClient } from '../../../runtime/client';
 import { gameActionsBlocked, useGameState } from '../../../runtime/store';
 import { TICKET_LEVELS } from '../../../shared/routing/ticketLevels';
+import { TOP_TICKET, topTicketSummary } from '../../../../../../packages/engine/src/tickets';
 import { Money } from '../../../shared/ui/Money';
 import { number } from '../../../presentation/format';
 import { useOfficeRead } from '../../../shared/lib/useOfficeRead';
@@ -502,7 +503,11 @@ export function TicketSetting({ w, client }: { w: World; client: GameClient }) {
         ...TICKET_LEVELS.map((option) => ({
           value: option.price,
           name: option.name,
-          summary: option.summary,
+          // The highest preset explains its own forecast; the others keep their shared summary.
+          summary:
+            option.price === TOP_TICKET
+              ? topTicketSummary(office.ticketGates[String(option.price)])
+              : option.summary,
         })),
       ]}
       command={(price) => ({ type: 'club-ticket', price })}
