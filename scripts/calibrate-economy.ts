@@ -26,6 +26,10 @@ import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/res
  *            --seeds N (careers per setting), --first-seed N (the first seed's number), --log
  *            (per season), --out careers.json (keep the careers), --in a.json,b.json (report
  *            kept careers only)
+ *   --sellout: T1052's owned top-flight sellout fixture; --career-sellout: T1056's lived reads of
+ *            takeover checkpoints at the default and top ticket presets (--matches 50, --cases
+ *            FRA:midsize:-,ENG:oil:ENG:0:0:0 as country:tier:club with - for the reference club,
+ *            --out reads.json)
  *
  * Careers run 60 seasons by default: the first 50 make the career averages, and seasons 51–60
  * (2000–2009) are the only top-flight 2000s a 1950 takeover reaches. Money is compared in 1901 price
@@ -68,6 +72,7 @@ import { DEFAULT_TICKET, TICKET_PRESETS } from '../packages/engine/src/presets';
 import { FINANCE_CONFIG, leagueMerit, leagueShare } from '../packages/engine/src/finance';
 import { sponsorOffers, sponsorSlotOpen } from '../packages/engine/src/sponsors';
 import { exp } from '../packages/engine/src/portable-math';
+import { stadiumCapacity } from '../packages/engine/src/facility-model';
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const args = process.argv.slice(2);
@@ -834,6 +839,225 @@ function selloutProbe() {
         `| ${year} | ${gate.capacity.toLocaleString('en-GB')} | ${gate.attendanceLow}–${gate.attendanceHigh} | ${money(pounds(gate.incomeHigh, year))} | ${money(pounds(seasonGate, year))} | ${money(pounds(distribution, year))} | ${money(pounds(commercial, year))} (${slots.join('+')}) | ${money(pounds(turnover, year))} | ${pct(Number(seasonGate) / Number(turnover))} | ${pct(Number(defaultGate) / Number(defaultGate + distribution + commercial))} |`,
       );
     }
+}
+
+// ---- T1056: the sellout response on lived reference takeovers --------------------------------
+/** One read: a takeover checkpoint lived at one ticket preset until `matches` owned matches settled. */
+interface SelloutRead {
+  label: string;
+  code: CountryCode;
+  club: string;
+  tier: WealthTier;
+  ticket: number;
+  year: number;
+  division: number;
+  reputation: number;
+  capacity: number;
+  /** Local and travelling supporters at the checkpoint and default-price demand over seats. */
+  pool: number;
+  demandOverSeats: number;
+  pressure: number;
+  matches: number;
+  window: string;
+  homeLeagueGates: number;
+  soldOut: number;
+  meanAttendance: number;
+  /** Price units of the window, by source; trading and owner money apart from turnover. */
+  sources: Record<Source, number>;
+  /** Owner money: injections less dividends taken. */
+  injections: number;
+  purchases: number;
+  expense: number;
+  facility: number;
+  /** Expense by ledger kind, price units. */
+  expenseKinds: Record<string, number>;
+  cashStart: number;
+  cashEnd: number;
+  distress: number;
+  bankrupt: boolean;
+}
+/** The owner's own fortune entries, outside the club's books (→OWNER-3/7/8). */
+const OWNER_ONLY = new Set(['takeover', 'owner-living', 'owner-business', 'owner-stake']);
+/** Every income kind's total and the club's expense lines of a season's entries, price units. */
+function seasonFlows(w: World, year: number, money: string, unit: number) {
+  const sources: Record<Source, number> = {
+    competition: 0,
+    matchday: 0,
+    commercial: 0,
+    sales: 0,
+    other: 0,
+  };
+  let injections = 0,
+    purchases = 0,
+    facility = 0,
+    expense = 0;
+  const kinds: Record<string, number> = {};
+  for (const event of w.events) {
+    if (event.year !== year || event.currency !== money || event.amount === undefined) continue;
+    const amount = Number(event.amount) / unit;
+    if (OWNER_ONLY.has(event.kind)) continue;
+    if (event.kind === 'owner-injection' || event.kind === 'owner-dividend')
+      injections += event.kind === 'owner-injection' ? amount : -amount;
+    else if (isIncomeKind(event.kind)) sources[sourceOf(event.kind)] += amount;
+    else if (event.kind !== 'debt-write-off') {
+      expense += amount;
+      kinds[event.kind] = (kinds[event.kind] ?? 0) + amount;
+      if (event.kind === 'transfer-in') purchases += amount;
+      if (event.kind === 'facility') facility += amount;
+    }
+  }
+  return { sources, injections, purchases, facility, expense, kinds };
+}
+function selloutRead(
+  label: string,
+  code: CountryCode,
+  club: string | undefined,
+  tier: WealthTier,
+  ticket: number,
+  matches: number,
+): SelloutRead {
+  const w = careerWorld({ country: code, seed: `economy-${code}-0`, tier, club });
+  w.cash = (careerFunds(w) / BigInt(CAREER_FUNDS)).toString();
+  delegateAll(w);
+  const own = clubOf(w),
+    start = gateProjection(w),
+    pool = start.supporters + start.travellingSupporters;
+  w.ticket = ticket;
+  const unit0 = unitOf(code, w.year);
+  const read: SelloutRead = {
+    label,
+    code,
+    club: own.id,
+    tier,
+    ticket,
+    year: w.year,
+    division: own.tier + 1,
+    reputation: own.reputation,
+    capacity: start.capacity,
+    pool: Math.round(pool),
+    demandOverSeats:
+      (pool * exp(-DEFAULT_TICKET / FINANCE_CONFIG.ticketDemandScale)) / start.capacity,
+    pressure: pressureOf(w, pool, start.capacity),
+    matches: 0,
+    window: '',
+    homeLeagueGates: 0,
+    soldOut: 0,
+    meanAttendance: 0,
+    sources: { competition: 0, matchday: 0, commercial: 0, sales: 0, other: 0 },
+    injections: 0,
+    purchases: 0,
+    expense: 0,
+    facility: 0,
+    expenseKinds: {},
+    cashStart: Number(w.cash) / unit0,
+    cashEnd: 0,
+    distress: 0,
+    bankrupt: false,
+  };
+  const absolute = () => (w.ownMatchesBase ?? 0) + w.ownMatches.length;
+  const first = absolute();
+  const attendances: number[] = [];
+  const segment = () => {
+    const flows = seasonFlows(w, w.year, w.currency, unitOf(code, w.year));
+    for (const key of Object.keys(flows.sources) as Source[])
+      read.sources[key] += flows.sources[key];
+    read.injections += flows.injections;
+    read.purchases += flows.purchases;
+    read.facility += flows.facility;
+    read.expense += flows.expense;
+    for (const [kind, amount] of Object.entries(flows.kinds))
+      read.expenseKinds[kind] = (read.expenseKinds[kind] ?? 0) + amount;
+  };
+  const firstYear = w.year;
+  while (absolute() - first < matches && !w.bankrupt) {
+    if (w.round >= 46) {
+      // The close's entries (merit payment, dividends) stay with the season they close.
+      const year = w.year,
+        money = w.currency;
+      closeSeason(w);
+      w.revision++;
+      const flows = seasonFlows(w, year, money, unitOf(code, year));
+      for (const key of Object.keys(flows.sources) as Source[])
+        read.sources[key] += flows.sources[key];
+      read.injections += flows.injections;
+      read.purchases += flows.purchases;
+      read.facility += flows.facility;
+      read.expense += flows.expense;
+      for (const [kind, amount] of Object.entries(flows.kinds))
+        read.expenseKinds[kind] = (read.expenseKinds[kind] ?? 0) + amount;
+      continue;
+    }
+    buyFacilities(w);
+    const before = w.events.length;
+    advanceRound(w, undefined, false);
+    const capacity = stadiumCapacity(w);
+    const leagueIds = new Set(
+      w.ownMatches.filter((m) => m.kind === 'league' && m.home === w.playerClub).map((m) => m.id),
+    );
+    for (const event of w.events.slice(before)) {
+      if (event.kind !== 'gate') continue;
+      const gate = readGateDetail(event.detail);
+      if (!gate || !leagueIds.has(gate.matchId)) continue;
+      attendances.push(gate.attendance);
+      if (gate.attendance >= capacity) read.soldOut++;
+    }
+  }
+  // The open season's entries so far.
+  if (w.round < 46 || w.year === firstYear) segment();
+  read.matches = absolute() - first;
+  read.window = `${firstYear}/${String((firstYear + 1) % 100).padStart(2, '0')} R1 – ${w.year} R${w.round}`;
+  read.homeLeagueGates = attendances.length;
+  read.meanAttendance = Math.round(average(attendances));
+  read.cashEnd = Number(w.cash) / unitOf(code, w.year);
+  read.distress = w.distress?.stage ?? 0;
+  read.bankrupt = !!w.bankrupt;
+  return read;
+}
+function careerSelloutProbe() {
+  const matches = Number(option('matches', '50'));
+  const cases = option(
+    'cases',
+    'FRA:midsize:-,ENG:midsize:-,FRA:oil:FRA:0:0:0,ENG:oil:ENG:0:0:0',
+  ).split(',');
+  console.log(
+    `# T1056 sellout response on lived reference takeovers (ECON-9, ECON-29)\n\nOne checkpoint per case (careerWorld seed economy-<code>-0, 1950 takeover, one year of fixed costs in cash, every delegation on, ECON-29's facility rule, no owner money), lived at ${DEFAULT_TICKET} and ${TICKET_PRESETS.at(-1)} until ${matches} owned matches settled. Price units of 1901. Turnover = competition + matchday + commercial (no sales, no owner money); operating = turnover - club expense (purchases, dividends and the owner's own takeover/living/business entries excluded; construction included); before construction adds facility spend back.\n`,
+  );
+  console.log(
+    '| case | club | div | rep | ticket | seats | pool | default demand / seats | pressure | matches | window | home league gates | sold out | mean crowd | turnover | matchday | competition | commercial | operating | before construction | sales | purchases | injections | cash start → end | distress |',
+  );
+  console.log(
+    '|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|',
+  );
+  const reads: SelloutRead[] = [];
+  for (const entry of cases) {
+    const [code, tier, ...rest] = entry.split(':');
+    const club = rest.join(':');
+    for (const ticket of [DEFAULT_TICKET, TICKET_PRESETS.at(-1)!]) {
+      const t = performance.now();
+      const r = selloutRead(
+        entry,
+        code as CountryCode,
+        club === '-' ? undefined : club,
+        tier as WealthTier,
+        ticket,
+        matches,
+      );
+      reads.push(r);
+      const turnover =
+        r.sources.competition + r.sources.matchday + r.sources.commercial + r.sources.other;
+      const operatingResult = turnover - (r.expense - r.purchases);
+      console.log(
+        `| ${code} ${tier} | ${r.club} | ${r.division} | ${r.reputation} | ${r.ticket} | ${r.capacity} | ${r.pool} | ${r.demandOverSeats.toFixed(2)} | ${r.pressure.toFixed(3)} | ${r.matches} | ${r.window} | ${r.homeLeagueGates} | ${r.soldOut} | ${r.meanAttendance} | ${units(turnover)} | ${pct(r.sources.matchday / turnover)} | ${pct(r.sources.competition / turnover)} | ${pct((r.sources.commercial + r.sources.other) / turnover)} | ${pct(operatingResult / turnover)} | ${pct((operatingResult + r.facility) / turnover)} | ${units(r.sources.sales)} | ${units(r.purchases)} | ${units(r.injections)} | ${units(r.cashStart)} → ${units(r.cashEnd)} | ${r.distress}${r.bankrupt ? ' bankrupt' : ''} |`,
+      );
+      console.error(`${entry} ${ticket}: ${((performance.now() - t) / 1000).toFixed(0)} s`);
+    }
+  }
+  const out = option('out', '');
+  if (out) writeFileSync(out, JSON.stringify(reads, null, 1));
+}
+if (args.includes('--career-sellout')) {
+  careerSelloutProbe();
+  process.exit(0);
 }
 
 if (args.includes('--sellout')) {
