@@ -1884,8 +1884,8 @@
       "branch": "gusta-session-start-fs24b-ce328e4b",
       "head": "2a96146a99e1f5753ffbbfa15c96f791a6cb2b27",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-24T01:47:07.540Z",
+      "status": "ready",
+      "at": "2026-11-24T01:47:14.141Z",
       "agentChecks": [
         {
           "id": "T1059-AC2",
