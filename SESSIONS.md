@@ -239,6 +239,7 @@
 - 261124 suggest T1065 SAVE-3 ARCH-34: Save row skipping after T1065: a complete check of unchanged records costs what encoding them costs (1930 e2e start, 2,856 rows: JSON.stringify 60.1 ms, deep equality with committed copies 57.3 ms at best plus 254 ms to take the copies, 32-bit fingerprint 184.5 ms; artifacts/benchmarks/T1065), and the engine changes squads, people, npcSeason and playerRecords in place, so no row skipping is possible inside rowSaver/worldRows/host. Re-landing T1061 needs change marks at the engine write sites (a per-record touch passed to the host RowSaver), proven by a parity mode running the full diff beside it on the host, save-round-trip and long-career suites; host.saveRows.test.ts holds the two review cases as regression tests.
 
 ## log
+- 261124 fix client: one 120 s engine silence limit; season-close next-event and the settings command after it failed the worker on a busy 2-core runner (main 45417944693)
 - 261124 T1066 done
 - 261124 T1065 done
 - 261124 T1064 done
@@ -258,4 +259,3 @@
 - 261124 T1056 done
 - 261124 T1059 done
 - 261124 T1053 done
-- 261124 T1039 done
