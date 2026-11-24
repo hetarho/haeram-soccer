@@ -6,7 +6,7 @@ import {
   dismissMatchReport,
   eventCard,
 } from './events';
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page, type TestInfo } from '@playwright/test';
 
 async function identity(page: Page) {
   const year = await page.getByTestId('calendar').getAttribute('data-season');
@@ -60,6 +60,24 @@ async function stepSettles(control: Locator, moved: () => Promise<boolean>, step
     .toMatch(/^(moved|idle)$/);
   expect(state, `${step} ran no step, or its step ended without a result`).toBe('moved');
 }
+/** Each journey's budget and when its first real event started, kept across helper calls. */
+const journeyClocks = new WeakMap<TestInfo, { budget: number; started: number }>();
+/**
+ * Journeys that play real events grow their test budget with each event that lands, leaving every
+ * next one a whole step's time (STEP_MS), so a step that stops still fails. A fixed budget counted
+ * steps that differ by host: the contract-talk journey's six weeks took 2.9-3.3 min on one host
+ * against its 180 s (main 45339146352).
+ */
+function extendForEvents() {
+  const info = test.info();
+  let clock = journeyClocks.get(info);
+  if (!clock)
+    journeyClocks.set(
+      info,
+      (clock = { budget: Math.max(info.timeout, 180000), started: Date.now() }),
+    );
+  test.setTimeout(clock.budget + (Date.now() - clock.started) + STEP_MS);
+}
 async function requestNextEvent(page: Page, moved: () => Promise<boolean>) {
   // The prior owner decision publishes its view before the engine commits the save.
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
@@ -95,9 +113,10 @@ export async function advanceManualEvent(page: Page) {
 export async function advanceOneRound(page: Page) {
   const wasManual =
     (await page.getByRole('button', { name: '다음 이벤트', exact: true }).count()) > 0;
+  extendForEvents();
   await manual(page);
   const initial = await identity(page);
-  for (let event = 0; event < 40; event++) {
+  for (let event = 0; event < 40; event++, extendForEvents()) {
     const now = await identity(page);
     if (now.year !== initial.year || now.round > initial.round) {
       if (!wasManual) await configureResponsibilities(page, { mode: 'automatic' });
@@ -111,15 +130,11 @@ export async function advanceOneRound(page: Page) {
 export async function finishSeason(page: Page) {
   // About 42 match eves a season, each a next-event and a match day with an owner decision's save
   // in the engine worker before the next step (→SAVE-3/8): 85 steps took 81 s in Node, and a fixed
-  // 420 s ran out on CI (main 44697908305). The test's budget therefore grows with each event that
-  // lands, leaving every next one a whole step's time: a step that stops still fails.
-  const budget = Math.max(test.info().timeout, 180000),
-    started = Date.now();
-  const extend = () => test.setTimeout(budget + (Date.now() - started) + STEP_MS);
-  extend();
+  // 420 s ran out on CI (main 44697908305), so the budget grows with each event (extendForEvents).
+  extendForEvents();
   await manual(page, true);
   const initial = await identity(page);
-  for (let event = 0; event < 240; event++, extend()) {
+  for (let event = 0; event < 240; event++, extendForEvents()) {
     if ((await identity(page)).year !== initial.year) {
       await configureResponsibilities(page, {
         mode: 'automatic',
