@@ -73,7 +73,6 @@
 | T1056 | Measure the sellout response on reference careers | ECON ARCH SAVE | - | todo |
 | T1057 | Serve WebAssembly with its streaming MIME type | ARCH SAVE | - | todo |
 | T1058 | Profile and shorten player-facing worker waits | ARCH SAVE WEB LAB | T1039 | todo |
-| T1059 | Give the heritage stage-10 locker room round footballs | WEB ECON ARCH SAVE | T1053 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
