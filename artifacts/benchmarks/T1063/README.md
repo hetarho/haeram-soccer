@@ -63,5 +63,5 @@ open-game). A stopped read follows a projection of the same day, so its squads w
 The candidate against the full squad scan on the same world after each stop (squads invalidated
 before each): takeover-2000 (`.tmp/t1061-takeover-2000.bin` from T1061) four stops identical
 (863–2,454 entries, no representative club holding one); the run was slow and left unfinished.
-The 1930 run gave no output within the timebox. The unit case `T1063-read-parity` (in
+The 1930 run's first 다음 이벤트 (match eve off, every business delegated) played on unattended until the career ended in 1976, then refused further commands; its one comparison, in 1976 with European ties played, was identical: 100 entries, 28 of them held by 23 representative clubs. The unit case `T1063-read-parity` (in
 `candidate.diff`) passed on both versions.
