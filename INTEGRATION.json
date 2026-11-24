@@ -2335,8 +2335,8 @@
       "branch": "gusta-session-start-fs24f-22ddbbef",
       "head": "060a5b77f846a3210bd724ffb4b605cbd6703518",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-24T13:46:19.344Z",
+      "status": "ready",
+      "at": "2026-11-24T13:46:25.285Z",
       "agentChecks": [
         {
           "id": "T1065-review-regressions",
