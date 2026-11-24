@@ -231,6 +231,7 @@
 - 261124 suggest T1058 SAVE-5: Open/import cost after T1058 (Node, 1930 e2e start after 20 steps): open-game 1.4-2.3 s, about 1.0 s of it SAVE-5 world validation (zod validateWorld, record/array schemas), 0.3-0.5 s the first view's slow reads, 0.2 s row assembly; import 1.3-2.4 s the same. Likely boundary: packages/contracts/src/schema.ts. Next experiment: profile validateWorld on a 2000 takeover and try an equivalent faster schema with identical accept/reject fixtures (portable save cases), paired with scripts/perf/waits-pair.ts.
 - 261124 suggest T1058 WEB-119: Remaining view slow reads after T1058 (Node, 1930): disciplineNames regenerates every representative club's squad after each day's cache invalidation (~0.7 s CPU of 2.5 s slow reads over 10 steps); a skip-when-all-names-found variant measured no difference (decision x0.90 [0.79, 1.03], 7 rounds) and was not kept. officeRead ~0.66 s. Next experiment: cache representative squads across the day invalidation where their inputs did not change, measured with scripts/perf/waits-pair.ts.
 - 261124 decided SAVE-3 T1061: 저장 변경 추적의 시작점 → 변경 지점을 확인한 행 묶음부터 표시하고 그 밖의 경로는 전체 diff를 사용 (alt: 첫 실험부터 레코드별 변경 표시) · 비교 범위를 작게 유지하면서 재개방과 실패 후 재시도의 결과를 대조할 수 있습니다.
+- 261124 decided SAVE-5 T1062: 검증 최적화의 시작점 → 기존 Zod 스키마와 참조 조회 안에서 중복 작업을 줄임 (alt: 동등한 대체 파서부터 시험) · 기존 정규화와 오류 동작을 대조하기 쉽습니다.
 
 ## unlanded
 | id | tag | branch | commit | at |
