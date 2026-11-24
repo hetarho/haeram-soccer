@@ -232,6 +232,7 @@
 - 261124 suggest T1058 WEB-119: Remaining view slow reads after T1058 (Node, 1930): disciplineNames regenerates every representative club's squad after each day's cache invalidation (~0.7 s CPU of 2.5 s slow reads over 10 steps); a skip-when-all-names-found variant measured no difference (decision x0.90 [0.79, 1.03], 7 rounds) and was not kept. officeRead ~0.66 s. Next experiment: cache representative squads across the day invalidation where their inputs did not change, measured with scripts/perf/waits-pair.ts.
 - 261124 decided SAVE-3 T1061: 저장 변경 추적의 시작점 → 변경 지점을 확인한 행 묶음부터 표시하고 그 밖의 경로는 전체 diff를 사용 (alt: 첫 실험부터 레코드별 변경 표시) · 비교 범위를 작게 유지하면서 재개방과 실패 후 재시도의 결과를 대조할 수 있습니다.
 - 261124 decided SAVE-5 T1062: 검증 최적화의 시작점 → 기존 Zod 스키마와 참조 조회 안에서 중복 작업을 줄임 (alt: 동등한 대체 파서부터 시험) · 기존 정규화와 오류 동작을 대조하기 쉽습니다.
+- 261124 decided WEB-119 T1063: 조회 캐시의 수명 → 불러온 월드마다 계산 입력을 확인하고 파생 조회값을 재사용 (alt: 공용 엔진 스쿼드 캐시의 수명 연장) · 시뮬레이션의 캐시 무효화 규칙에 의존하는 다른 경로를 그대로 비교할 수 있습니다.
 
 ## unlanded
 | id | tag | branch | commit | at |
