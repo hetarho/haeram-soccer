@@ -1,7 +1,10 @@
 /**
  * Saves a world as the rows changed since the previous save, in one transaction (→SAVE-3). The
  * saver remembers what it last committed; a failed write leaves that memory, so the next save
- * writes the same changes again.
+ * writes the same changes again. A `tracked` saver is told which world fields the writer may have
+ * changed since (`touch`); the rows of the others keep their committed text without being encoded
+ * again, so the database stays the one the full comparison would write. An untracked saver
+ * compares every row at every save.
  */
 import type {
   RecordStore,
@@ -10,7 +13,7 @@ import type {
 } from '../../../../packages/contracts/src/record-store';
 import type { World } from '../../../../packages/contracts/src/types';
 import { SAVE_SCHEMA_VERSION, type RecordTable } from './saveSchema';
-import { WORLD_TABLES, worldToRows } from './worldRows';
+import { FAMILIES, WORLD_TABLES, worldToRows, type HeldText } from './worldRows';
 
 /** What one save wrote. */
 export interface SaveStats {
@@ -35,6 +38,12 @@ export function worldMeta(w: World): Record<string, string> {
 
 const id = (table: TableName, key: string) => `${table}\u0000${key}`;
 
+/** The world field holding each record table's rows; the news journal holds its buckets. */
+const FIELD_OF = new Map<TableName, string>([
+  ...Object.entries(FAMILIES).map(([field, family]) => [family.table, field] as const),
+  ['news_bucket', 'newsJournal'],
+]);
+
 /** Tables whose `seq` is a memory position rather than an absolute array index. */
 const POSITIONAL = new Set<TableName>([
   'world_field',
@@ -54,8 +63,19 @@ export class RowSaver {
   private readonly fields = new Map<string, unknown>();
   /** The positional tables the store holds cold rows of, read once and kept as saves add them. */
   private coldTables: Set<TableName> | undefined;
+  /**
+   * The world fields that may differ from the last commit (`touch`); every other field's records
+   * are unchanged since then. All of them until a tracked saver's first commit.
+   */
+  private changed: Set<string> | 'all' = 'all';
+  private readonly tracked: boolean;
 
-  constructor(private readonly store: RecordStore) {}
+  constructor(
+    private readonly store: RecordStore,
+    options: { tracked?: boolean } = {},
+  ) {
+    this.tracked = !!options.tracked;
+  }
 
   /**
    * Takes `w`, the world just opened from the store, as this saver's last commit, so the next save
@@ -94,6 +114,17 @@ export class RowSaver {
     this.fields.set(field, value);
   }
 
+  /**
+   * Notes world fields the writer may have changed since the last commit, or `'all'` when it cannot
+   * tell. A field never touched keeps its committed rows' text in the next save, so whatever may
+   * have changed a field — in place or not — must touch it before that save.
+   */
+  touch(fields: Iterable<string> | 'all'): void {
+    if (this.changed === 'all') return;
+    if (fields === 'all') this.changed = 'all';
+    else for (const field of fields) this.changed.add(field);
+  }
+
   /** Writes the rows of `w` changed since the previous save, with its metadata, in one write. */
   save(w: World): SaveStats {
     try {
@@ -106,7 +137,13 @@ export class RowSaver {
 
   /** The rows of `w` with this save's field values (`setField`) in place. */
   private rowsOf(w: World): StoredRow[] {
-    const rows = worldToRows(w);
+    const changed = this.changed;
+    const held: HeldText | undefined =
+      changed === 'all'
+        ? undefined
+        : (field, table, key) =>
+            changed.has(field) ? undefined : this.written.get(id(table, key))?.data;
+    const rows = worldToRows(w, held);
     if (!this.fields.size) return rows;
     const pending = new Map(this.fields);
     const out = rows.map((stored) => {
@@ -151,6 +188,11 @@ export class RowSaver {
       else remove.push({ table: before.table, key: before.key });
     }
     this.store.write({ put, delete: remove, meta: worldMeta(w) });
+    // Committed: memory matches the rows written, except what this save's movers change once it
+    // returns (→SAVE-32) — the records they release and the fields set here.
+    const changed = new Set(this.fields.keys());
+    for (const { table } of this.cold.values()) changed.add(FIELD_OF.get(table) ?? 'all');
+    this.changed = !this.tracked || changed.has('all') ? 'all' : changed;
     for (const stored of put) {
       const at = id(stored.table, stored.key);
       if (stored.cold) {

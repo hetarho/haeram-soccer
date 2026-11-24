@@ -68,7 +68,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T1061 | Skip encoding unchanged save rows | ARCH SAVE | - | todo |
+| T1061 | Skip encoding unchanged save rows | ARCH SAVE | - | doing@261124.fs24c |
 | T1062 | Reduce validation work on open and import | ARCH SAVE | - | todo |
 | T1063 | Reuse unchanged stopped view reads | ARCH SAVE WEB | - | todo |
 | T1064 | Reduce engine work on own match days | ARCH LEAGUE MATCH SAVE | - | todo |

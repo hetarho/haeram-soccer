@@ -160,6 +160,26 @@ const DAY_STEPS: DaySteps = { prepareRound, completeRound, advanceDays };
  * 4.5 s silent stretch in Node (records-room-journey, 261124), several times that on CI.
  */
 const NEXT_EVENT_BEAT_MS = 1000;
+/**
+ * The world fields an owner decision changes, for the commands whose engine code has been read for
+ * it (T1061): each sets its own setting and records an event, `operate` then catches the read
+ * models up and counts the revision, and the host notes the receipt. The next save encodes only
+ * these fields' rows (→SAVE-3); every other request may change anything.
+ */
+const DECISION_FIELDS: Partial<Record<string, readonly string[]>> = {
+  'club-ticket': ['ticket'],
+  'club-policy': ['policy'],
+  'club-build': ['build'],
+  'club-direction': ['direction'],
+  'coaching-investment': ['direction'],
+};
+const DECISION_COMMON = ['events', 'newsJournal', 'careerReads', 'revision', 'receiptIds'];
+/** The world fields request `body` may change, for the save that follows (`RowSaver.touch`). */
+function changedFields(body: Request['body']): readonly string[] | 'all' {
+  if (body.type === 'save' || body.type === 'list-games') return [];
+  const own = body.type === 'command' ? DECISION_FIELDS[body.command.type] : undefined;
+  return own ? [...own, ...DECISION_COMMON] : 'all';
+}
 /** The patch policy lives with publication; existing importers still find it here. */
 export { VIEW_PATCH } from './viewPublisher';
 import { clubRecords } from './clubRecords';
@@ -670,7 +690,7 @@ export class Host {
     }
     try {
       activated = checked?.activated ?? this.writerUpgrade(world);
-      saver = new RowSaver(store);
+      saver = new RowSaver(store, { tracked: true });
       saver.prime(world);
     } catch (error) {
       store.close();
@@ -857,7 +877,7 @@ export class Host {
     const store = await this.openStore(gameId, { create: true });
     if (!store) throw new Error(sourceMessage('copy.host.c64421732a'));
     try {
-      const saver = new RowSaver(store);
+      const saver = new RowSaver(store, { tracked: true });
       if (store.meta().world_id !== undefined) {
         if (!replace) throw new Error(sourceMessage('copy.host.76a7247c60'));
         // What the database held is taken as committed, so the save removes what `w` lacks.
@@ -1299,6 +1319,7 @@ export class Host {
       this.session = r.session;
       const previous = this.acknowledgments.get(r.requestId);
       if (previous) return previous;
+      this.game?.saver.touch(changedFields(r.body));
       if (r.body.type === 'save') return await this.save(r);
       if (r.body.type === 'restore-backup') return await this.restoreBackup(r, r.body.gameId);
       if (r.body.type === 'open-game') return await this.openGame(r, r.body.gameId);
