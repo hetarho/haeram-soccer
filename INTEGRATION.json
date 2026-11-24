@@ -1856,6 +1856,22 @@
         "reason": "ovr20b landed 0.8.22 (0f6f36910) on main by fast-forward after task-tier checks (owner: unit checks only)",
         "verified": false
       }
+    },
+    "92049d603d0990aace966255": {
+      "id": "92049d603d0990aace966255",
+      "owner": "f6b8b523-2bfb-456e-8327-c100ccba8731",
+      "tag": "fs24",
+      "kind": "start",
+      "publication": "merge",
+      "host": "hq-dev1-pve2-vm2",
+      "device": "hq-dev1-pve2-vm2",
+      "branch": "gusta-session-start-fs24-0f2a0f35",
+      "head": "d0f4476e21ef92146d553869ba616e8a8e564fd1",
+      "land": "main",
+      "status": "working",
+      "at": "2026-11-24T00:27:24.666Z",
+      "agentChecks": [],
+      "verificationCommands": []
     }
   },
   "gate": null,
