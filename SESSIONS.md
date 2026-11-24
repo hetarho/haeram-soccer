@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| fs24c | hq-dev1-pve2-vm2 | autopilot | 2026-11-24T06:17Z | 2026-11-24T07:17Z | T1061 | gusta-session-start-fs24c-364d564d | b2b0b80ef69d | b909ffa89a69f423cedebf74 |
+| fs24c | hq-dev1-pve2-vm2 | autopilot | 2026-11-24T06:17Z | 2026-11-24T07:42Z | - | gusta-session-start-fs24c-364d564d | b2b0b80ef | b909ffa89a69f423cedebf74 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -249,8 +249,10 @@
 | T1060 | fs24 | gusta-session-start-fs24-0f2a0f35 | 12d879fdaa11 | 2026-11-24T04:05Z |
 | T1054 | fs24 | gusta-session-start-fs24-0f2a0f35 | 7193944602c5 | 2026-11-24T04:26Z |
 | T1055 | fs24 | gusta-session-start-fs24-0f2a0f35 | 515b4f9acac2 | 2026-11-24T04:32Z |
+| T1061 | fs24c | gusta-session-start-fs24c-364d564d | b2b0b80ef | 2026-11-24T07:42Z |
 
 ## log
+- 261124 T1061 done
 - 261124 gusta-create-task T1061 T1062 T1063 T1064 planned and published at 4cee344a3e5a; spec lint and task tier passed
 - 261124 gusta-create-task SAVE WEB ARCH start
 - 261124 gusta-update-ssot SAVE@76 WEB@232 ARCH@54: result-identical performance changes; no active tasks affected
@@ -270,4 +272,3 @@
 - 261124 gusta-create-task ARCH WEB ECON start
 - 261124 gusta-update-ssot ARCH@53 WEB@231 ECON@68: preview WASM, worker waits, facility scenes, ticket forecast and career reads pending
 - 261124 gusta-update-ssot ARCH WEB ECON start
-- 261120 T1052 done
