@@ -2173,7 +2173,7 @@
       "host": "hq-dev1-pve2-vm2",
       "pid": 551803
     },
-    "phase": "checking",
+    "phase": "waiting-agent",
     "land": "main",
     "base": "cccc05acd4671484dde87ca23b1c639c6f6b7ea1",
     "cohort": [
@@ -2519,38 +2519,33 @@
       {
         "command": "verification-plan:scripts/verification-plan.json",
         "schemaVersion": 1,
-        "ok": false,
-        "exitCode": 1,
+        "ok": true,
+        "exitCode": 0,
         "cached": false,
         "timedOut": false,
         "cancelled": false,
         "stale": false,
-        "ms": 1686537,
+        "ms": 1477491,
         "scope": {
           "TIER": "batch",
           "DIFF_BASE": "cccc05acd4671484dde87ca23b1c639c6f6b7ea1",
           "TASK": "",
           "TASKS": ""
         },
-        "commit": "c6824c4a7c802ebd923647bf90b02eb1ba8fb0dd",
-        "tree": "b0f70b1a2eab557ea73740cf8c602547f7fe7530",
-        "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-516f67b0-138d-4c97-ad1d-6bca892e0ae0.log",
+        "commit": "96c088576eeed9ad3f540eb8cbe1a7176a0821f1",
+        "tree": "94d74bd311d4edd7ace2b094683c7060c962dd1d",
+        "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-c9acdbfc-8868-4fe4-b023-0d977d93ca1c.log",
         "tail": [
-          "      Tests  2 failed | 4550 passed | 3 skipped (4555)",
-          "   Start at  13:34:33",
-          "   Duration  1605.50s (tests 96%, import 4%)",
+          " Test Files  551 passed (551)",
+          "      Tests  4553 passed | 3 skipped (4556)",
+          "   Start at  14:11:10",
+          "   Duration  1440.82s (tests 96%, import 4%, transform 1%)",
           "",
           "JSON report written to /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/vitest-results.json",
-          "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":462870,\"started\":\"2026-11-24T04:34:32.162Z\",\"exitCode\":1,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-24T05:01:18.987Z\",\"elapsedMs\":1606828,\"commandExitCode\":1,\"afterExitCode\":1}",
-          "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/report.json\"}",
-          " ELIFECYCLE  Command failed with exit code 1."
+          "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"passed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":554168,\"started\":\"2026-11-24T05:11:09.251Z\",\"exitCode\":0,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T05-10-35-814Z-552522/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T05-10-35-814Z-552522/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-24T05:35:11.615Z\",\"elapsedMs\":1442367,\"commandExitCode\":0,\"afterExitCode\":0}",
+          "{\"event\":\"verification-finished\",\"status\":\"passed\",\"passed\":true,\"exitCode\":0,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T05-10-35-814Z-552522/report.json\"}"
         ],
-        "failedTests": [
-          "× keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career) 500146ms",
-          "× is every package version and the rules a world plays 16ms",
-          "FAIL  |integration| packages/engine/src/feature-replay.retained.test.ts > keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career)",
-          "FAIL  |unit| packages/contracts/src/versions.test.ts > the current game version (→SAVE-10, SAVE-26) > is every package version and the rules a world plays"
-        ],
+        "failedTests": [],
         "plan": {
           "source": "scripts/verification-plan.json",
           "checks": [
@@ -2578,32 +2573,27 @@
               "scripts",
               "tests"
             ],
-            "inputFingerprint": "d24843401e59822b8fa72ec7e49b737c5b0f0de9af721bd1d3a1a0c133d6e854",
+            "inputFingerprint": "11577ebb8ab672e18bd278e726759b73732831ba3c43e6f45c700180b9a83703",
             "executionFingerprint": "2da5c5d51929df8ed22e2c1906f88d088694c5fdaf2b64e9b63510986ef3e790",
-            "ok": false,
-            "status": "failed",
-            "exitCode": 1,
+            "ok": true,
+            "status": "passed",
+            "exitCode": 0,
             "cached": false,
             "timedOut": false,
             "cancelled": false,
             "stale": false,
-            "ms": 1686216,
-            "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-516f67b0-138d-4c97-ad1d-6bca892e0ae0.log",
-            "failedTests": [
-              "× keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career) 500146ms",
-              "× is every package version and the rules a world plays 16ms",
-              "FAIL  |integration| packages/engine/src/feature-replay.retained.test.ts > keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career)",
-              "FAIL  |unit| packages/contracts/src/versions.test.ts > the current game version (→SAVE-10, SAVE-26) > is every package version and the rules a world plays"
-            ],
+            "ms": 1476960,
+            "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-c9acdbfc-8868-4fe4-b023-0d977d93ca1c.log",
+            "failedTests": [],
             "tail": [
-              "      Tests  2 failed | 4550 passed | 3 skipped (4555)",
-              "   Start at  13:34:33",
-              "   Duration  1605.50s (tests 96%, import 4%)",
+              " Test Files  551 passed (551)",
+              "      Tests  4553 passed | 3 skipped (4556)",
+              "   Start at  14:11:10",
+              "   Duration  1440.82s (tests 96%, import 4%, transform 1%)",
               "",
               "JSON report written to /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/vitest-results.json",
-              "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":462870,\"started\":\"2026-11-24T04:34:32.162Z\",\"exitCode\":1,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-24T05:01:18.987Z\",\"elapsedMs\":1606828,\"commandExitCode\":1,\"afterExitCode\":1}",
-              "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T04-33-13-870Z-459523/report.json\"}",
-              " ELIFECYCLE  Command failed with exit code 1."
+              "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"passed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":554168,\"started\":\"2026-11-24T05:11:09.251Z\",\"exitCode\":0,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T05-10-35-814Z-552522/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T05-10-35-814Z-552522/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-24T05:35:11.615Z\",\"elapsedMs\":1442367,\"commandExitCode\":0,\"afterExitCode\":0}",
+              "{\"event\":\"verification-finished\",\"status\":\"passed\",\"passed\":true,\"exitCode\":0,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T05-10-35-814Z-552522/report.json\"}"
             ],
             "cleanup": {
               "scope": "process-group",
@@ -2612,9 +2602,7 @@
             }
           }
         ],
-        "failedCheckIds": [
-          "verify-batch"
-        ],
+        "failedCheckIds": [],
         "cleanup": {
           "scope": "process-group",
           "signalled": false,
@@ -2899,6 +2887,105 @@
           }
         ],
         "at": "2026-11-24T05:01:20.469Z"
+      },
+      {
+        "candidate": "96c088576eeed9ad3f540eb8cbe1a7176a0821f1",
+        "checks": [
+          {
+            "command": "verification-plan:scripts/verification-plan.json",
+            "schemaVersion": 1,
+            "ok": true,
+            "exitCode": 0,
+            "cached": false,
+            "timedOut": false,
+            "cancelled": false,
+            "stale": false,
+            "ms": 1477491,
+            "scope": {
+              "TIER": "batch",
+              "DIFF_BASE": "cccc05acd4671484dde87ca23b1c639c6f6b7ea1",
+              "TASK": "",
+              "TASKS": ""
+            },
+            "commit": "96c088576eeed9ad3f540eb8cbe1a7176a0821f1",
+            "tree": "94d74bd311d4edd7ace2b094683c7060c962dd1d",
+            "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-c9acdbfc-8868-4fe4-b023-0d977d93ca1c.log",
+            "tail": [
+              " Test Files  551 passed (551)",
+              "      Tests  4553 passed | 3 skipped (4556)",
+              "   Start at  14:11:10",
+              "   Duration  1440.82s (tests 96%, import 4%, transform 1%)",
+              "",
+              "JSON report written to /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/vitest-results.json",
+              "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"passed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":554168,\"started\":\"2026-11-24T05:11:09.251Z\",\"exitCode\":0,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T05-10-35-814Z-552522/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T05-10-35-814Z-552522/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-24T05:35:11.615Z\",\"elapsedMs\":1442367,\"commandExitCode\":0,\"afterExitCode\":0}",
+              "{\"event\":\"verification-finished\",\"status\":\"passed\",\"passed\":true,\"exitCode\":0,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T05-10-35-814Z-552522/report.json\"}"
+            ],
+            "failedTests": [],
+            "plan": {
+              "source": "scripts/verification-plan.json",
+              "checks": [
+                "verify-batch"
+              ]
+            },
+            "checks": [
+              {
+                "id": "verify-batch",
+                "command": "pnpm run verify:batch",
+                "inputs": [
+                  "*.json",
+                  "*.mjs",
+                  "*.toml",
+                  "*.ts",
+                  "*.yaml",
+                  ".github",
+                  ".gitignore",
+                  ".node-version",
+                  ".prettierignore",
+                  "apps",
+                  "artifacts",
+                  "packages",
+                  "patches",
+                  "scripts",
+                  "tests"
+                ],
+                "inputFingerprint": "11577ebb8ab672e18bd278e726759b73732831ba3c43e6f45c700180b9a83703",
+                "executionFingerprint": "2da5c5d51929df8ed22e2c1906f88d088694c5fdaf2b64e9b63510986ef3e790",
+                "ok": true,
+                "status": "passed",
+                "exitCode": 0,
+                "cached": false,
+                "timedOut": false,
+                "cancelled": false,
+                "stale": false,
+                "ms": 1476960,
+                "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-c9acdbfc-8868-4fe4-b023-0d977d93ca1c.log",
+                "failedTests": [],
+                "tail": [
+                  " Test Files  551 passed (551)",
+                  "      Tests  4553 passed | 3 skipped (4556)",
+                  "   Start at  14:11:10",
+                  "   Duration  1440.82s (tests 96%, import 4%, transform 1%)",
+                  "",
+                  "JSON report written to /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/vitest-results.json",
+                  "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"passed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":554168,\"started\":\"2026-11-24T05:11:09.251Z\",\"exitCode\":0,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T05-10-35-814Z-552522/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T05-10-35-814Z-552522/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-24T05:35:11.615Z\",\"elapsedMs\":1442367,\"commandExitCode\":0,\"afterExitCode\":0}",
+                  "{\"event\":\"verification-finished\",\"status\":\"passed\",\"passed\":true,\"exitCode\":0,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3/.tmp/verification/2026-11-24T05-10-35-814Z-552522/report.json\"}"
+                ],
+                "cleanup": {
+                  "scope": "process-group",
+                  "signalled": false,
+                  "escalated": false
+                }
+              }
+            ],
+            "failedCheckIds": [],
+            "cleanup": {
+              "scope": "process-group",
+              "signalled": false,
+              "escalated": false
+            }
+          }
+        ],
+        "at": "2026-11-24T05:35:13.302Z"
       }
     ],
     "path": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-14d911dd-d011-4fde-90c1-0176ff6958d3",
