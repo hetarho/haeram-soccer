@@ -83,7 +83,7 @@
 
 ## next
 - gusta-implement-task T1065
-- fs24 (261124): T1039 tracks the two remaining Chromium failures. T1053–T1056 cover the stad20 follow-ups (reports/261120-stad20), T1057 fixes the preview Wasm MIME type, and T1058 profiles player-facing waits after T1039.
+- fs24/fs24c (261124): 0.8.24 fixed main CI (T1039 and three journey test budgets/waits; first green run since 0.8.19 at 0211dd2a0), stad20 follow-ups T1053-T1057 and T1059, speed-up T1058 (다음 이벤트 x0.30-0.75, decisions x0.23-0.37). 0.8.25 adds T1062 (open/import x0.68-0.81). T1061 was reverted after an independent review found stale-row saves; T1065 re-lands it. reports/261124-fs24, reports/261124-fs24c.
 - ovr20 (261120): season-close Club OVR landed as 0.8.20 (T1040 archive, T1041 past tables, 구단 성장 and generation champions); reports/261120-ovr20.
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
 - x10 (261119): landed as 0.8.15 (9c3a60796) — unwatched own matches without script/material, heat maps removed, slow view reads only on a stopped clock with dimmed places, fixture helpers from three cores (three on 6–12 cores); a 10x automatic-play day ×0.72 on own match days and ×0.11 on other days (reports/261119-x10). T989 withdrawn, T1019 parked until T1003/T1004.
