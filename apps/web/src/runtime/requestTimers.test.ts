@@ -10,9 +10,14 @@ describe('waitsBehindLonger', () => {
     expect(waitsBehindLonger(queue, 'command')).toBe(true);
   });
 
-  it('times a request out on its own once nothing longer is ahead of it', () => {
+  it('keeps a read waiting behind an earlier command allowed as long, which guards the worker', () => {
+    // The command reported progress and is still at work; the read behind it is not lost.
+    expect(waitsBehindLonger(pending(['command', 120_000], ['read', 120_000]), 'read')).toBe(true);
+  });
+
+  it('times a request out on its own once nothing at least as long is ahead of it', () => {
     expect(waitsBehindLonger(pending(['command', 15_000]), 'command')).toBe(false);
-    expect(waitsBehindLonger(pending(['read', 15_000], ['command', 15_000]), 'command')).toBe(
+    expect(waitsBehindLonger(pending(['read', 15_000], ['command', 120_000]), 'command')).toBe(
       false,
     );
     // A longer request sent after it does not hold it: the worker answers in order.

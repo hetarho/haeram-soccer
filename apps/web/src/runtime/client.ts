@@ -276,6 +276,15 @@ export class GameClient {
       return;
     }
     clearTimeout(pending.timer);
+    // The worker answers in order: the requests sent after this one start their turn now, so each
+    // gets its whole silence limit from here (→ARCH-6).
+    let behind = false;
+    for (const [id, waiting] of this.waiters) {
+      if (behind) {
+        clearTimeout(waiting.timer);
+        waiting.timer = window.setTimeout(() => this.expire(id), waiting.timeout);
+      } else behind = id === r.requestId;
+    }
     this.waiters.delete(r.requestId);
     const { view, shared } = this.viewOf(r, pending.publishView);
     // A failed day changes nothing to show: its view stands where the worker does.

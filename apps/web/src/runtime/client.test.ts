@@ -476,8 +476,11 @@ describe('background worker publication', () => {
     expect(client.state.savedRevision).toBe(client.state.view!.world.revision);
   });
 
-  /** Holds the engine's answers to `held` requests until released, on fake timers. */
-  async function silentEngine(held: (body: Request['body']) => boolean) {
+  /**
+   * Holds the engine's answers to the requests `held` names a gate for (`true`: the one gate) until
+   * that gate is released, on fake timers.
+   */
+  async function silentEngine(held: (body: Request['body']) => string | boolean) {
     const client = await start();
     const settings = structuredClone(client.state.view!.world.settings!);
     settings.mode = 'manual';
@@ -485,19 +488,28 @@ describe('background worker publication', () => {
     await client.whenSaved();
     const host = WorkerPort.instances[0].host;
     const handle = host.handle.bind(host);
-    let release!: () => void;
-    const gate = new Promise<void>((resolve) => (release = resolve));
+    const gates = new Map<string, { open: Promise<void>; release: () => void }>();
+    const gate = (name: string) => {
+      let entry = gates.get(name);
+      if (!entry) {
+        let release!: () => void;
+        const open = new Promise<void>((resolve) => (release = resolve));
+        gates.set(name, (entry = { open, release }));
+      }
+      return entry;
+    };
     const spy = vi.spyOn(host, 'handle').mockImplementation(async (input) => {
-      if (held((input as Request).body)) await gate;
+      const name = held((input as Request).body);
+      if (name) await gate(name === true ? 'held' : name).open;
       return handle(input);
     });
     vi.useFakeTimers();
     const browserTimeout = vi.spyOn(window, 'setTimeout').mockImplementation(setTimeout);
     return {
       client,
-      release: () => release(),
+      release: (name = 'held') => gate(name).release(),
       restore() {
-        release();
+        for (const entry of gates.values()) entry.release();
         spy.mockRestore();
         browserTimeout.mockRestore();
         vi.useRealTimers();
@@ -522,6 +534,32 @@ describe('background worker publication', () => {
       expect(await advancing).toMatchObject({ ok: true });
       expect(await reading).toMatchObject({ world: client.state.view!.world.id });
       await client.whenSaved();
+    } finally {
+      engine.restore();
+    }
+  });
+
+  it('gives a read its whole silence limit once the step ahead of it is answered', async () => {
+    const engine = await silentEngine((body) =>
+      body.type === 'news-page'
+        ? 'read'
+        : body.type === 'command' && body.command.type === 'next-event'
+          ? 'step'
+          : false,
+    );
+    const { client } = engine;
+    try {
+      const advancing = client.command({ type: 'next-event' }, { background: true });
+      await vi.advanceTimersByTimeAsync(0);
+      const reading = client.newsPage().catch((error: unknown) => error);
+      // The step answers after 100 s; the read has waited behind it and only now takes its turn.
+      await vi.advanceTimersByTimeAsync(100_000);
+      engine.release('step');
+      expect(await advancing).toMatchObject({ ok: true });
+      await vi.advanceTimersByTimeAsync(30_000);
+      expect(client.state.error).toBeUndefined();
+      engine.release('read');
+      expect(await reading).toMatchObject({ world: client.state.view!.world.id });
     } finally {
       engine.restore();
     }
