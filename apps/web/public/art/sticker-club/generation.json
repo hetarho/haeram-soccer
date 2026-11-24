@@ -2472,20 +2472,20 @@
       "kind": "locker",
       "era": "heritage",
       "stage": 10,
-      "prompt": "Built-in image edit of the existing heritage stage-10 locker panorama: replace American football helmets and balls with period-appropriate association football boots and round footballs; preserve composition, flat colors and dark outlines; no text, logos or people.",
+      "prompt": "Built-in image edit of the T1053 heritage stage-10 locker panorama: replace the four oval balls with round period leather association footballs while preserving the room and equipment.",
       "source": "apps/web/design/sticker-club/stadium-large-v1/sources/heritage-locker-10.png",
-      "sourceBytes": 2518254,
-      "sourceSha256": "1abbee0fc9afab12fdd8882ab3bd624fb27c135da958f9aab9a42c6832d3c411",
+      "sourceBytes": 2485065,
+      "sourceSha256": "d35b172f5a849f20f19deb22f48523311bd5175128a785a092b2f9f93a99eef3",
       "width": 960,
       "height": 320,
-      "bytes": 78032,
-      "sha256": "e7b7b1d3716872c6e103f11e8c109114513e8137cb3419d92f830b422ed30845",
+      "bytes": 78500,
+      "sha256": "ef8f16a03be0acddab136266598be71901a0ec090ed3a72719f55799077337bb",
       "small": {
         "file": "heritage/locker-10.small.webp",
         "width": 480,
         "height": 160,
-        "bytes": 22640,
-        "sha256": "e597033bde155bb69f3a846695e475d0aa5d8c50b5406371345bdfdf4d082e75"
+        "bytes": 23306,
+        "sha256": "8db6ba764af35c0098a53f23dbd4cee66a476cc7caa043efdf4c1e1ac60915a0"
       }
     },
     {

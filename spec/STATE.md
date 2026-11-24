@@ -68,7 +68,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T1059 | Give the heritage stage-10 locker room round footballs | WEB ECON ARCH SAVE | T1053 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
