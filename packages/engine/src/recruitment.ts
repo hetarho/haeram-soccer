@@ -6,7 +6,7 @@ import { LINES } from '../../contracts/src/player';
 import { SEASON_ROUNDS, nextOwnFixture } from './calendar';
 import { operatingCost } from './transactions';
 import { clubOf, fatigueLoad, formationOf, lineOfPlayer, overall, slotOvr } from './player-state';
-import { startingSquad } from './world';
+import { arrivalBase, startersWithArrival, startingSquad, type ArrivalBase } from './world';
 import { adaptationMultiplier, adaptationStart, ADAPTATION_NEUTRAL } from './player';
 import { lineupSummary, npcTactic, tacticalProfile } from './strategy';
 
@@ -38,16 +38,27 @@ export function recruitmentContext(w: World) {
     opponentId = fixture?.home === w.playerClub ? fixture.away : fixture?.home,
     opponent = w.clubs.find((club) => club.id === opponentId),
     opponentTactic = opponent ? npcTactic(opponent) : 'balanced';
+  let arrivals: ArrivalBase | undefined;
   return {
     before,
     opponentTactic,
     beforeStrength: lineupSummary(before, w.tactic).strength,
     beforeFit: tacticalProfile(before, w.tactic, opponentTactic).fit,
+    /** The squad read once for every candidate's XI (`startersWithArrival`). */
+    arrivals: () => (arrivals ??= arrivalBase(w)),
   };
 }
 
-/** Automatic selection after the candidate arrives, including a squad with vacant slots. */
-export function recruitmentSelection(w: World, offer: TransferOffer, before: readonly Player[]) {
+/**
+ * Automatic selection after the candidate arrives, including a squad with vacant slots; `arrivals`
+ * is the squad read once for a query's many candidates.
+ */
+export function recruitmentSelection(
+  w: World,
+  offer: TransferOffer,
+  before: readonly Player[],
+  arrivals?: ArrivalBase,
+) {
   const alreadyOwned = w.players.some(
     (player) => player.id === offer.player.id && player.status === 'active',
   );
@@ -60,12 +71,7 @@ export function recruitmentSelection(w: World, offer: TransferOffer, before: rea
     ),
   };
   // A returning player replaces his retained historical row rather than adding a second ID.
-  const after = alreadyOwned
-    ? before
-    : startingSquad(
-        { ...w, players: [...w.players.filter((p) => p.id !== arriving.id), arriving] },
-        clubOf(w),
-      );
+  const after = alreadyOwned ? before : startersWithArrival(w, arriving, arrivals);
   return {
     arriving,
     after,
@@ -76,7 +82,12 @@ export function recruitmentSelection(w: World, offer: TransferOffer, before: rea
 /** Only selection/fit facts, without registration, financial runway or a full signing preview. */
 export function recruitmentFit(w: World, offer: TransferOffer, context = recruitmentContext(w)) {
   const { before, opponentTactic, beforeStrength, beforeFit } = context;
-  const { arriving, after, willStart } = recruitmentSelection(w, offer, before);
+  const { arriving, after, willStart } = recruitmentSelection(
+    w,
+    offer,
+    before,
+    context.arrivals?.(),
+  );
   // The slot he would take (→CLUB-14): where he beats the starter by most at the slot, else the
   // weakest of his main position's; his 실효 OVR there on arrival and once settled (→PLAYER-11).
   const slots = formationOf(w.tactic);

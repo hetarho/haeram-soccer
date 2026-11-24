@@ -16,7 +16,7 @@ import { exp, log } from './portable-math';
 import { clubOf, overall } from './player-state';
 import { recruitmentSelection, type TransferOffer } from './recruitment';
 import type { AnswerFactor, FactorLine } from './sale-answer';
-import { clubById, startingSquad } from './world';
+import { arrivalBase, clubById, startingSquad, type ArrivalBase } from './world';
 import { clubPlayer, worldMarketOffer } from './world-market';
 
 /** Our offer as a share of his demand: the owner picks one, the 단장 the smallest that suits. */
@@ -237,8 +237,11 @@ export function termsContext(w: World, terms: TermsOffer): TermsContext | undefi
 export function termsSearchContext(w: World) {
   const entries = new Map<string, ReturnType<typeof europeOf>>(),
     starters = new Map<string, Set<string>>();
+  let arrivals: ArrivalBase | undefined;
   return {
     ownStarters: startingSquad(w, clubOf(w)),
+    /** Our squad read once for every candidate's XI (`startersWithArrival`). */
+    arrivals: () => (arrivals ??= arrivalBase(w)),
     europe: (id: string) => {
       if (!entries.has(id)) entries.set(id, europeOf(w, id));
       return entries.get(id);
@@ -277,7 +280,7 @@ export function resolvedTermsContext(
     age: w.year - player.born,
     ...(ourEurope ? { ourEurope } : {}),
     hisEurope: !!club && !!context.europe(club.id),
-    wouldStart: recruitmentSelection(w, offer, context.ownStarters).willStart,
+    wouldStart: recruitmentSelection(w, offer, context.ownStarters, context.arrivals()).willStart,
     startsNow: !!club && context.starters(club).has(player.id),
     freeAgent: !club,
     loyalty: club ? loyaltyTerm(player, w.year) : 0,

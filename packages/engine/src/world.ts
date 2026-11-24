@@ -794,6 +794,61 @@ function chooseStarters(w: World, f?: Pick<Fixture, 'kind' | 'groupKey'>) {
     ? xi
     : lineup(active, w.tactic, w.manager, w.year, ownMultiplier);
 }
+/**
+ * What `startersWithArrival` reads of `w` once for many arrivals: the fit players' XI without a
+ * fixture and, when that XI fills every slot from finite values, the value each slot was filled at.
+ */
+export interface ArrivalBase {
+  w: World;
+  xi: Player[];
+  /** The ids of the active players, whom an arrival of the same id would replace. */
+  active: Set<string>;
+  /** Per slot, the value its starter took it at; absent when an arrival is always chosen afresh. */
+  floor?: Float64Array;
+}
+export function arrivalBase(w: World): ArrivalBase {
+  const players = activePlayers(w),
+    active = new Set(players.map((p) => p.id)),
+    fit = players.filter((p) => !isInjured(w, p)),
+    slots = formationOf(w.tactic),
+    xi = lineup(fit, w.tactic, w.manager, w.year, ownMultiplier);
+  if (xi.length < 11 || xi.length !== slots.length) return { w, xi, active };
+  for (const p of fit)
+    for (const slot of slots)
+      if (!Number.isFinite(selectionValue(p, slot, w.manager, w.year, ownMultiplier(p))))
+        return { w, xi, active };
+  const floor = Float64Array.from(xi, (p, s) =>
+    selectionValue(p, slots[s]!, w.manager, w.year, ownMultiplier(p)),
+  );
+  return { w, xi, active, floor };
+}
+/**
+ * The own XI without a fixture once `arriving` joins the squad, replacing any row of his id: what
+ * `ownStarters` chooses on that squad. `lineup` fills slots best pair first and its best pair's
+ * value never rises, so an arrival whose value at every slot is below the value that slot was
+ * filled at is never chosen and the fit players' XI stands; an injured arrival leaves the fit
+ * players alone. Anything else — a tie, a slot left empty, a value that is not finite — chooses
+ * the XI afresh. Reading many arrivals against one `base` reads the squad once (scout searches).
+ */
+export function startersWithArrival(w: World, arriving: Player, base?: ArrivalBase): Player[] {
+  const known = base?.w === w ? base : undefined;
+  if (known?.floor && arriving.status === 'active' && !known.active.has(arriving.id)) {
+    const slots = formationOf(w.tactic);
+    let below = isInjured(w, arriving);
+    if (!below) {
+      const multiplier = ownMultiplier(arriving);
+      below = slots.every(
+        (slot, s) =>
+          selectionValue(arriving, slot, w.manager, w.year, multiplier) < known.floor![s]!,
+      );
+    }
+    if (below) return [...known.xi];
+  }
+  return ownStarters({
+    ...w,
+    players: [...w.players.filter((p) => p.id !== arriving.id), arriving],
+  });
+}
 /** The tactic a club plays: the own club's applied one, else its style. */
 export const tacticOf = (w: World, c: Club) => (c.id === w.playerClub ? w.tactic : clubStyle(c));
 /**
