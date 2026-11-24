@@ -2472,20 +2472,20 @@
       "kind": "locker",
       "era": "heritage",
       "stage": 10,
-      "prompt": "Original flat colourful cartoon heritage locker, completed stage 10; large period-appropriate locker room; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "prompt": "Built-in image edit of the existing heritage stage-10 locker panorama: replace American football helmets and balls with period-appropriate association football boots and round footballs; preserve composition, flat colors and dark outlines; no text, logos or people.",
       "source": "apps/web/design/sticker-club/stadium-large-v1/sources/heritage-locker-10.png",
-      "sourceBytes": 2631906,
-      "sourceSha256": "621f5781d37c6aa22ec9d85d0f0e69ccd50407e54916052828dcbe427bcde0cb",
+      "sourceBytes": 2518254,
+      "sourceSha256": "1abbee0fc9afab12fdd8882ab3bd624fb27c135da958f9aab9a42c6832d3c411",
       "width": 960,
       "height": 320,
-      "bytes": 80260,
-      "sha256": "6def8707be4795c26b4d9211a37cd4bb7098cdd7deea6a1cc7c03cd0aa8f3cc0",
+      "bytes": 78032,
+      "sha256": "e7b7b1d3716872c6e103f11e8c109114513e8137cb3419d92f830b422ed30845",
       "small": {
         "file": "heritage/locker-10.small.webp",
         "width": 480,
         "height": 160,
-        "bytes": 22672,
-        "sha256": "a07a2dfcbb7a2ea819cea52215045bd69ade5497a74f21ed33b9d474a0202a7d"
+        "bytes": 22640,
+        "sha256": "e597033bde155bb69f3a846695e475d0aa5d8c50b5406371345bdfdf4d082e75"
       }
     },
     {
@@ -2560,20 +2560,20 @@
       "kind": "locker",
       "era": "terraces",
       "stage": 10,
-      "prompt": "Original flat colourful cartoon terraces locker, completed stage 10; large period-appropriate locker room; no text, branding or people. Built-in image generation with stage 8 style reference.",
+      "prompt": "Built-in image edit of the existing terraces stage-10 locker panorama: replace American football helmets and balls with period-appropriate association football boots and round footballs; preserve composition, flat colors and dark outlines; no text, logos or people.",
       "source": "apps/web/design/sticker-club/stadium-large-v1/sources/terraces-locker-10.png",
-      "sourceBytes": 2683715,
-      "sourceSha256": "e99545578e1666298a592334a7dcd90989f8b667e7dab94ce1633e655752b806",
+      "sourceBytes": 2600177,
+      "sourceSha256": "61af85fee1bba7a6262039565f405de7d0155efb8ff8ad1fec40e984788fd459",
       "width": 960,
       "height": 320,
-      "bytes": 79786,
-      "sha256": "63fd9dfe98f6877bd3c28d0206605477befef2199202133b099da2db5ebb77c1",
+      "bytes": 81254,
+      "sha256": "c0e12b07871ed84ff78726c68b846727748f5d77f37157cb24aba1b64597c8e1",
       "small": {
         "file": "terraces/locker-10.small.webp",
         "width": 480,
         "height": 160,
-        "bytes": 23364,
-        "sha256": "87a2055fc03eec979a0aef150edf3f3471a0aca149825eb6b5aac3775e4fab29"
+        "bytes": 23768,
+        "sha256": "6ed329eb5af7fc16fb0d182e8be4d873c682214578826897912a5498d00b73f8"
       }
     },
     {
