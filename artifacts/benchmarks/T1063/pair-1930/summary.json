@@ -1,0 +1,113 @@
+{
+  "base": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/start-fs24c-364d564d/.tmp/t1063-base",
+  "candidate": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/start-fs24c-364d564d/.tmp/t1063-cand",
+  "seed": "records-room-journey",
+  "decade": 1930,
+  "steps": 10,
+  "rounds": 8,
+  "hashes": [
+    "base:8e9033c3e3ae93af:8e9033c3e3ae93af",
+    "candidate:8e9033c3e3ae93af:8e9033c3e3ae93af"
+  ],
+  "loads": [
+    2.32,
+    3.37,
+    3.78,
+    4.87,
+    5.28,
+    5.32,
+    5.62,
+    6.18,
+    6.44,
+    6.22,
+    5.64,
+    5.28,
+    5.06,
+    5.22,
+    5.4,
+    5.09
+  ],
+  "calls": {
+    "next-event": {
+      "ratio": 0.9731,
+      "lo": 0.8673,
+      "hi": 1.1406,
+      "call": "no difference",
+      "samples": 40,
+      "baseMedianMs": 743.2750465000004,
+      "candidateMedianMs": 755.4945560000006
+    },
+    "advance-days": {
+      "ratio": 1.0014,
+      "lo": 0.876,
+      "hi": 1.1332,
+      "call": "no difference",
+      "samples": 40,
+      "baseMedianMs": 1136.2632885000007,
+      "candidateMedianMs": 1084.0225684999996
+    },
+    "save": {
+      "ratio": 0.9616,
+      "lo": 0.8981,
+      "hi": 1.0772,
+      "call": "no difference",
+      "samples": 80,
+      "baseMedianMs": 93.40933950000044,
+      "candidateMedianMs": 90.19837400000006
+    },
+    "stopped-reads": {
+      "ratio": 0.9429,
+      "lo": 0.8106,
+      "hi": 1.214,
+      "call": "no difference",
+      "samples": 80,
+      "baseMedianMs": 18.111479000000145,
+      "candidateMedianMs": 18.015580000000227
+    },
+    "decision": {
+      "ratio": 0.9477,
+      "lo": 0.8116,
+      "hi": 1.1661,
+      "call": "no difference",
+      "samples": 16,
+      "baseMedianMs": 69.44317300000057,
+      "candidateMedianMs": 68.80148150000059
+    },
+    "decision-save": {
+      "ratio": 0.9728,
+      "lo": 0.7465,
+      "hi": 1.1572,
+      "call": "no difference",
+      "samples": 16,
+      "baseMedianMs": 11.785546000000068,
+      "candidateMedianMs": 11.56742949999989
+    },
+    "open-game": {
+      "ratio": 0.9935,
+      "lo": 0.8939,
+      "hi": 1.0645,
+      "call": "no difference",
+      "samples": 8,
+      "baseMedianMs": 843.1585725000004,
+      "candidateMedianMs": 839.6273815000004
+    },
+    "export-game": {
+      "ratio": 0.9947,
+      "lo": 0.904,
+      "hi": 1.0652,
+      "call": "no difference",
+      "samples": 8,
+      "baseMedianMs": 496.9552915000004,
+      "candidateMedianMs": 497.5349699999997
+    },
+    "import-game": {
+      "ratio": 0.9997,
+      "lo": 0.8959,
+      "hi": 1.0769,
+      "call": "no difference",
+      "samples": 8,
+      "baseMedianMs": 964.1229470000007,
+      "candidateMedianMs": 964.1937180000004
+    }
+  }
+}

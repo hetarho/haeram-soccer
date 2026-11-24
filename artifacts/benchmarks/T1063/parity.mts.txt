@@ -1,0 +1,63 @@
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+const args = process.argv.slice(2);
+const flag = (n: string, f?: string) => (args.indexOf(n) < 0 ? f : args[args.indexOf(n) + 1]);
+const decade = Number(flag('--decade', '1930'));
+const steps = Number(flag('--steps', '30'));
+const load = async (p: string) => (await import(pathToFileURL(resolve('.', p)).href)) as any;
+const { Host } = await load('apps/web/src/runtime/host.ts');
+const { memoryGames } = await load('tests/fixtures/save-file.ts');
+const { RESPONSIBILITY_KEYS } = await load('packages/engine/src/responsibilities.ts');
+const world = await load('packages/engine/src/world.ts');
+const { disciplineNames } = await load('apps/web/src/runtime/disciplineNames.ts');
+function old(w: any) {
+  const ids = new Set([...Object.keys(w.discipline?.yellows ?? {}), ...(w.discipline?.bans ?? []).map((b: any) => b.player)]);
+  const names: any[] = [];
+  if (ids.size) for (const club of w.clubs) for (const p of world.clubPlayers(w, club)) if (ids.has(p.id)) names.push([p.id, { name: p.name, club: club.id }]);
+  return Object.fromEntries(names);
+}
+const games = memoryGames();
+const host = new Host(() => {}, { openStore: games.open, gameFiles: { list: games.list, remove: games.remove }, databaseBytes: games.bytes });
+let n = 0;
+const req = (body: unknown) => ({ protocol: 1, session: 'p', requestId: `r${n++}`, expectedRevision: host.world?.revision ?? -1, body });
+if (flag('--world')) {
+  const v8 = await import('node:v8');
+  const fs = await import('node:fs');
+  const fixture = v8.deserialize(fs.readFileSync(resolve(flag('--world')!)));
+  if (!fixture.newsJournal || !fixture.careerReads) {
+    const { initializeReadModels } = await load('packages/engine/src/read-models.ts');
+    initializeReadModels(fixture);
+  }
+  host.world = fixture;
+} else {
+  const g = await host.handle(req({ type: 'generate', choice: { tier: 'oil', traits: [], decade, seed: flag('--seed', 'records-room-journey') } }));
+  const club = g.start.listings.find((l: any) => l.affordable);
+  await host.handle(req({ type: 'take-over', clubId: club.clubId }));
+}
+const w0 = host.world;
+w0.settings.mode = 'manual';
+for (const k of RESPONSIBILITY_KEYS) w0.settings.responsibilities[k] = 'delegated';
+w0.settings.observations.matchEve = false;
+const cg = await host.handle(req({ type: 'create-game', gameId: 'g' }));
+if (!cg.ok) throw new Error(cg.error);
+let tOld = 0, tNew = 0, mism = 0, entries = 0, rep = 0;
+for (let s = 0; s < steps; s++) {
+  const r = await host.handle(req({ type: 'command', command: { type: 'next-event' } }));
+  if (!r.ok) throw new Error(r.error);
+  const w = host.world;
+  world.invalidateNpcSquads(w);
+  let t = performance.now();
+  const b = JSON.stringify(old(w));
+  tOld += performance.now() - t;
+  world.invalidateNpcSquads(w);
+  t = performance.now();
+  const c = JSON.stringify(disciplineNames(w));
+  tNew += performance.now() - t;
+  if (b !== c) mism++;
+  const parsed = JSON.parse(c);
+  entries = Object.keys(parsed).length;
+  rep = Object.values(parsed).filter((x: any) => !w.squads?.[x.club] && x.club !== w.playerClub).length;
+  const repClubs = new Set(Object.values(JSON.parse(c)).filter((x: any) => !w.squads?.[x.club] && x.club !== w.playerClub).map((x: any) => x.club)).size;
+  console.error(s, w.year, 'repClubs', repClubs, w.date ?? '', 'entries', entries, 'rep', rep, b === c ? 'same' : 'DIFF');
+}
+console.log(JSON.stringify({ decade, steps, mism, tOld: tOld.toFixed(0), tNew: tNew.toFixed(0) }));

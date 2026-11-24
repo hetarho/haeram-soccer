@@ -1,0 +1,81 @@
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+const args = process.argv.slice(2);
+const flag = (n: string, f?: string) => (args.indexOf(n) < 0 ? f : args[args.indexOf(n) + 1]);
+const tree = resolve(flag('--tree', '.')!);
+const decade = Number(flag('--decade', '1930'));
+const steps = Number(flag('--steps', '6'));
+const load = async (p: string) => (await import(pathToFileURL(resolve(tree, p)).href)) as any;
+const { Host } = await load('apps/web/src/runtime/host.ts');
+const { memoryGames } = await load('tests/fixtures/save-file.ts');
+const { RESPONSIBILITY_KEYS } = await load('packages/engine/src/responsibilities.ts');
+const world = await load('packages/engine/src/world.ts');
+const ce = await load('packages/engine/src/person-careers.ts');
+const games = memoryGames();
+const host = new Host(() => {}, { openStore: games.open, gameFiles: { list: games.list, remove: games.remove }, databaseBytes: games.bytes });
+let n = 0;
+const req = (body: unknown) => ({ protocol: 1, session: 'p', requestId: `r${n++}`, expectedRevision: host.world?.revision ?? -1, body });
+const g = await host.handle(req({ type: 'generate', choice: { tier: 'oil', traits: [], decade, seed: 'records-room-journey' } }));
+const club = g.start.listings.find((l: any) => l.affordable);
+await host.handle(req({ type: 'take-over', clubId: club.clubId }));
+const w0 = host.world;
+w0.settings.mode = 'manual';
+for (const k of RESPONSIBILITY_KEYS) w0.settings.responsibilities[k] = 'delegated';
+await host.handle(req({ type: 'create-game', gameId: 'g' }));
+for (let s = 0; s < steps; s++) {
+  const r = await host.handle(req({ type: 'command', command: { type: 'next-event' } }));
+  if (!r.ok) throw new Error(r.error);
+}
+const w = host.world;
+world.invalidateNpcSquads(w);
+const ids = new Set([...Object.keys(w.discipline?.yellows ?? {}), ...(w.discipline?.bans ?? []).map((b: any) => b.player)]);
+let rep = 0, stored = 0, cand = 0, found = 0, tRep = 0;
+for (const c of w.clubs) {
+  if (c.id === w.playerClub) continue;
+  if (w.squads?.[c.id]) { stored++; continue; }
+  rep++;
+  const pre = `${c.id}:`;
+  const people = ce.playingFor(w, c.id);
+  const isCand = [...ids].some((id) => id.startsWith(pre)) || people.some((p: any) => ids.has(p.id));
+  if (isCand) cand++;
+  const t = performance.now();
+  const ps = world.clubPlayers(w, c);
+  tRep += performance.now() - t;
+  const hit = ps.filter((p: any) => ids.has(p.id)).length;
+  found += hit;
+  if (hit && !isCand) console.log('MISSED', c.id);
+}
+console.log({ year: w.year, ids: ids.size, rep, stored, cand, found, tRep: tRep.toFixed(1) });
+// office parts
+const mods: Record<string, any> = {
+  policy: await load('packages/engine/src/policy.ts'), finance: await load('packages/engine/src/finance.ts'),
+  inv: await load('packages/engine/src/investment.ts'), ledger: await load('packages/engine/src/effect-ledger.ts'),
+  proj: await load('packages/engine/src/projection.ts'), del: await load('packages/engine/src/delegation.ts'),
+  budget: await load('packages/engine/src/club-budget.ts'), staff: await load('packages/engine/src/staff.ts'),
+  syn: await load('packages/engine/src/synergy.ts'), bases: await load('packages/engine/src/bases.ts'),
+  hiring: await load('packages/engine/src/hiring.ts'), info: await load('packages/engine/src/delegation-info.ts'),
+  tickets: await load('packages/engine/src/tickets.ts'),
+};
+const { officeRead } = await load('apps/web/src/runtime/officeRead.ts');
+const time = (label: string, f: () => unknown, reps = 5) => {
+  f();
+  const t = performance.now();
+  for (let i = 0; i < reps; i++) f();
+  console.log(label.padEnd(22), ((performance.now() - t) / reps).toFixed(2), 'ms');
+};
+time('officeRead', () => officeRead(w));
+time('operatingCosts', () => mods.finance.operatingCosts(w));
+time('policyCosts(all)', () => { const policy = mods.policy.policyOf(w); for (const key of mods.policy.POLICY_KEYS) for (const { level } of mods.policy.POLICY_INFO[key].levels) mods.finance.operatingCosts({ ...w, policy: { ...policy, [key]: level } }); });
+time('effectLedger', () => mods.ledger.effectLedger(w));
+time('facilities', () => ['training', 'academy', 'stadium'].map((p) => mods.inv.facilityInvestmentPreview(w, p)));
+time('gateProjection', () => mods.finance.gateProjection(w));
+time('ticketGates', () => mods.tickets.TICKET_LEVELS.map((l: any) => mods.finance.gateProjection({ ...w, ticket: l.price })));
+time('staffEffects', () => mods.staff.staffEffects(w));
+time('synergy', () => mods.syn.synergyEffects(w));
+time('budgets', () => mods.budget.clubBudgets(w));
+time('ownerFlows', () => mods.budget.ownerSeasonFlows(w));
+time('planRevenue', () => mods.del.planRevenue(w));
+time('financeProjection', () => mods.proj.financeProjection(w));
+time('delegation', () => { const r = mods.del.planRevenue(w), p = mods.proj.financeProjection(w); for (const key of mods.info.BUDGET_RESPONSIBILITIES) { mods.del.delegatePlan(w, key, undefined, r, p); for (const l of mods.info.SPEND_REQUESTS) mods.del.delegatePlan(w, key, l, r, p); } });
+time('hiring', () => [mods.hiring.managerCriteriaOf(w), mods.hiring.coachCriteriaOf(w), mods.hiring.talkRuleOf(w)]);
+time('bases', () => mods.bases.baseEffects(w));

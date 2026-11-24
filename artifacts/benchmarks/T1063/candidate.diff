@@ -1,0 +1,130 @@
+diff --git a/apps/web/src/runtime/disciplineNames.ts b/apps/web/src/runtime/disciplineNames.ts
+index c18b835f1..e0cae60a3 100644
+--- a/apps/web/src/runtime/disciplineNames.ts
++++ b/apps/web/src/runtime/disciplineNames.ts
+@@ -1,5 +1,37 @@
+-import type { World } from '../../../../packages/contracts/src/types';
++import type { Club, World } from '../../../../packages/contracts/src/types';
+ import { clubPlayers } from '../../../../packages/engine/src/world';
++import { playingFor } from '../../../../packages/engine/src/person-careers';
++
++/** A club whose squad is drawn on each read (a representative club, →WORLD-6): no stored squad. */
++const drawn = (w: World, club: Club) => club.id !== w.playerClub && !w.squads?.[club.id];
++
++/**
++ * The drawn clubs that can hold any of `ids`. Their players are their generated places
++ * (`<club>:p:…`), those places' refills (`<club>:vacancy:…`) and the people playing for them
++ * (`continuousSquad`), so a club none of `ids` points to is not drawn: drawing every one again after
++ * each day's squad invalidation was most of this read (T1063), and every entry it could name is
++ * still found. Only an ID beginning like a drawn club's is cut at its colons.
++ */
++function drawnHolders(w: World, ids: ReadonlySet<string>) {
++  const clubs = new Set<string>(),
++    heads = new Set<string>(),
++    holders = new Set<string>();
++  for (const club of w.clubs)
++    if (drawn(w, club)) {
++      clubs.add(club.id);
++      heads.add(club.id.split(':', 1)[0]!);
++      if (playingFor(w, club.id).some((person) => ids.has(person.id))) holders.add(club.id);
++    }
++  for (const id of ids) {
++    let at = id.indexOf(':');
++    if (at < 0 || !heads.has(id.slice(0, at))) continue;
++    for (; at > 0; at = id.indexOf(':', at + 1)) {
++      const prefix = id.slice(0, at);
++      if (clubs.has(prefix)) holders.add(prefix);
++    }
++  }
++  return holders;
++}
+ 
+ /** Only players named by the discipline table travel, never the other clubs' whole squads. */
+ export function disciplineNames(w: World) {
+@@ -8,9 +40,12 @@ export function disciplineNames(w: World) {
+     ...(w.discipline?.bans ?? []).map((ban) => ban.player),
+   ]);
+   const names: [string, { name: string; club: string }][] = [];
+-  if (ids.size)
++  if (ids.size) {
++    const holders = drawnHolders(w, ids);
+     for (const club of w.clubs)
+-      for (const player of clubPlayers(w, club))
+-        if (ids.has(player.id)) names.push([player.id, { name: player.name, club: club.id }]);
++      if (!drawn(w, club) || holders.has(club.id))
++        for (const player of clubPlayers(w, club))
++          if (ids.has(player.id)) names.push([player.id, { name: player.name, club: club.id }]);
++  }
+   return Object.fromEntries(names);
+ }
+diff --git a/apps/web/src/runtime/disciplineNames.test.ts b/apps/web/src/runtime/disciplineNames.test.ts
+new file mode 100644
+index 000000000..543ce287e
+--- /dev/null
++++ b/apps/web/src/runtime/disciplineNames.test.ts
+@@ -0,0 +1,65 @@
++import { expect, it } from 'vitest';
++import type { World } from '../../../../packages/contracts/src/types';
++import { worldMarketFixture } from '../../../../packages/engine/src/world-market.testkit';
++import { foundSquads } from '../../../../packages/engine/src/persisted-squads';
++import { playingChanged, retainPerson } from '../../../../packages/engine/src/person-careers';
++import { clubPlayers, invalidateNpcSquads, makePlayer } from '../../../../packages/engine/src/world';
++import { disciplineNames } from './disciplineNames';
++
++/** The read before T1063: every club's whole squad drawn and searched. */
++function everySquad(w: World) {
++  const ids = new Set([
++    ...Object.keys(w.discipline?.yellows ?? {}),
++    ...(w.discipline?.bans ?? []).map((ban) => ban.player),
++  ]);
++  const names: [string, { name: string; club: string }][] = [];
++  if (ids.size)
++    for (const club of w.clubs)
++      for (const player of clubPlayers(w, club))
++        if (ids.has(player.id)) names.push([player.id, { name: player.name, club: club.id }]);
++  return Object.fromEntries(names);
++}
++
++const booked = (w: World, players: string[]) => {
++  w.discipline = {
++    year: w.year,
++    yellows: Object.fromEntries(players.map((id) => [id, { league: 1 }])),
++    bans: [],
++    out: [],
++  };
++};
++
++it('T1063-read-parity: names the table as reading every squad does, drawing only the clubs it names', () => {
++  const w = worldMarketFixture();
++  const representative = w.clubs.find((club) => club.id === 'representative')!;
++  representative.representative = true;
++  foundSquads(w);
++  expect(w.squads?.representative).toBeUndefined();
++  // Someone who now plays for the representative club, holding one of its generated places.
++  const arrival = makePlayer('ENG', 'market-unit', 'arrival', 1950, 50, 'ST', 25, 0);
++  retainPerson(w, arrival, 'representative');
++  playingChanged(w);
++  invalidateNpcSquads(w);
++  const drawn = clubPlayers(w, representative);
++  expect(drawn.some((p) => p.id === 'arrival')).toBe(true);
++  const generated = drawn.find((p) => p.id.startsWith('representative:'))!;
++  const own = w.players[0]!.id,
++    stored = w.squads!.foreign![0]!.id;
++
++  // A generated place, an arrival, a stored and an own player, and someone in no squad.
++  booked(w, [generated.id, 'arrival', stored, own, 'retired-nobody']);
++  const names = disciplineNames(w);
++  expect(names).toEqual(everySquad(w));
++  expect(JSON.stringify(names)).toBe(JSON.stringify(everySquad(w)));
++  expect(names[generated.id]).toEqual({ name: generated.name, club: 'representative' });
++  expect(names.arrival).toEqual({ name: arrival.name, club: 'representative' });
++  expect(names['retired-nobody']).toBeUndefined();
++
++  // The arrival alone still finds him; nobody of the representative club is the same answer too.
++  booked(w, ['arrival', own]);
++  expect(disciplineNames(w)).toEqual(everySquad(w));
++  booked(w, [stored, own]);
++  invalidateNpcSquads(w);
++  expect(disciplineNames(w)).toEqual(everySquad(w));
++  expect(Object.values(disciplineNames(w)).map((x) => x.club)).toEqual(['own', 'foreign']);
++});

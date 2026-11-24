@@ -1,0 +1,26 @@
+// Matched requests of a waits-pair directory: posted reply hashes and rows put, and the slow reads' own time.
+const fs = require('fs'), path = require('path');
+const dir = process.argv[2];
+const files = fs.readdirSync(dir).filter((f) => /^(base|candidate)-\d+\.json$/.test(f));
+const runs = { base: [], candidate: [] };
+for (const f of files) runs[f.split('-')[0]].push(JSON.parse(fs.readFileSync(path.join(dir, f))));
+let matched = 0, differ = 0;
+const ratios = {}, med = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? (s[(s.length - 1) >> 1] + s[s.length >> 1]) / 2 : NaN; };
+const parts = {};
+for (let r = 0; r < Math.min(runs.base.length, runs.candidate.length); r++) {
+  const b = runs.base[r].rows, c = runs.candidate[r].rows;
+  for (let i = 0; i < Math.min(b.length, c.length); i++) {
+    if (b[i].kind !== c[i].kind) throw new Error('row order');
+    matched++;
+    if (b[i].replyHash !== c[i].replyHash || (b[i].rowsPut ?? 0) !== (c[i].rowsPut ?? 0)) differ++;
+    if (b[i].slowReads !== undefined && c[i].slowReads !== undefined) {
+      const k = b[i].kind;
+      (ratios[k] ??= []).push(Math.log(c[i].slowReads / b[i].slowReads));
+      (parts[k] ??= { base: [], cand: [] });
+      parts[k].base.push(b[i].slowReads); parts[k].cand.push(c[i].slowReads);
+    }
+  }
+}
+console.log({ rounds: runs.base.length, matched, differ });
+for (const [k, v] of Object.entries(ratios))
+  console.log(k.padEnd(14), 'slowReads median base', med(parts[k].base).toFixed(1), 'cand', med(parts[k].cand).toFixed(1), 'median ratio', Math.exp(med(v)).toFixed(3), 'n', v.length);
