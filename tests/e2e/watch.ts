@@ -49,6 +49,23 @@ export async function openWatchAction(page: Page) {
   if (await watch.isVisible()) return watch;
   const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
   if (await pace.isVisible()) {
+    // The pace control stays locked while the engine worker commits the save behind the
+    // responsibilities just set (→WEB-97); CI 45349144596 still had it locked after the 2 s click
+    // below. Wait for it to unlock, or for the eve that opens over it, before that click.
+    await expect
+      .poll(
+        async () =>
+          (await watch.isVisible()) ||
+          (await resume.isVisible()) ||
+          // Read without auto-waiting: a replaced control is simply not locked.
+          (await pace.evaluateAll((controls) =>
+            controls.some((control) => !(control as HTMLButtonElement).disabled),
+          )),
+        { timeout: 30000, message: '자동 진행 배속 stayed locked' },
+      )
+      .toBe(true);
+    if (await watch.isVisible()) return watch;
+    if (await resume.isVisible()) return resume;
     try {
       await chooseOption(pace, 'x10', { timeout: 2000 });
     } catch (error) {
