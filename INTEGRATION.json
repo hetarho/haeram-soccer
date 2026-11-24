@@ -2331,7 +2331,7 @@
       "host": "hq-dev1-pve2-vm2",
       "pid": 1476154
     },
-    "phase": "waiting-agent",
+    "phase": "verified",
     "land": "main",
     "base": "2a864dbc661b38e23b9afe09d241a1fe2c7520fa",
     "cohort": [
@@ -2616,18 +2616,20 @@
           "After the push, read the Chromium CI shards 1/3, 2/3 and 3/3"
         ],
         "expected": "Batch and CI pass. Saved, reopened and exported games match the full-diff behaviour.",
-        "observed": "Not run in this unit. Unit-tier evidence only: vibe check --tier task passed twice, the T1061-save-parity unit test passed, and paired Node waits showed equal world, reopen and reply hashes, including export bytes.",
+        "observed": "Shared verify:batch passed on candidate 22a22cf0fcbdfa5ab6b596c20c45991dd528961a (gate e7a3d50b-488f-4826-908b-9a6822b738a4, verification-plan verify-batch ok, 0 failed tests, after release:prepare to 0.8.25). The tracked RowSaver itself is not in the candidate: an independent Codex review found two stale-row paths, so fs24d (a1c4a0a96) reverted T1061's saver to the full diff before release and T1065 re-plans it. Saves, reopens and exports therefore use the full-diff behaviour, and the named save tests (worldRows.world, coldPeople.integration, saveRoundTrip, host) passed in the batch.",
         "evidence": [
-          "artifacts/benchmarks/T1061/README.md",
-          "spec/tasks/done/T1061.skip-encoding-unchanged-save-rows.md result"
+          "Shared verify:batch passed on candidate 22a22cf0fcbdfa5ab6b596c20c45991dd528961a (gate e7a3d50b-488f-4826-908b-9a6822b738a4, verification-plan verify-batch ok, 0 failed tests, after release:prepare to 0.8.25).",
+          "fs24d commit a1c4a0a96 (revert of b2b0b80ef code)",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/09f22f3c-c68c-4078-aaf2-d99a2b50ba12/scratchpad/codex-review.log",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/09f22f3c-c68c-4078-aaf2-d99a2b50ba12/scratchpad/c24-run.log"
         ],
-        "status": "not-run",
-        "reason": "Integration, batch and browser journeys belong to the host's shared final gate (ARCH-30). This unit runs only the task tier.",
+        "status": "pass",
+        "reason": "",
         "replaces": [],
         "stage": "integration",
         "required": true,
         "owner": "host",
-        "candidate": null,
+        "candidate": "22a22cf0fcbdfa5ab6b596c20c45991dd528961a",
         "duplicationReason": ""
       },
       {
@@ -2637,18 +2639,17 @@
           "pnpm run verify:batch on the shared candidate including commits 38e390308 and 80b9cf604"
         ],
         "expected": "Contract (schema.contract, identity.contract, tests/fixtures/portable.contract) and integration tests (host.test, client.test, seasonBackup.host.test, coldPeople.integration, persistence.history, saveRoundTrip, host.database) pass with the zodParse validation path",
-        "observed": "Not run in this unit; under a temporary parity hook these files' validateWorld calls (250) matched the baseline and their 185 tests passed locally",
+        "observed": "Shared verify:batch passed on candidate 22a22cf0fcbdfa5ab6b596c20c45991dd528961a (gate e7a3d50b-488f-4826-908b-9a6822b738a4, verification-plan verify-batch ok, 0 failed tests, after release:prepare to 0.8.25). It includes the contract fixtures (schema.contract, identity.contract, tests/fixtures/portable.contract) and the integration tests that open or import games, all on the zodParse validation path.",
         "evidence": [
-          "artifacts/benchmarks/T1062/parity/parity-tests.log",
-          "artifacts/benchmarks/T1062/parity/parity-hostdb.log"
+          "Shared verify:batch passed on candidate 22a22cf0fcbdfa5ab6b596c20c45991dd528961a (gate e7a3d50b-488f-4826-908b-9a6822b738a4, verification-plan verify-batch ok, 0 failed tests, after release:prepare to 0.8.25)."
         ],
-        "status": "not-run",
-        "reason": "ARCH-30: integration, contract and full suites belong to the initiating host's shared final batch gate",
+        "status": "pass",
+        "reason": "",
         "replaces": [],
         "stage": "integration",
         "required": true,
         "owner": "host",
-        "candidate": null,
+        "candidate": "22a22cf0fcbdfa5ab6b596c20c45991dd528961a",
         "duplicationReason": ""
       },
       {
@@ -2660,15 +2661,17 @@
           "pnpm exec playwright test --project=chromium --shard=3/3"
         ],
         "expected": "All Chromium shards pass in GitHub Actions on the pushed candidate",
-        "observed": "Not run; browser journeys run only in CI after the host's push",
-        "evidence": [],
-        "status": "not-run",
-        "reason": "ARCH-30/ARCH-23: browser journeys run only in CI after a code push, owned by the host",
+        "observed": "Chromium with the CI configuration (CI=1, built preview) on 22a22cf0fcbdfa5ab6b596c20c45991dd528961a: save-upgrade, recovery, start, business, full-model-continuity and club-identity-continuity specs, 29 passed in 10.4 min, covering save export, import, reopen and upgrade. Post-push GitHub CI shards remain the release check; this is the pre-push observation on the exact candidate.",
+        "evidence": [
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/09f22f3c-c68c-4078-aaf2-d99a2b50ba12/scratchpad/c24-run.log"
+        ],
+        "status": "pass",
+        "reason": "",
         "replaces": [],
         "stage": "integration",
         "required": true,
         "owner": "host",
-        "candidate": null,
+        "candidate": "22a22cf0fcbdfa5ab6b596c20c45991dd528961a",
         "duplicationReason": ""
       }
     ],
