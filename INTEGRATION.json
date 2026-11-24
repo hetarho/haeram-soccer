@@ -2205,8 +2205,8 @@
       "branch": "gusta-session-start-fs24d-06588be4",
       "head": "0175a3d1c93e5eda1461ebfbe0e23e574199ed3d",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-24T09:04:56.239Z",
+      "status": "ready",
+      "at": "2026-11-24T09:05:02.070Z",
       "agentChecks": [],
       "verificationCommands": []
     }
