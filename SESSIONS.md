@@ -243,6 +243,7 @@
 | T1060 | fs24 | gusta-session-start-fs24-0f2a0f35 | 12d879fdaa11 | 2026-11-24T04:05Z |
 
 ## log
+- 261124 fix next-event test: freeze the heartbeat clock so batch load cannot add a progress reply (fs24 phase gate 1, T1060)
 - 261124 T1060 done
 - 261124 T1058 done
 - 261124 T1057 done
@@ -262,4 +263,3 @@
 - 261120 T1049 done
 - 261120 T1048 done
 - 261120 T1046 done
-- 261120 T1044 done
