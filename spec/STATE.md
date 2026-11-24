@@ -69,6 +69,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1065 | Re-land save row skipping without stale rows | ARCH SAVE | - | todo |
+| T1066 | Unlock management after a stop under load | WEB SAVE ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
