@@ -70,8 +70,10 @@ export async function importResponsibilityCareer(page: Page, world: World) {
     mimeType: 'application/octet-stream',
     buffer: Buffer.from(await saveFileOf(world)),
   });
-  // A 35-round career on the released model: CI WebKit 40233059787 opened it in over 5 s.
-  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 15000 });
+  // A 35-round career on the released model: CI WebKit 40233059787 opened it in over 5 s, and
+  // with three local workers beside other journeys it still showed 화면을 여는 중… after 15 s
+  // (fs24f, 261124), so it gets the same minute as the file input above.
+  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 60_000 });
 }
 
 /*
